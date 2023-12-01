@@ -23,7 +23,7 @@ end Day01
 object Day01:
 
     val day = "01"
-    val puzzleTitle = "Day 7: Some Assembly Required"
+    val puzzleTitle = "--- Day 1: Trebuchet?! ---"
 
     // input data files
     private val testData: String = s"$day-test.txt"
@@ -72,9 +72,25 @@ object Day01:
         // ----------
         //  Part One
         // ----------
-        println(s"Part 1: TBD ???")
         val p1T0 = Instant.now()
 
+        // a place to hold all the numbers
+        val a = scala.collection.mutable.ArrayBuffer[Int]()
+
+        // regex match digits
+        val digitsRE = raw"[0-9]".r
+
+        for li <- input do
+            // filter each line of input out and return only the digits,
+            // then take first and last digits
+            // if only one digit, then take first digit twice.
+            val matches = digitsRE.findAllIn(li).toVector
+            val h = matches.head
+            val t = if matches.length == 1 then matches.head else matches.tail.last
+            a += h.toInt*10 + t.toInt
+
+        println(s"Part 1:  What is the sum of all of the calibration values?")
+        println(s"${a.sum}")
 
         val delta1 = Duration.between(p1T0, Instant.now())
         println(s"Part 1 run time approx ${delta1.toMillis} milliseconds\n")
