@@ -75,10 +75,10 @@ object Day01:
         val p1T0 = Instant.now()
 
         // a place to hold all the numbers
-        val a = scala.collection.mutable.ArrayBuffer[Int]()
+        val as = scala.collection.mutable.ArrayBuffer[Int]()
 
         // regex match digits
-        val digitsRE = raw"[0-9]".r
+        val digitsRE = raw"([0-9])".r
 
         for li <- input do
             // filter each line of input out and return only the digits,
@@ -87,10 +87,10 @@ object Day01:
             val matches = digitsRE.findAllIn(li).toVector
             val h = matches.head
             val t = if matches.length == 1 then matches.head else matches.tail.last
-            a += h.toInt*10 + t.toInt
+            as += h.toInt*10 + t.toInt
 
         println(s"Part 1:  What is the sum of all of the calibration values?")
-        println(s"${a.sum}")
+        println(as.sum)
 
         val delta1 = Duration.between(p1T0, Instant.now())
         println(s"Part 1 run time approx ${delta1.toMillis} milliseconds\n")
@@ -99,10 +99,44 @@ object Day01:
         // ----------
         //  Part Two
         // ----------
-        println(s"Part 2: TBD ???")
         val p2T0 = Instant.now()
 
+        //val input2 = Source.fromResource("01-test-p2.txt").getLines().toVector
+        val input2 = Source.fromResource("01-input.txt").getLines().toVector
+        val bs = scala.collection.mutable.ArrayBuffer[Int]()
+        def digitToInt(d: String): Int = {
+            d match
+                case digitsRE(d) => d.toInt
+                case "one" => 1
+                case "two" => 2
+                case "three" => 3
+                case "four" => 4
+                case "five" => 5
+                case "six" => 6
+                case "seven" => 7
+                case "eight" => 8
+                case "nine" => 9
+                case "zero" => 0
+                case _ => Int.MinValue  // shouldn't happen
+        }
 
+        // regex matching digits or spelled out single digits
+        // [Regex101](https://regex101.com/)
+        val part2DigitsRE = raw"(one|two|three|four|five|six|seven|eight|nine|zero|[0-9])".r
+
+        for li <- input2 do
+            // Same process as Part1:  filter each line of input out and return only the digits,
+            // then take first and last digits
+            // if only one digit, then take first digit twice.
+            val matches2 = part2DigitsRE.findAllIn(li).toVector
+            val h = matches2.head
+            val t = if matches2.length == 1 then matches2.head else matches2.tail.last
+            bs += digitToInt(h) * 10 + digitToInt(t)
+
+        println(s"Part 2: What is the sum of all of the calibration values?")
+        println(bs.sum)
+
+        // 53900 - too high
 
         val delta2 = Duration.between(p2T0, Instant.now())
         println(f"Part 2 run time approx ${delta2.toMillis} milliseconds")

@@ -9,7 +9,7 @@ def Main(): Unit = {
     //         = 2 for real data
 
     val title = "Advent of Code 2023"
-    val runType = 1 // Default to type =1, the test data
+    val runType = 2 // Default to type =1, the test data
 
     // Which day's puzzle to run?
     val day = 1
