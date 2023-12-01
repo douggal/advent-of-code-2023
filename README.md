@@ -9,11 +9,15 @@ TODO: My goals for this year's AoC are to have fun, ...
 
 1. Day   1:  Trebuchet?!
 2. Day   2: 
-3. Day   3:
-4. Day   4: 
-
 
 ### Notes
 
 #### Day 1
 - [Regex101](https://regex101.com/)
+
+```text
+Part 1:  What is the sum of all of the calibration values?  54159
+Part 1 run time approx 16 milliseconds
+Part 2: What is the sum of all of the calibration values?  53866
+Part 2 run time approx 15 milliseconds
+```

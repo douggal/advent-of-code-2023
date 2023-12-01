@@ -101,9 +101,11 @@ object Day01:
         // ----------
         val p2T0 = Instant.now()
 
-        //val input2 = Source.fromResource("01-test-p2.txt").getLines().toVector
+        // val input2 = Source.fromResource("01-test-p2.txt").getLines().toVector
         val input2 = Source.fromResource("01-input.txt").getLines().toVector
+
         val bs = scala.collection.mutable.ArrayBuffer[Int]()
+
         def digitToInt(d: String): Int = {
             d match
                 case digitsRE(d) => d.toInt
@@ -116,22 +118,32 @@ object Day01:
                 case "seven" => 7
                 case "eight" => 8
                 case "nine" => 9
-                case "zero" => 0
                 case _ => Int.MinValue  // shouldn't happen
         }
 
         // regex matching digits or spelled out single digits
         // [Regex101](https://regex101.com/)
-        val part2DigitsRE = raw"(one|two|three|four|five|six|seven|eight|nine|zero|[0-9])".r
+
+        // forward
+        val part2DigitsRE = raw"(one|two|three|four|five|six|seven|eight|nine|[0-9])".r
+
+        // regex only searches from right to left?
+        // to get around this I'll have to reverse the regex and string
+
+        // reversed - used to search from right side by reversing string and applying regex
+        val part2stigiDRE = raw"(enin|thgie|neves|xis|evif|ruof|eerht|owt|eno|[0-9])".r
 
         for li <- input2 do
             // Same process as Part1:  filter each line of input out and return only the digits,
             // then take first and last digits
             // if only one digit, then take first digit twice.
-            val matches2 = part2DigitsRE.findAllIn(li).toVector
-            val h = matches2.head
-            val t = if matches2.length == 1 then matches2.head else matches2.tail.last
-            bs += digitToInt(h) * 10 + digitToInt(t)
+            val matchesFwd = part2DigitsRE.findAllIn(li).toVector
+            val h = matchesFwd.head
+            val matchesRev = part2stigiDRE.findAllIn(li.reverse).toVector
+            val t = matchesRev.head
+            bs += digitToInt(h) * 10 + digitToInt(t.reverse)
+
+        // bs.foreach(println)
 
         println(s"Part 2: What is the sum of all of the calibration values?")
         println(bs.sum)
