@@ -70,7 +70,7 @@ object Day02:
         // ----------------------
         //  Common to both parts
         // ----------------------
-        val gameHeaderRE = raw"(Game [1-9]+: )(.+)".r
+        val gameHeaderRE = raw"(Game [0-9]+: )(.+)".r
 
         // ----------
         //  Part One
@@ -118,21 +118,22 @@ object Day02:
         var pGreen = scala.collection.mutable.Set[Int]()
         var pBlue = scala.collection.mutable.Set[Int]()
         for r <- reds.zipWithIndex do
-            if r._1.count(_ >= 12) > 0 then
+            if r._1.count(_ > 12) == 0 then
                 pRed += r._2 + 1
         for r <- greens.zipWithIndex do
-            if r._1.count(_ >= 13) > 0 then
+            if r._1.count(_ > 13) == 0 then
                 pGreen += r._2 + 1
         for r <- blues.zipWithIndex do
-            if r._1.count(_ >= 14) > 0 then
+            if r._1.count(_ > 14) == 0 then
                 pBlue += r._2 + 1
 
-        val answer = pRed.intersect(pGreen.intersect(pBlue))
+        val answerVector = pRed.intersect(pGreen.intersect(pBlue)).toVector
 
-        answer.foreach(println)
+        answerVector.sortWith(_ < _).foreach(println)
 
         println(s"Part 1: Determine which games would have been possible if the bag had been loaded with only")
         println(s"12 red cubes, 13 green cubes, and 14 blue cubes. What is the sum of the IDs of those games?")
+        println(answerVector.sum)
 
         val delta1 = Duration.between(p1T0, Instant.now())
         println(s"Part 1 run time approx ${delta1.toMillis} milliseconds\n")
