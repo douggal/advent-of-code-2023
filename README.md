@@ -8,7 +8,7 @@ Solutions are in Scala 3 unless otherwise noted.
 TODO: My goals for this year's AoC are to have fun, ...
 
 1. Day   1:  Trebuchet?!
-2. Day   2: 
+2. Day   2:  Cube Conundrum
 
 ### Notes
 
@@ -23,3 +23,4 @@ Part 1 run time approx 16 milliseconds
 Part 2: What is the sum of all of the calibration values?  53866
 Part 2 run time approx 15 milliseconds
 ```
+#### Day 2

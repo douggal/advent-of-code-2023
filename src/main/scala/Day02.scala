@@ -1,5 +1,6 @@
 import java.time.{Duration, Instant}
 import scala.io.Source
+import scala.collection.mutable.ArrayBuffer
 
 /** Advent of Code 2023 Day 02
  *
@@ -66,15 +67,53 @@ object Day02:
             println(s"  Last line: ${input.last}")
         println
 
-        // Common to both parts
-        // code goes here ...
+        // ----------------------
+        //  Common to both parts
+        // ----------------------
+        val gameHeaderRE = raw"(Game [1-9]+: )(.+)".r
 
         // ----------
         //  Part One
         // ----------
         val p1T0 = Instant.now()
 
-        println(s"Part 1: TBD ???")
+        // Use parallel arrays,  one each for red, green and blue
+        // ignore index 0
+        // each index represents game #, and its Vector of Ints is counts from each draw
+        val reds = ArrayBuffer[ArrayBuffer[Int]]()
+        val greens = ArrayBuffer[ArrayBuffer[Int]]()
+        val blues = ArrayBuffer[ArrayBuffer[Int]]()
+
+        val colors = List("red", "green", "blue")
+
+        for li <- input do
+            // peel off the game number
+            val game = gameHeaderRE.findAllIn(li).toVector.tail.head
+
+            // split on ;
+            // Ex:  3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
+            val draws = game.split(";")
+
+            // split on ,
+            // Ex 3 blue, 4 red
+            for draw <- draws do
+                reds += ArrayBuffer[Int]()
+                greens += ArrayBuffer[Int]()
+                blues += ArrayBuffer[Int]()
+                val xs = draw.split(",")
+                for x <- xs do
+                    for color <- colors do
+                        color match
+                            case "red" => reds.last += x.split(" ").head.trim.toInt
+                            case "green" => greens.last += x.split(" ").head.trim.toInt
+                            case "blue" => blues.last += x.split(" ").head.trim.toInt
+                            case _ => { println("Error"); System.exit(1) }
+
+
+
+
+        println(s"Part 1: Determine which games would have been possible if the bag had been loaded with only")
+        println(s"12 red cubes, 13 green cubes, and 14 blue cubes. What is the sum of the IDs of those games?")
 
         val delta1 = Duration.between(p1T0, Instant.now())
         println(s"Part 1 run time approx ${delta1.toMillis} milliseconds\n")
