@@ -1,4 +1,5 @@
 import java.time.{Duration, Instant}
+import scala.collection.mutable
 import scala.io.Source
 import scala.collection.mutable.{ArrayBuffer, Set}
 
@@ -119,9 +120,9 @@ object Day02:
         // Data structures are built and populated, now answer question
         // return Game # of each possible game
         // pRed for example is the set of possible game #s meeting minimum condition Red count <= 12
-        var pRed = Set[Int]()
-        var pGreen = Set[Int]()
-        var pBlue = Set[Int]()
+        var pRed = mutable.Set[Int]()
+        var pGreen = mutable.Set[Int]()
+        var pBlue = mutable.Set[Int]()
         for r <- reds.zipWithIndex do
             if r._1.count(_ > redTarget) == 0 then
                 pRed += r._2 + 1
@@ -160,7 +161,7 @@ object Day02:
             maxBlues += r.max
 
         val powerSet = ArrayBuffer[Int]()
-        for i <- 0 until maxReds.length do
+        for i <- maxReds.indices do
             powerSet += maxReds(i) * maxGreens(i) * maxBlues(i)
 
         val answerP2 = powerSet.sum
