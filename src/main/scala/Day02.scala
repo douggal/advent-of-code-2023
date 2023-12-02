@@ -1,6 +1,6 @@
 import java.time.{Duration, Instant}
 import scala.io.Source
-import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable.{ArrayBuffer, Set}
 
 /** Advent of Code 2023 Day 02
  *
@@ -70,7 +70,14 @@ object Day02:
         // ----------------------
         //  Common to both parts
         // ----------------------
+        // RE to split out game # from data in each input line
         val gameHeaderRE = raw"(Game [0-9]+: )(.+)".r
+        val colors = List("red", "green", "blue")
+
+        // target numbers
+        val redTarget = 12
+        val greenTarget = 13
+        val blueTarget = 14
 
         // ----------
         //  Part One
@@ -83,8 +90,6 @@ object Day02:
         val reds = ArrayBuffer[ArrayBuffer[Int]]()
         val greens = ArrayBuffer[ArrayBuffer[Int]]()
         val blues = ArrayBuffer[ArrayBuffer[Int]]()
-
-        val colors = List("red", "green", "blue")
 
         for li <- input do
             // peel off the game numbers from the line header
@@ -113,18 +118,18 @@ object Day02:
 
         // Data structures are built and populated, now answer question
         // return Game # of each possible game
-        // pRed for example is the set of game #s meeting minimum condition Red count <= 12
-        var pRed = scala.collection.mutable.Set[Int]()
-        var pGreen = scala.collection.mutable.Set[Int]()
-        var pBlue = scala.collection.mutable.Set[Int]()
+        // pRed for example is the set of possible game #s meeting minimum condition Red count <= 12
+        var pRed = Set[Int]()
+        var pGreen = Set[Int]()
+        var pBlue = Set[Int]()
         for r <- reds.zipWithIndex do
-            if r._1.count(_ > 12) == 0 then
+            if r._1.count(_ > redTarget) == 0 then
                 pRed += r._2 + 1
         for r <- greens.zipWithIndex do
-            if r._1.count(_ > 13) == 0 then
+            if r._1.count(_ > greenTarget) == 0 then
                 pGreen += r._2 + 1
         for r <- blues.zipWithIndex do
-            if r._1.count(_ > 14) == 0 then
+            if r._1.count(_ > blueTarget) == 0 then
                 pBlue += r._2 + 1
 
         val answerVector = pRed.intersect(pGreen.intersect(pBlue)).toVector

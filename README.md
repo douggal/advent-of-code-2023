@@ -24,3 +24,11 @@ Part 2: What is the sum of all of the calibration values?  53866
 Part 2 run time approx 15 milliseconds
 ```
 #### Day 2
+- I set out to use Functional Programming techniques, but I find mutable vars and for loops get the job done. 
+
+```text
+Part 1: Determine which games would have been possible if the bag had been loaded with only
+12 red cubes, 13 green cubes, and 14 blue cubes. What is the sum of the IDs of those games?  2331
+Part 2: For each game, find the minimum set of cubes that must have been present. 
+What is the sum of the power of these sets?  71585
+```
