@@ -66,7 +66,9 @@ object DayXX:
             println(s"  Last line: ${input.last}")
         println
 
-        // Common to both parts
+        // ----------------------
+        //  Common to both parts
+        // ----------------------
         // code goes here ...
 
         // ----------

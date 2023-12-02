@@ -12,15 +12,17 @@ def Main(): Unit = {
     val runType = 2 // Default to type =1, the test data
 
     // Which day's puzzle to run?
-    val day = 1
+    val day = 2
 
     // Implement each day's puzzle
     val d1 = Day01(s"$title Day 1", runType)
+    val d2 = Day02(s"$title Day 2", runType)
 
     // Run the selected day's puzzle
     println(s"Begin: ${ZonedDateTime.now()}")
 
     day match {
+        case 2 => d2.run()
         case 1 => d1.run()
         case _ => println("Error day does not match with a class")
     }
