@@ -77,8 +77,8 @@ object Day02:
         // ----------
         val p1T0 = Instant.now()
 
-        // Use parallel arrays,  one each for red, green and blue
-        // ignore index 0
+        // Color count arrays.  Use parallel arrays, one each for red, green and blue
+        // 0 based so game number will be -1
         // each index represents game #, and its Vector of Ints is counts from each draw
         val reds = ArrayBuffer[ArrayBuffer[Int]]()
         val greens = ArrayBuffer[ArrayBuffer[Int]]()
@@ -87,30 +87,49 @@ object Day02:
         val colors = List("red", "green", "blue")
 
         for li <- input do
-            // peel off the game number
-            val game = gameHeaderRE.findAllIn(li).toVector.tail.head
+            // peel off the game numbers from the line header
+            @unchecked
+            val gameHeaderRE(head, game) = li
 
             // split on ;
             // Ex:  3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
             val draws = game.split(";")
 
-            // split on ,
+            // split on , and add number to each game's color count array
             // Ex 3 blue, 4 red
+            reds += ArrayBuffer[Int]()
+            greens += ArrayBuffer[Int]()
+            blues += ArrayBuffer[Int]()
             for draw <- draws do
-                reds += ArrayBuffer[Int]()
-                greens += ArrayBuffer[Int]()
-                blues += ArrayBuffer[Int]()
-                val xs = draw.split(",")
+                val xs = draw.split(",").map(x => x.trim)
                 for x <- xs do
                     for color <- colors do
-                        color match
-                            case "red" => reds.last += x.split(" ").head.trim.toInt
-                            case "green" => greens.last += x.split(" ").head.trim.toInt
-                            case "blue" => blues.last += x.split(" ").head.trim.toInt
-                            case _ => { println("Error"); System.exit(1) }
+                        if color == "red" && x.contains("red") then
+                            reds.last += x.split(" ").head.trim.toInt
+                        if color == "green" && x.contains("green") then
+                            greens.last += x.split(" ").head.trim.toInt
+                        if color == "blue" && x.contains("blue") then
+                            blues.last += x.split(" ").head.trim.toInt
 
+        // Data structures are built and populated, now answer question
+        // return Game # of each possible game
+        //val pRed = reds.zipWithIndex.map((x, i) => if x.count(_ >= 12) > 0 then i)
+        var pRed = scala.collection.mutable.Set[Int]()
+        var pGreen = scala.collection.mutable.Set[Int]()
+        var pBlue = scala.collection.mutable.Set[Int]()
+        for r <- reds.zipWithIndex do
+            if r._1.count(_ >= 12) > 0 then
+                pRed += r._2 + 1
+        for r <- greens.zipWithIndex do
+            if r._1.count(_ >= 13) > 0 then
+                pGreen += r._2 + 1
+        for r <- blues.zipWithIndex do
+            if r._1.count(_ >= 14) > 0 then
+                pBlue += r._2 + 1
 
+        val answer = pRed.intersect(pGreen.intersect(pBlue))
 
+        answer.foreach(println)
 
         println(s"Part 1: Determine which games would have been possible if the bag had been loaded with only")
         println(s"12 red cubes, 13 green cubes, and 14 blue cubes. What is the sum of the IDs of those games?")
