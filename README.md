@@ -14,6 +14,8 @@ TODO: My goals for this year's AoC are to have fun, ...
 
 #### Day 1
 - [Regex101](https://regex101.com/)
+- Could not figure out how to use Scala's string filter method with regex.  Discovered later a map and toVector is needed to convert each char in the input to a string and turn the sequence into a Vector before using filter w/regex.
+- This was fortunate.  In switching a pattern matcher with capture groups it set me up for success in part 2.
 
 ```text
 Part 1:  What is the sum of all of the calibration values?  54159
