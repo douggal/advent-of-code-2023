@@ -113,7 +113,7 @@ object Day02:
 
         // Data structures are built and populated, now answer question
         // return Game # of each possible game
-        //val pRed = reds.zipWithIndex.map((x, i) => if x.count(_ >= 12) > 0 then i)
+        // pRed for example is the set of game #s meeting minimum condition Red count <= 12
         var pRed = scala.collection.mutable.Set[Int]()
         var pGreen = scala.collection.mutable.Set[Int]()
         var pBlue = scala.collection.mutable.Set[Int]()
@@ -129,7 +129,7 @@ object Day02:
 
         val answerVector = pRed.intersect(pGreen.intersect(pBlue)).toVector
 
-        answerVector.sortWith(_ < _).foreach(println)
+        // answerVector.sortWith(_ < _).foreach(println)
 
         println(s"Part 1: Determine which games would have been possible if the bag had been loaded with only")
         println(s"12 red cubes, 13 green cubes, and 14 blue cubes. What is the sum of the IDs of those games?")
@@ -144,7 +144,25 @@ object Day02:
         // ----------
         val p2T0 = Instant.now()
 
-        println(s"Part 2: TBD ???")
+        val maxReds = ArrayBuffer[Int]()
+        val maxGreens = ArrayBuffer[Int]()
+        val maxBlues = ArrayBuffer[Int]()
+        for r <- reds do
+            maxReds += r.max
+        for r <- greens do
+            maxGreens += r.max
+        for r <- blues do
+            maxBlues += r.max
+
+        val powerSet = ArrayBuffer[Int]()
+        for i <- 0 until maxReds.length do
+            powerSet += maxReds(i) * maxGreens(i) * maxBlues(i)
+
+        val answerP2 = powerSet.sum
+
+        println(s"Part 2: For each game, find the minimum set of cubes that must have been present. ")
+        println(s"What is the sum of the power of these sets?")
+        println(answerP2)
 
         val delta2 = Duration.between(p2T0, Instant.now())
         println(f"Part 2 run time approx ${delta2.toMillis} milliseconds")
