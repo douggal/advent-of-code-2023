@@ -73,27 +73,42 @@ object Day03:
         /*
            Create a grid from the input data:  1-D array of Char
            Row-oriented, y-down
+           Ref:  (Amit's grid parts)[https://www.redblobgames.com/grids/parts/]
+            (Chutes and Ladders)[https://docs.swift.org/swift-book/documentation/the-swift-programming-language/controlflow/]
 
             Index         0   1   2   3   4   5   6   7   8   9   10   11
-            Data          4   6   7   .   .   1   1   4   .   .    .   .
+            Data          4   6   7   .   .   1   1   4   .   .   .    .
             rows (y)      0   0   0   0   0   0   0   0   0   0   1    1
             columns (x)   0   1   2   3   4   5   6   7   8   9   0    1
         */
         val grid = ArrayBuffer[Char]()
         val maxRow = input.length
-        val valCol = input.head.count(_ => true)
+        val maxCol = input.head.count(_ => true)
         for li <- input do
             for c <- li.toCharArray do
                 grid += c
 
         val i = 0
 
-        def getNeighbors(r: Int, c: Int): Vector[Char] = {
-            Vector[Char]('c')
+        def coordsToIndex(r: Int, c: Int): Int = {
+            // convert row and column to index in the grid
+
+
+            ???
         }
 
-        def getTouches(r: Int, c: Int): Vector[Char] = {
-            Vector[Char]('c')
+        def getNeighbors(r: Int, c: Int): ArrayBuffer[Char] = {
+            // returns a Vector of the values of this cell's neighbors
+            // neighbors share an edge with the cell a row r and column c
+            // or share a corner touch - the diagonals
+
+            val moves = List((-1,0),(-1,1),(0,1),(1,1),(1,0),(1,-1),(0,-1),(-1,-1))  // clockwise from top
+            val result = ArrayBuffer[Char]()
+            for t <- moves do
+                if r+t._1 >= 0 && r+t._1 < maxRow then
+                    if c+t._2 >= 0 && c+t._2 < maxCol then
+                        result += grid(r+t._1,c+t._2)
+            result
         }
 
 
