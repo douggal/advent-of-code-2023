@@ -5,8 +5,9 @@ Advent of Code website:  [Advent of Code](https://adventofcode.com)
 
 Solutions are in Scala 3 unless otherwise noted.
 
-1. Day   1:  Trebuchet?!
-2. Day   2:  Cube Conundrum
+1. Day  1:  Trebuchet?!
+2. Day  2:  Cube Conundrum
+3. Day  3:  Gear Ratios
 
 ### Notes
 
@@ -34,3 +35,6 @@ Part 1: Determine which games would have been possible if the bag had been loade
 Part 2: For each game, find the minimum set of cubes that must have been present. 
 What is the sum of the power of these sets?  71585
 ```
+
+#### Day 3
+- (Amit's Grid parts and relationships)[https://www.redblobgames.com/grids/parts/]

@@ -1,5 +1,6 @@
 import scala.io.Source
 import java.time.{Duration, Instant}
+import scala.collection.mutable.{ArrayBuffer}
 
 /** Advent of Code 2023 Day 3
  *
@@ -23,7 +24,7 @@ end Day03
 object Day03:
 
     val day = "03"
-    val puzzleTitle = "Day 03: ???"
+    val puzzleTitle = "--- Day 3: Gear Ratios ---"
 
     // input data files
     private val testData: String = s"$day-test.txt"
@@ -69,14 +70,43 @@ object Day03:
         // ----------------------
         //  Common to both parts
         // ----------------------
-        // code goes here ...
+        /*
+           Create a grid from the input data:  1-D array of Char
+           Row-oriented, y-down
+
+            Index         0   1   2   3   4   5   6   7   8   9   10   11
+            Data          4   6   7   .   .   1   1   4   .   .    .   .
+            rows (y)      0   0   0   0   0   0   0   0   0   0   1    1
+            columns (x)   0   1   2   3   4   5   6   7   8   9   0    1
+        */
+        val grid = ArrayBuffer[Char]()
+        val maxRow = input.length
+        val valCol = input.head.count(_ => true)
+        for li <- input do
+            for c <- li.toCharArray do
+                grid += c
+
+        val i = 0
+
+        def getNeighbors(r: Int, c: Int): Vector[Char] = {
+            Vector[Char]('c')
+        }
+
+        def getTouches(r: Int, c: Int): Vector[Char] = {
+            Vector[Char]('c')
+        }
+
 
         // ----------
         //  Part One
         // ----------
         val p1T0 = Instant.now()
 
-        println(s"Part 1: TBD ???")
+
+
+
+
+        println(s"Part 1: What is the sum of all of the part numbers in the engine schematic?")
 
         val delta1 = Duration.between(p1T0, Instant.now())
         println(s"Part 1 run time approx ${delta1.toMillis} milliseconds\n")
