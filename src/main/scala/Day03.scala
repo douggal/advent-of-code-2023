@@ -70,6 +70,11 @@ object Day03:
         // ----------------------
         //  Common to both parts
         // ----------------------
+        val symbols = "!@#$%^&*()-=+_/|\\[]{}<>,:;".toCharArray.toSet
+        val digits = "0123456789".toCharArray.toSet
+        val maxRow = input.length
+        val maxCol = input.head.count(_ => true)
+
         /*
            Create a grid from the input data:  1-D array of Char
            Row-oriented, y-down
@@ -81,11 +86,7 @@ object Day03:
             rows (y)      0   0   0   0   0   0   0   0   0   0   1    1
             columns (x)   0   1   2   3   4   5   6   7   8   9   0    1
         */
-        val symbols = "!@#$%^&*()-=+_/|\\[]{}<>,:;".toCharArray.toSet
-        val digits = "0123456789".toCharArray.toSet
         val grid = ArrayBuffer[Char]()
-        val maxRow = input.length
-        val maxCol = input.head.count(_ => true)
         for li <- input do
             for c <- li.toCharArray do
                 grid += c
@@ -125,7 +126,7 @@ object Day03:
             val neighbors2 = getNeighbors(9,4)
             val iiii = 0 // debug: for breakpoint
 
-        // Algo: iterate down the grid
+        // Algo: iterate down the grid left to right
         // if digit, then accumulate each cell's neighbors
         // when not a digit, then process number if has symbol neighbor
 
@@ -136,11 +137,16 @@ object Day03:
         var pow = 0  // power of 10
         var num = 0  // current number
         var hasSymbolNeighbor = false
+
         for row <- 0 until maxRow
             col <- 0 until maxCol do
             val cell = grid(toIndex(row, col))
             if digits.contains(cell) then
-                num += num*Math.pow(10,pow).toInt + cell.toInt
+                // the cell has a digit
+                // multiply number, num, by 10 then add new digit.
+                if pow > 0 then
+                    num = num*10
+                num += cell.toString.toInt
                 pow += 1
                 if getNeighbors(row, col).length > 0 then
                     hasSymbolNeighbor = true
@@ -149,6 +155,12 @@ object Day03:
                 if hasSymbolNeighbor then
                     nums += num
                 pow = 0
+                num = 0
+                hasSymbolNeighbor = false
+
+        // check if last cell in the grid was a digit, and if so pick up the digit in last cell
+        if hasSymbolNeighbor then
+            nums += num
 
         val answerP1 = nums.sum
 
