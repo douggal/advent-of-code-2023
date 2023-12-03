@@ -1,6 +1,7 @@
 import scala.io.Source
 import java.time.{Duration, Instant}
-import scala.collection.mutable.{ArrayBuffer, Set}
+import scala.collection.mutable
+import scala.collection.mutable.{ArrayBuffer, Map, Set}
 
 /** Advent of Code 2023 Day 3
  *
@@ -113,6 +114,24 @@ object Day03:
             result
         }
 
+        def getCoordsOfGear(r: Int, c: Int): (Int, Int) = {
+            // circle the given cell in a clockwise direction
+            // if a gear is found,
+            // returns a Tuple2 with the coords of gear
+            // neighbors share an edge with the cell a row r and column c
+            // or share a corner touch - the diagonals
+
+            val moves = List((-1, 0), (-1, 1), (0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1)) // clockwise from top
+            var result: (Int,Int) = (0,0)
+            for t <- moves do
+                if r + t._1 >= 0 && r + t._1 < maxRow then
+                    if c + t._2 >= 0 && c + t._2 < maxCol then
+                        val x = grid(toIndex(r + t._1, c + t._2))
+                        if x == '*' then
+                            result = (r + t._1, c + t._2)
+            result
+        }
+
         // ----------
         //  Part One
         // ----------
@@ -171,8 +190,6 @@ object Day03:
         val answerP1 = nums.sum
 
         println(s"Part 1: What is the sum of all of the part numbers in the engine schematic? A:  ${answerP1}")
-
-
         val delta1 = Duration.between(p1T0, Instant.now())
         println(s"Part 1 run time approx ${delta1.toMillis} milliseconds\n")
 
@@ -182,7 +199,58 @@ object Day03:
         // ----------
         val p2T0 = Instant.now()
 
-        println(s"Part 2: TBD ???")
+
+        // Algo: similar to part 1, we'll traverse the grid
+        // left to right finding numbers, but only those numbers
+        // touching a gear.  Also save the coordinates of the the gear cell.
+        // Find the answer by iterating over Map of numbers, and for each
+        // two (and only two says the instructions), multiple the two number together
+        // and accumulate a sum.
+        val gear = '*'
+
+        // holding area in which to accumulate numbers as we go along
+        // the value is a tuple, (row, col) of the gear number (key) touches
+        val nums2 = scala.collection.mutable.Map[Int,(Int,Int)]()
+
+        // define a couple of mutable helper variables
+        var pow2 = 0 // power of 10
+        var num2 = 0 // current number
+        var gearCoords = (-1,-1)
+        var hasSymbolNeighbor2 = false
+
+        for row <- 0 until maxRow
+            col <- 0 until maxCol do
+
+            val cell = grid(toIndex(row, col))
+
+            if digits.contains(cell) then
+            // the cell contains a digit
+            // multiply accumulating number, num, by 10, then add the new digit.
+                if pow > 0 then
+                    num2 = num2 * 10
+                num2 += cell.toString.toInt
+                pow2 += 1
+                if getNeighbors(row, col).contains(gear) then
+                    hasSymbolNeighbor = true
+                    gearCoords = getCoordsOfGear(row, col)
+            else
+                // reached a empty cell - if accumulating a number, then add new number
+                if hasSymbolNeighbor then
+                    nums2 += (num2 -> gearCoords)
+                // reset helpers
+                pow2 = 0
+                num2 = 0
+                hasSymbolNeighbor2 = false
+                gearCoords = (-1,-1)
+
+        // check if last cell in the grid was a digit,
+        // and if so pick up the digit in last cell
+        if hasSymbolNeighbor2 then
+            nums2 += (num2 -> gearCoords)
+
+        val answerP2 = 0
+
+        println(s"Part 2: What is the sum of all of the gear ratios in your engine schematic?  A:  ${answerP2}")
 
         val delta2 = Duration.between(p2T0, Instant.now())
         println(f"Part 2 run time approx ${delta2.toMillis} milliseconds")
