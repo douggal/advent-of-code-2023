@@ -210,13 +210,13 @@ object Day03:
 
         // holding area in which to accumulate numbers as we go along
         // the value is a tuple, (row, col) of the gear number (key) touches
-        val nums2 = scala.collection.mutable.Map[Int,(Int,Int)]()
+        val gearRatios = scala.collection.mutable.Map[Int,(Int,Int)]()
 
         // define a couple of mutable helper variables
         var pow2 = 0 // power of 10
         var num2 = 0 // current number
         var gearCoords = (-1,-1)
-        var hasSymbolNeighbor2 = false
+        var hasGearNeighbor = false
 
         for row <- 0 until maxRow
             col <- 0 until maxCol do
@@ -224,33 +224,51 @@ object Day03:
             val cell = grid(toIndex(row, col))
 
             if digits.contains(cell) then
-            // the cell contains a digit
-            // multiply accumulating number, num, by 10, then add the new digit.
-                if pow > 0 then
+                // the cell contains a digit
+                // multiply accumulating number, num, by 10, then add the new digit.
+                if pow2 > 0 then
                     num2 = num2 * 10
                 num2 += cell.toString.toInt
                 pow2 += 1
                 if getNeighbors(row, col).contains(gear) then
-                    hasSymbolNeighbor = true
+                    hasGearNeighbor = true
                     gearCoords = getCoordsOfGear(row, col)
             else
                 // reached a empty cell - if accumulating a number, then add new number
-                if hasSymbolNeighbor then
-                    nums2 += (num2 -> gearCoords)
+                if hasGearNeighbor then
+                    gearRatios += (num2 -> gearCoords)
                 // reset helpers
                 pow2 = 0
                 num2 = 0
-                hasSymbolNeighbor2 = false
+                hasGearNeighbor = false
                 gearCoords = (-1,-1)
 
         // check if last cell in the grid was a digit,
         // and if so pick up the digit in last cell
-        if hasSymbolNeighbor2 then
-            nums2 += (num2 -> gearCoords)
+        if hasGearNeighbor then
+            gearRatios += (num2 -> gearCoords)
 
-        val answerP2 = 0
+        // to solve, find each pair of numbers with same gear coord
+        // multiply nums together, save in holding area, pairs, then compute the sum of the pairs
+        // key in pairs map is the gear coordinates
+        val pairs = mutable.Map[(Int, Int),BigInt]()
+        val countIf = mutable.Set[(Int,Int)]()
+        for (k,v) <- gearRatios do
+            if !pairs.contains(v) then
+                pairs += (v -> k)
+            else
+                pairs(v) *= k
+                countIf += v
+
+        var sum:BigInt = 0
+        for k <- countIf do
+            sum += pairs(k)
+
+        val answerP2 = sum
 
         println(s"Part 2: What is the sum of all of the gear ratios in your engine schematic?  A:  ${answerP2}")
+
+        // 45752839 too low
 
         val delta2 = Duration.between(p2T0, Instant.now())
         println(f"Part 2 run time approx ${delta2.toMillis} milliseconds")
