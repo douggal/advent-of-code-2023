@@ -1,6 +1,6 @@
 import scala.io.Source
 import java.time.{Duration, Instant}
-import scala.collection.mutable.{ArrayBuffer}
+import scala.collection.mutable.{ArrayBuffer, Set}
 
 /** Advent of Code 2023 Day 3
  *
@@ -11,11 +11,11 @@ import scala.collection.mutable.{ArrayBuffer}
  * Link: https://adventofcode.com/2023/day/3
  */
 
-class Day03 private (val title: String, val runType: Int ):
+class Day03 private(val title: String, val runType: Int):
 
     //var title: String = "Advent of Code 2023"
     //var runType: Int = 1 // Default to test data
-    def run():Unit = Day03.runPuzzle(runType)
+    def run(): Unit = Day03.runPuzzle(runType)
 
     override def toString: String = s"Class ${Day03.puzzleTitle}"
 
@@ -81,6 +81,8 @@ object Day03:
             rows (y)      0   0   0   0   0   0   0   0   0   0   1    1
             columns (x)   0   1   2   3   4   5   6   7   8   9   0    1
         */
+        val symbols = "!@#$%^&*()-=+_/|\\[]{}<>,:;".toCharArray.toSet
+        val digits = "0123456789".toCharArray.toSet
         val grid = ArrayBuffer[Char]()
         val maxRow = input.length
         val maxCol = input.head.count(_ => true)
@@ -88,13 +90,9 @@ object Day03:
             for c <- li.toCharArray do
                 grid += c
 
-        val i = 0
-
-        def coordsToIndex(r: Int, c: Int): Int = {
+        def toIndex(r: Int, c: Int): Int = {
             // convert row and column to index in the grid
-
-
-            ???
+            r * maxRow + c
         }
 
         def getNeighbors(r: Int, c: Int): ArrayBuffer[Char] = {
@@ -102,26 +100,60 @@ object Day03:
             // neighbors share an edge with the cell a row r and column c
             // or share a corner touch - the diagonals
 
-            val moves = List((-1,0),(-1,1),(0,1),(1,1),(1,0),(1,-1),(0,-1),(-1,-1))  // clockwise from top
+            val moves = List((-1, 0), (-1, 1), (0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1)) // clockwise from top
             val result = ArrayBuffer[Char]()
             for t <- moves do
-                if r+t._1 >= 0 && r+t._1 < maxRow then
-                    if c+t._2 >= 0 && c+t._2 < maxCol then
-                        result += grid(r+t._1,c+t._2)
+                if r + t._1 >= 0 && r + t._1 < maxRow then
+                    if c + t._2 >= 0 && c + t._2 < maxCol then
+                        val x = grid(toIndex(r + t._1, c + t._2))
+                        if symbols.contains(x) then result += x
             result
         }
-
 
         // ----------
         //  Part One
         // ----------
         val p1T0 = Instant.now()
 
+        // Do some tests on test data:
+        // Assert test data row 9, col 7 in test data returns index of 97
+        // and test row 6 col 3 returns 63
+        if runType == 1 then
+            val test = toIndex(9,7)
+            val test2 = toIndex(6,3)
+            val neighbors = getNeighbors(4,2)
+            val neighbors2 = getNeighbors(9,4)
+            val iiii = 0 // debug: for breakpoint
 
+        // Algo: iterate down the grid
+        // if digit, then accumulate each cell's neighbors
+        // when not a digit, then process number if has symbol neighbor
 
+        // holding area in which to accumulate numbers as we go along
+        val nums = ArrayBuffer[Int]()
 
+        // define a couple of mutable helper variables
+        var pow = 0  // power of 10
+        var num = 0  // current number
+        var hasSymbolNeighbor = false
+        for row <- 0 until maxRow
+            col <- 0 until maxCol do
+            val cell = grid(toIndex(row, col))
+            if digits.contains(cell) then
+                num += num*Math.pow(10,pow).toInt + cell.toInt
+                pow += 1
+                if getNeighbors(row, col).length > 0 then
+                    hasSymbolNeighbor = true
+            else
+                // add new number
+                if hasSymbolNeighbor then
+                    nums += num
+                pow = 0
 
-        println(s"Part 1: What is the sum of all of the part numbers in the engine schematic?")
+        val answerP1 = nums.sum
+
+        println(s"Part 1: What is the sum of all of the part numbers in the engine schematic? A:  ${answerP1}")
+
 
         val delta1 = Duration.between(p1T0, Instant.now())
         println(s"Part 1 run time approx ${delta1.toMillis} milliseconds\n")
