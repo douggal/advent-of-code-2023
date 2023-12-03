@@ -140,10 +140,12 @@ object Day03:
 
         for row <- 0 until maxRow
             col <- 0 until maxCol do
+
             val cell = grid(toIndex(row, col))
+
             if digits.contains(cell) then
-                // the cell has a digit
-                // multiply number, num, by 10 then add new digit.
+                // the cell contains a digit
+                // multiply accumulating number, num, by 10, then add the new digit.
                 if pow > 0 then
                     num = num*10
                 num += cell.toString.toInt
@@ -151,14 +153,16 @@ object Day03:
                 if getNeighbors(row, col).length > 0 then
                     hasSymbolNeighbor = true
             else
-                // add new number
+                // reached a empty cell - if accumulating a number, then add new number
                 if hasSymbolNeighbor then
                     nums += num
+                // reset helpers
                 pow = 0
                 num = 0
                 hasSymbolNeighbor = false
 
-        // check if last cell in the grid was a digit, and if so pick up the digit in last cell
+        // check if last cell in the grid was a digit,
+        // and if so pick up the digit in last cell
         if hasSymbolNeighbor then
             nums += num
 
