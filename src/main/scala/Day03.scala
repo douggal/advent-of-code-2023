@@ -56,8 +56,9 @@ object Day03:
             println("REAL INPUT DATA ...")
 
         // simple text file read:  Jan-Pieter van den Heuvel [Saving Christmas Using Scala](https://www.youtube.com/watch?v=tHU36gQ5iAI)
-        //val input = Source.fromResource(filename).getLines().toVector
-        val input = Source.fromResource("03-test-2.txt").getLines().toVector
+        val input = Source.fromResource(filename).getLines().toVector
+        // for debug 2nd test file
+        //val input = Source.fromResource("03-test-2.txt").getLines().toVector
 
         println("\nData Quality Control:")
         println(s"  Input file name: $filename")
