@@ -56,7 +56,8 @@ object Day03:
             println("REAL INPUT DATA ...")
 
         // simple text file read:  Jan-Pieter van den Heuvel [Saving Christmas Using Scala](https://www.youtube.com/watch?v=tHU36gQ5iAI)
-        val input = Source.fromResource(filename).getLines().toVector
+        //val input = Source.fromResource(filename).getLines().toVector
+        val input = Source.fromResource("03-test-2.txt").getLines().toVector
 
         println("\nData Quality Control:")
         println(s"  Input file name: $filename")
@@ -94,9 +95,12 @@ object Day03:
             for c <- li.toCharArray do
                 grid += c
 
+        val z = 0
+
         def toIndex(r: Int, c: Int): Int = {
             // convert row and column to index in the grid
-            r * maxRow + c
+            // Formula = row * # cols in each row + column
+            r * maxCol + c
         }
 
         def getNeighbors(r: Int, c: Int): ArrayBuffer[Char] = {
@@ -145,6 +149,7 @@ object Day03:
             val test2 = toIndex(6,3)
             val neighbors = getNeighbors(4,2)
             val neighbors2 = getNeighbors(9,4)
+            val abcd = getCoordsOfGear(2,4)
             val iiii = 0 // debug: for breakpoint
 
         // Algo: iterate down the grid left to right
@@ -198,7 +203,6 @@ object Day03:
         //  Part Two
         // ----------
         val p2T0 = Instant.now()
-
 
         // Algo: similar to part 1, we'll traverse the grid
         // left to right finding numbers, but only those numbers
@@ -257,7 +261,7 @@ object Day03:
             if !pairs.contains(v) then
                 pairs += (v -> k)
             else
-                pairs(v) *= k
+                pairs(v) = pairs(v) * k
                 countIf += v
 
         var sum:BigInt = 0
