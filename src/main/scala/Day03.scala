@@ -78,6 +78,8 @@ object Day03:
         /*
            Create a grid from the input data:  1-D array of Char
            Row-oriented, y-down
+           This has an advantage: only need to consider what happens if number ends in last
+           cell of a row if the end the grid has been reached.
            Ref:  (Amit's grid parts)[https://www.redblobgames.com/grids/parts/]
             (Chutes and Ladders)[https://docs.swift.org/swift-book/documentation/the-swift-programming-language/controlflow/]
 

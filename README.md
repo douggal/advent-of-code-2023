@@ -37,4 +37,9 @@ What is the sum of the power of these sets?  71585
 ```
 
 #### Day 3
-- (Amit's Grid parts and relationships)[https://www.redblobgames.com/grids/parts/]
+- Grids (Amit's Grid parts and relationships)[https://www.redblobgames.com/grids/parts/]
+- 1-D array rather than 2-D array: (Chutes and Ladders)[https://docs.swift.org/swift-book/documentation/the-swift-programming-language/controlflow/]
+
+```text
+Part 1: What is the sum of all of the part numbers in the engine schematic? A:  529618
+```
