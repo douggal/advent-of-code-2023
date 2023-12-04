@@ -37,8 +37,15 @@ What is the sum of the power of these sets?  71585
 ```
 
 #### Day 3
+- Today's puzzle might serve as a good example of why mutable variables can be a problem
+- For part 2, I put the numbers adjacent to gear into a mutable Map (dictionary) and then found 
+the answer by finding pairs of parts in the Map connected by same gear.
+- What I didn't see and didn't think of is what happens when a part number appears more than once in the engine diagram data.
 - Grids (Amit's Grid parts and relationships)[https://www.redblobgames.com/grids/parts/]
 - 1-D array rather than 2-D array: (Chutes and Ladders)[https://docs.swift.org/swift-book/documentation/the-swift-programming-language/controlflow/]
+- Seemed like a good idea to use a 1-D array avoid end of line checking, but 
+in fact the problem is still there.  My data set didn't have a  number end on one line 
+with new number on next, so I got away with w/o checking for this.
 
 ```text
 Part 1: What is the sum of all of the part numbers in the engine schematic? A:  529618

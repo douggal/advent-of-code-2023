@@ -58,7 +58,7 @@ object Day03:
         // simple text file read:  Jan-Pieter van den Heuvel [Saving Christmas Using Scala](https://www.youtube.com/watch?v=tHU36gQ5iAI)
         val input = Source.fromResource(filename).getLines().toVector
         // for debug 2nd test file
-        //val input = Source.fromResource("03-test-2.txt").getLines().toVector
+        // val input = Source.fromResource("03-test-2.txt").getLines().toVector
 
         println("\nData Quality Control:")
         println(s"  Input file name: $filename")
@@ -152,6 +152,7 @@ object Day03:
             val neighbors2 = getNeighbors(9,4)
             val abcd = getCoordsOfGear(2,4)
             val iiii = 0 // debug: for breakpoint
+        end if
 
         // Algo: iterate down the grid left to right
         // if digit, then accumulate each cell's neighbors
@@ -187,6 +188,7 @@ object Day03:
                 pow = 0
                 num = 0
                 hasSymbolNeighbor = false
+            end if
 
         // check if last cell in the grid was a digit,
         // and if so pick up the digit in last cell
@@ -214,8 +216,8 @@ object Day03:
         val gear = '*'
 
         // holding area in which to accumulate numbers as we go along
-        // the value is a tuple, (row, col) of the gear number (key) touches
-        val gearRatios = scala.collection.mutable.Map[Int,(Int,Int)]()
+        // the value is a tuple, (part number, row, col) of the gear touches
+        val ajoinsGear = scala.collection.mutable.ArrayBuffer[(Int,Int,Int)]()
 
         // define a couple of mutable helper variables
         var pow2 = 0 // power of 10
@@ -228,6 +230,8 @@ object Day03:
 
             val cell = grid(toIndex(row, col))
 
+            // Assumption:  every number is separated by a period or symbol from every other
+            // even if number ends on a line, the next line then starts with symbol.
             if digits.contains(cell) then
                 // the cell contains a digit
                 // multiply accumulating number, num, by 10, then add the new digit.
@@ -238,36 +242,47 @@ object Day03:
                 if getNeighbors(row, col).contains(gear) then
                     hasGearNeighbor = true
                     gearCoords = getCoordsOfGear(row, col)
+                end if
             else
-                // reached a empty cell - if accumulating a number, then add new number
+                // reached a non-digit cell - if accumulating a number, then add new number
                 if hasGearNeighbor then
-                    gearRatios += (num2 -> gearCoords)
+                    ajoinsGear += (num2 -> gearCoords)
                 // reset helpers
                 pow2 = 0
                 num2 = 0
                 hasGearNeighbor = false
                 gearCoords = (-1,-1)
+            end if
 
         // check if last cell in the grid was a digit,
-        // and if so pick up the digit in last cell
+        // and if so and is adjacent to a gear pick up the digit in last cell
         if hasGearNeighbor then
-            gearRatios += (num2 -> gearCoords)
+            ajoinsGear += (num2 -> gearCoords)
+
+        for (k,v) <- ajoinsGear do
+            println(s"(${v._1}, ${v._2})\t$k")
 
         // to solve, find each pair of numbers with same gear coord
-        // multiply nums together, save in holding area, pairs, then compute the sum of the pairs
-        // key in pairs map is the gear coordinates
-        val pairs = mutable.Map[(Int, Int),BigInt]()
+        // multiply nums together, save in holding area, gearRatios, then compute the sum of the gearRatios
+        // key in gearRatios map is the gear coordinates
+        val gearRatios = mutable.Map[(Int, Int),BigInt]()
         val countIf = mutable.Set[(Int,Int)]()
-        for (k,v) <- gearRatios do
-            if !pairs.contains(v) then
-                pairs += (v -> k)
+        for (k,v) <- ajoinsGear do
+            if !gearRatios.contains(v) then
+                gearRatios += (v -> k)
             else
-                pairs(v) = pairs(v) * k
-                countIf += v
+                gearRatios(v) = gearRatios(v) * k
+                countIf += v  // only count if have 2 parts connected by a gear
 
         var sum:BigInt = 0
-        for k <- countIf do
-            sum += pairs(k)
+        for (k,v) <- gearRatios do
+            if countIf.contains(k) then
+                sum += gearRatios(k)
+
+println("\n\nGear ratios:")
+        for (k, v) <- gearRatios do
+            if countIf.contains(k) then
+                println(s"(${k._1}, ${k._2})\t$v")
 
         val answerP2 = sum
 
