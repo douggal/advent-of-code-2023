@@ -8,6 +8,7 @@ Solutions are in Scala 3 unless otherwise noted.
 1. Day  1:  Trebuchet?!
 2. Day  2:  Cube Conundrum
 3. Day  3:  Gear Ratios
+4. Day  4:  Scratchcards
 
 ### Notes
 
@@ -51,3 +52,6 @@ with new number on next, so I got away with w/o checking for this.
 Part 1: What is the sum of all of the part numbers in the engine schematic? A:  529618
 Part 2: What is the sum of all of the gear ratios in your engine schematic?  A:  77509019
 ```
+
+#### Day 4
+- 
