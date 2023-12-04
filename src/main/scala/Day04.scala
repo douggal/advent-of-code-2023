@@ -91,13 +91,6 @@ object Day04:
 
         val deck = buildDeck(input)
 
-        println(deck.length)
-        deck.foreach(println)
-
-        for scratchoff <- deck do
-            val p = scratchoff.nums.intersect(scratchoff.wins)
-            println(s"Card ${scratchoff.N}, $p")
-
         val answerP1 = deck.map(x => Math.pow(2,x.nums.intersect(x.wins).size-1).toInt).sum
 
         println(s"Part 1: How many points are they worth in total?  A: $answerP1")
