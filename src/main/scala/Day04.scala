@@ -76,10 +76,30 @@ object Day04:
         // ----------
         val p1T0 = Instant.now()
 
+        case class Card (N: Int, wins: Set[Int], nums: Set[Int])
 
+        val parseCardRE = raw"Card (\d+) : ([\d ]+)|([\d ]+)".r
 
+        def buildDeck(input: Vector[String]): Vector[Card] = {
+            input
+                .map(x => parseCardRE.findAllIn(x).toVector)
+                .map(x =>
+                    Card(x(0).trim.toInt,
+                        x(1).trim.split(" +").toSet.map(_.toInt),
+                        x(2).trim.split(" +").toSet.map(_.toInt)))
+        }
 
-        val answerP1 = 0
+        val deck = buildDeck(input)
+
+        println(deck.length)
+        deck.foreach(println)
+
+        for scratchoff <- deck do
+            val p = scratchoff.nums.intersect(scratchoff.wins)
+            println(s"Card ${scratchoff.N}, $p")
+
+        val answerP1 = deck.map(x => Math.pow(2,x.nums.intersect(x.wins).size-1).toInt).sum
+
         println(s"Part 1: How many points are they worth in total?  A: $answerP1")
         val delta1 = Duration.between(p1T0, Instant.now())
         println(s"Part 1 run time approx ${delta1.toMillis} milliseconds\n")
