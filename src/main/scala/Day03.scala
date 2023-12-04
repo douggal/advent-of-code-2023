@@ -246,7 +246,8 @@ object Day03:
             else
                 // reached a non-digit cell - if accumulating a number, then add new number
                 if hasGearNeighbor then
-                    ajoinsGear += (num2 -> gearCoords)
+                    val v = (num2, gearCoords._1, gearCoords._2)
+                    ajoinsGear += v
                 // reset helpers
                 pow2 = 0
                 num2 = 0
@@ -257,32 +258,31 @@ object Day03:
         // check if last cell in the grid was a digit,
         // and if so and is adjacent to a gear pick up the digit in last cell
         if hasGearNeighbor then
-            ajoinsGear += (num2 -> gearCoords)
-
-        for (k,v) <- ajoinsGear do
-            println(s"(${v._1}, ${v._2})\t$k")
+            val v = (num2, gearCoords._1, gearCoords._2)
+            ajoinsGear += v
 
         // to solve, find each pair of numbers with same gear coord
         // multiply nums together, save in holding area, gearRatios, then compute the sum of the gearRatios
         // key in gearRatios map is the gear coordinates
         val gearRatios = mutable.Map[(Int, Int),BigInt]()
         val countIf = mutable.Set[(Int,Int)]()
-        for (k,v) <- ajoinsGear do
-            if !gearRatios.contains(v) then
-                gearRatios += (v -> k)
+        for (v, r, c) <- ajoinsGear do
+            val key = (r,c)
+            if !gearRatios.contains(key) then
+                gearRatios += (key -> v)
             else
-                gearRatios(v) = gearRatios(v) * k
-                countIf += v  // only count if have 2 parts connected by a gear
+                gearRatios(key) = gearRatios(key) * v
+                countIf += key  // only count if have 2 parts connected by a gear
 
         var sum:BigInt = 0
         for (k,v) <- gearRatios do
             if countIf.contains(k) then
                 sum += gearRatios(k)
 
-println("\n\nGear ratios:")
-        for (k, v) <- gearRatios do
-            if countIf.contains(k) then
-                println(s"(${k._1}, ${k._2})\t$v")
+//        println("\n\nGear ratios:")
+//        for v <- ajoinsGear do
+//            if countIf.contains((v._2, v._3)) then
+//                println(s"${v._1}\t${v._2}\t${v._3}")
 
         val answerP2 = sum
 

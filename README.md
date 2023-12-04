@@ -38,7 +38,7 @@ What is the sum of the power of these sets?  71585
 
 #### Day 3
 - Today's puzzle might serve as a good example of why mutable variables can be a problem
-- For part 2, I put the numbers adjacent to gear into a mutable Map (dictionary) and then found 
+- For part 2, I put the part numbers adjacent to gear into a mutable Map (dictionary) and then found 
 the answer by finding pairs of parts in the Map connected by same gear.
 - What I didn't see and didn't think of is what happens when a part number appears more than once in the engine diagram data.
 - Grids (Amit's Grid parts and relationships)[https://www.redblobgames.com/grids/parts/]
@@ -49,4 +49,5 @@ with new number on next, so I got away with w/o checking for this.
 
 ```text
 Part 1: What is the sum of all of the part numbers in the engine schematic? A:  529618
+Part 2: What is the sum of all of the gear ratios in your engine schematic?  A:  77509019
 ```
