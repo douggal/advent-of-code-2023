@@ -8,6 +8,7 @@ Solutions are in Scala 3 unless otherwise noted.
 1. Day  1:  Trebuchet?!
 2. Day  2:  Cube Conundrum
 3. Day  3:  Gear Ratios
+4. Day  4:  Scratchcards
 
 ### Notes
 
@@ -50,4 +51,13 @@ with new number on next, so I got away with w/o checking for this.
 ```text
 Part 1: What is the sum of all of the part numbers in the engine schematic? A:  529618
 Part 2: What is the sum of all of the gear ratios in your engine schematic?  A:  77509019
+```
+
+#### Day 4
+- Confidence builder today. Easier than Day 3
+- It's a win.  Examples on Stackoverflow clicked and I built immutable data structure from the input file.
+
+```text
+Part 1: How many points are they worth in total?  A: 23941 in approx 42 milliseconds
+Part 2: Including the original set of scratchcards, how many total scratchcards do you end up with? A: 5571760 in approx 5635 milliseconds
 ```
