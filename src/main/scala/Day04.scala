@@ -80,18 +80,19 @@ object Day04:
 
         val parseCardRE = raw"Card (\d+) : ([\d ]+)|([\d ]+)".r
 
-        def buildDeck(input: Vector[String]): Vector[Card] = {
+        def buildScratchOffCards(input: Vector[String]): List[Card] = {
             input
                 .map(x => parseCardRE.findAllIn(x).toVector)
                 .map(x =>
-                    Card(x(0).trim.toInt,
-                        x(1).trim.split(" +").toSet.map(_.toInt),
-                        x(2).trim.split(" +").toSet.map(_.toInt)))
+                        Card( x(0).trim.toInt,
+                              x(1).trim.split(" +").toSet.map(_.toInt),
+                              x(2).trim.split(" +").toSet.map(_.toInt) ))
+                .toList
         }
 
-        val deck = buildDeck(input)
+        val cards = buildScratchOffCards(input)
 
-        val answerP1 = deck.map(x => Math.pow(2,x.nums.intersect(x.wins).size-1).toInt).sum
+        val answerP1 = cards.map(card => Math.pow(2,card.nums.intersect(card.wins).size-1).toInt).sum
 
         println(s"Part 1: How many points are they worth in total?  A: $answerP1")
         val delta1 = Duration.between(p1T0, Instant.now())
@@ -103,8 +104,38 @@ object Day04:
         // ----------
         val p2T0 = Instant.now()
 
-        println(s"Part 2: TBD ???")
+//        def process(card: Card): Int = {
+//            val winners = card.nums.intersect(card.wins)
+//            if winners.size == 0 then
+//                0
+//            else
+//                winners.size + process(deck(card.N+i))
+//        }
+//
+//       val s = deck
+//           .map((k, card) => process(card))
 
+        def process(card: Card): Int = {
+            val winners = card.nums.intersect(card.wins)
+            var sum = 0
+            for i <- 0 to winners.size do
+                if card.N + 1 < cards.length then
+                    println(cards(card.N + i))
+                    sum = sum + process(cards(card.N + i))
+            sum
+        }
+
+        var newCards:BigInt = 0
+        for card <- cards do
+            val winners = card.nums.intersect(card.wins)
+            for i <- 0 to winners.size do
+                if card.N+1 < cards.length then
+                    println(cards(card.N+i))
+                    newCards = newCards + process(cards(card.N+i))
+
+        val answerP2 = newCards
+
+        println(s"Part 2: Including the original set of scratchcards, how many total scratchcards do you end up with? A: $answerP2")
         val delta2 = Duration.between(p2T0, Instant.now())
         println(f"Part 2 run time approx ${delta2.toMillis} milliseconds")
 
