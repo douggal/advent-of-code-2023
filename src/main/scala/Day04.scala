@@ -104,36 +104,42 @@ object Day04:
         // ----------
         val p2T0 = Instant.now()
 
-//        def process(card: Card): Int = {
+//        def process(card: Card, level: Int): Int = {
 //            val winners = card.nums.intersect(card.wins)
-//            if winners.size == 0 then
-//                0
-//            else
-//                winners.size + process(deck(card.N+i))
+//            var sum = 0
+//            for i <- 0 to winners.size do
+//                if card.N + i < cards.length then
+//                    println(s"Process: Level $level: ${cards(card.N + i)}")
+//                    sum = 1 + sum + process(cards(card.N + i), level+1)
+//            sum
 //        }
-//
-//       val s = deck
-//           .map((k, card) => process(card))
-
-        def process(card: Card): Int = {
-            val winners = card.nums.intersect(card.wins)
-            var sum = 0
-            for i <- 0 to winners.size do
-                if card.N + 1 < cards.length then
-                    println(cards(card.N + i))
-                    sum = sum + process(cards(card.N + i))
-            sum
-        }
 
         var newCards:BigInt = 0
+        val s = scala.collection.mutable.Stack[Int]()
         for card <- cards do
             val winners = card.nums.intersect(card.wins)
-            for i <- 0 to winners.size do
-                if card.N+1 < cards.length then
+            //newCards += winners.size
+            for i <- 0 until winners.size do
+                if card.N+i < cards.length then
+                    s.push(card.N+i)
                     println(cards(card.N+i))
-                    newCards = newCards + process(cards(card.N+i))
+                    newCards += 1
+            end for
+            while s.nonEmpty do
+                val thisCard = s.pop()
+                val winners = cards(thisCard).nums.intersect(cards(thisCard).wins)
+                //newCards += winners.size
+                for i <- 0 until winners.size do
+                    val nextCard = cards(thisCard).N + i
+                    if nextCard < cards.length then
+                        s.push(nextCard)
+                        println(nextCard)
+                        newCards += 1
+            end while
+        end for
 
-        val answerP2 = newCards
+
+        val answerP2 = newCards + cards.size
 
         println(s"Part 2: Including the original set of scratchcards, how many total scratchcards do you end up with? A: $answerP2")
         val delta2 = Duration.between(p2T0, Instant.now())
