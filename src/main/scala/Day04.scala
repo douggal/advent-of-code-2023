@@ -76,6 +76,7 @@ object Day04:
         // ----------
         val p1T0 = Instant.now()
 
+        // each Card has a number N, Set of winning numbers, Set of my numbers
         case class Card (N: Int, wins: Set[Int], nums: Set[Int])
 
         val parseCardRE = raw"Card (\d+) : ([\d ]+)|([\d ]+)".r
@@ -122,7 +123,7 @@ object Day04:
             for i <- 0 until winners.size do
                 if card.N+i < cards.length then
                     s.push(card.N+i)
-                    println(cards(card.N+i))
+                    //println(cards(card.N+i))
                     newCards += 1
             end for
             while s.nonEmpty do
@@ -133,7 +134,7 @@ object Day04:
                     val nextCard = cards(thisCard).N + i
                     if nextCard < cards.length then
                         s.push(nextCard)
-                        println(nextCard)
+                        //println(nextCard)
                         newCards += 1
             end while
         end for
