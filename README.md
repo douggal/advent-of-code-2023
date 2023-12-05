@@ -54,4 +54,10 @@ Part 2: What is the sum of all of the gear ratios in your engine schematic?  A: 
 ```
 
 #### Day 4
-- 
+- Confidence builder today. Easier than Day 3
+- It's a win.  Examples on Stackoverflow clicked and I built immutable data structure from the input file.
+
+```text
+Part 1: How many points are they worth in total?  A: 23941 in approx 42 milliseconds
+Part 2: Including the original set of scratchcards, how many total scratchcards do you end up with? A: 5571760 in approx 5635 milliseconds
+```

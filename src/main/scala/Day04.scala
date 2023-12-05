@@ -105,6 +105,7 @@ object Day04:
         // ----------
         val p2T0 = Instant.now()
 
+        // recursive version, no go
 //        def process(card: Card, level: Int): Int = {
 //            val winners = card.nums.intersect(card.wins)
 //            var sum = 0
@@ -119,7 +120,6 @@ object Day04:
         val s = scala.collection.mutable.Stack[Int]()
         for card <- cards do
             val winners = card.nums.intersect(card.wins)
-            //newCards += winners.size
             for i <- 0 until winners.size do
                 if card.N+i < cards.length then
                     s.push(card.N+i)
@@ -129,7 +129,6 @@ object Day04:
             while s.nonEmpty do
                 val thisCard = s.pop()
                 val winners = cards(thisCard).nums.intersect(cards(thisCard).wins)
-                //newCards += winners.size
                 for i <- 0 until winners.size do
                     val nextCard = cards(thisCard).N + i
                     if nextCard < cards.length then
