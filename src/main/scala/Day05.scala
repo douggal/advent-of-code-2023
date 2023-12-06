@@ -1,6 +1,7 @@
 import scala.io.Source
 import java.time.{Duration, Instant}
 import scala.collection.mutable.ArrayBuffer
+import scala.util.matching.Regex
 
 /** Advent of Code 2023 Day 5
  *
@@ -95,8 +96,8 @@ object Day05:
             // println(seedsRE.findAllIn(input).matchData.map(x => x.group(2)).mkString)
         }
 
-        def buildSeedToSoilMap(input: String): List[mapEntry] = {
-             soil2fertMapRE
+        def buildMap(input: String, regex: Regex): List[mapEntry] = {
+             regex
                 .findAllIn(input)
                 .matchData
                 .map(m => m.group(2)).mkString.trim.replace('\n',' ')
@@ -110,82 +111,13 @@ object Day05:
 
         val seeds = buildSeedsList(input)
         //seeds.foreach(println)
-        val seedsToSoil = seed2soilMapRE
-            .findAllIn(input)
-            .matchData
-            .map(m => m.group(2)).mkString.trim.replace('\n', ' ')
-            .split(" +")
-            .map(BigInt(_))
-            .toList
-            .grouped(3)
-            .map(x => mapEntry(dest = x(0), src = x(1), runLength = x(2).toInt))
-            .toList
-
-        val soil2fert = soil2fertMapRE
-            .findAllIn(input)
-            .matchData
-            .map(m => m.group(2)).mkString.trim.replace('\n', ' ')
-            .split(" +")
-            .map(BigInt(_))
-            .toList
-            .grouped(3)
-            .map(x => mapEntry(dest = x(0), src = x(1), runLength = x(2).toInt))
-            .toList
-
-        val fert2water = fert2waterMapRE
-            .findAllIn(input)
-            .matchData
-            .map(m => m.group(2)).mkString.trim.replace('\n', ' ')
-            .split(" +")
-            .map(BigInt(_))
-            .toList
-            .grouped(3)
-            .map(x => mapEntry(dest = x(0), src = x(1), runLength = x(2).toInt))
-            .toList
-
-        val water2light = water2lightMapRE
-            .findAllIn(input)
-            .matchData
-            .map(m => m.group(2)).mkString.trim.replace('\n', ' ')
-            .split(" +")
-            .map(BigInt(_))
-            .toList
-            .grouped(3)
-            .map(x => mapEntry(dest = x(0), src = x(1), runLength = x(2).toInt))
-            .toList
-
-        val light2temp = light2tempMapRE
-            .findAllIn(input)
-            .matchData
-            .map(m => m.group(2)).mkString.trim.replace('\n', ' ')
-            .split(" +")
-            .map(BigInt(_))
-            .toList
-            .grouped(3)
-            .map(x => mapEntry(dest = x(0), src = x(1), runLength = x(2).toInt))
-            .toList
-
-        val temp2humidity = temp2humidityMapRE
-            .findAllIn(input)
-            .matchData
-            .map(m => m.group(2)).mkString.trim.replace('\n', ' ')
-            .split(" +")
-            .map(BigInt(_))
-            .toList
-            .grouped(3)
-            .map(x => mapEntry(dest = x(0), src = x(1), runLength = x(2).toInt))
-            .toList
-
-        val humidity2location = humidity2locationMapRE
-            .findAllIn(input)
-            .matchData
-            .map(m => m.group(2)).mkString.trim.replace('\n', ' ')
-            .split(" +")
-            .map(BigInt(_))
-            .toList
-            .grouped(3)
-            .map(x => mapEntry(dest = x(0), src = x(1), runLength = x(2).toInt))
-            .toList
+        val seedsToSoil = buildMap(input, seed2soilMapRE)
+        val soil2fert = buildMap(input, soil2fertMapRE)
+        val fert2water = buildMap(input, fert2waterMapRE)
+        val water2light = buildMap(input, water2lightMapRE)
+        val light2temp = buildMap(input, light2tempMapRE)
+        val temp2humidity = buildMap(input, temp2humidityMapRE)
+        val humidity2location = buildMap(input, humidity2locationMapRE)
 
 //        seedsToSoil.foreach(println)
 //        soil2fert.foreach(println)
