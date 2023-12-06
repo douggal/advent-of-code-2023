@@ -175,10 +175,11 @@ object Day05:
         // ----------
         val p2T0 = Instant.now()
 
-        val locs2 = ArrayBuffer[BigInt]()
+        var locs2 = BigInt(Int.MaxValue)
 
         // start with seed, find location
         for s <- seeds.grouped(2).toList do
+            println(s)
             for t <- s.head until s.head+s.tail.head do
                 //println(t)
                 var temp = BigInt(0)
@@ -197,10 +198,11 @@ object Day05:
                 // println(s"7. $temp")
                 temp = fromSource2Destination(temp, humidity2location)
                 // println(s"8. $temp")
-                locs2 += temp
+                if temp < locs2 then
+                    locs2 = temp
             end for
         end for
-        val answerP2 = locs2.min
+        val answerP2 = locs2
         println(s"Part 2: Consider all of the initial seed numbers listed in the ranges on the first line of the almanac.")
         println(s"What is the lowest location number that corresponds to any of the initial seed numbers?  A: $answerP2")
 

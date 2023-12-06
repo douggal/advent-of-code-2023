@@ -64,5 +64,14 @@ Part 2: Including the original set of scratchcards, how many total scratchcards 
 ```
 
 #### Day 5
-- DNF
+- Almost gave up, but finally found success
+- Used a regex to parse input file w/multiline matching.  Lost a lot of time trying to get this to work.
+- Had to backtrack several times. Naieve solutions didn't work but with some extra thought the program completed.
 
+```text
+Part 1: What is the lowest location number that corresponds to any of the initial seed numbers?  A: 240320250
+Part 1 run time approx 6 milliseconds
+Part 2: Consider all of the initial seed numbers listed in the ranges on the first line of the almanac.
+What is the lowest location number that corresponds to any of the initial seed numbers?  A: 28580589
+Part 2 run time approx 910402 milliseconds (about 15 minutes)
+```
