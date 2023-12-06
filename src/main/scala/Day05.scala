@@ -1,5 +1,6 @@
 import scala.io.Source
 import java.time.{Duration, Instant}
+import scala.collection.mutable.ArrayBuffer
 
 /** Advent of Code 2023 Day 5
  *
@@ -199,7 +200,80 @@ object Day05:
         // ----------
         val p1T0 = Instant.now()
 
-        val answerP1 = 0
+        val locs = ArrayBuffer[Int]()
+
+        val fromSeedToSoil = scala.collection.mutable.Map[Int,Int]()
+        for entry <- seedsToSoil do
+            for i <- 0 until entry.runLength do
+                val v = ((entry.src + i) -> (entry.dest + i))
+                fromSeedToSoil += v
+
+        val fromSoil2Fert = scala.collection.mutable.Map[Int, Int]()
+        for entry <- soil2fert do
+            for i <- 0 until entry.runLength do
+                val v = ((entry.src + i) -> (entry.dest + i))
+                fromSoil2Fert += v
+
+        val fromFert2Water = scala.collection.mutable.Map[Int, Int]()
+        for entry <- fert2water do
+            for i <- 0 until entry.runLength do
+                val v = ((entry.src + i) -> (entry.dest + i))
+                fromFert2Water += v
+
+        val fromWater2Light = scala.collection.mutable.Map[Int, Int]()
+        for entry <- water2light do
+            for i <- 0 until entry.runLength do
+                val v = ((entry.src + i) -> (entry.dest + i))
+                fromWater2Light += v
+
+        val fromLight2Temp = scala.collection.mutable.Map[Int, Int]()
+        for entry <- light2temp do
+            for i <- 0 until entry.runLength do
+                val v = ((entry.src + i) -> (entry.dest + i))
+                fromLight2Temp += v
+
+        val fromTemp2Humidity = scala.collection.mutable.Map[Int, Int]()
+        for entry <- temp2humidity do
+            for i <- 0 until entry.runLength do
+                val v = ((entry.src + i) -> (entry.dest + i))
+                fromTemp2Humidity += v
+
+        val fromHumidity2Location = scala.collection.mutable.Map[Int, Int]()
+        for entry <- humidity2location do
+            for i <- 0 until entry.runLength do
+                val v = ((entry.src + i) -> (entry.dest + i))
+                fromHumidity2Location += v
+
+        // strt with seed, find location
+        for s <- seeds do
+            var temp = 0
+            if fromSeedToSoil.contains(s) then
+                temp = fromSeedToSoil(s)
+            else
+                temp = s
+
+            if fromSoil2Fert.contains(s) then
+                temp = fromSoil2Fert(temp)
+
+            if fromFert2Water.contains(temp) then
+                temp = fromFert2Water(temp)
+
+            if fromWater2Light.contains(temp) then
+                temp = fromWater2Light(temp)
+
+            if fromLight2Temp.contains(temp) then
+                temp = fromLight2Temp(temp)
+
+            if fromTemp2Humidity.contains(temp) then
+                temp = fromTemp2Humidity(temp)
+
+            if fromHumidity2Location.contains(temp) then
+                temp = fromHumidity2Location(temp)
+
+            locs += temp
+        end for
+
+        val answerP1 = locs.min
 
         println(s"Part 1: What is the lowest location number that corresponds to any of the initial seed numbers?  A: $answerP1")
         val delta1 = Duration.between(p1T0, Instant.now())
