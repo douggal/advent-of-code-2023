@@ -202,87 +202,32 @@ object Day05:
 
         val locs = ArrayBuffer[BigInt]()
 
-        // val fromSeedToSoil = scala.collection.mutable.Map[BigInt,BigInt]()
-        def fromSeedToSoil(s: BigInt): BigInt = {
-            var t = BigInt(-1)
-            for entry <- seedsToSoil do
+        def fromSource2Destination(s:BigInt, mapping: List[mapEntry]): BigInt = {
+            var temp = BigInt(-1)
+            for entry <- mapping do
                 if (s >= entry.src && s < entry.src + entry.runLength) then
-                    t = entry.dest + (s - entry.src)
+                    temp = entry.dest + (s - entry.src)
 
-            if t == -1 then s else t
-        }
-
-        def fromSoil2Fert(s: BigInt): BigInt = {
-            var t = BigInt(-1)
-            for entry <- soil2fert do
-                if (s >= entry.src && s < entry.src + entry.runLength) then
-                    t = entry.dest + (s - entry.src)
-
-            if t == -1 then s else t
-        }
-
-        def fromFert2Water(s: BigInt): BigInt = {
-            var t = BigInt(-1)
-            for entry <- fert2water do
-                if (s >= entry.src && s < entry.src + entry.runLength) then
-                    t = entry.dest + (s - entry.src)
-
-            if t == -1 then s else t
-        }
-
-        def fromWater2Light(s: BigInt): BigInt = {
-            var t = BigInt(-1)
-            for entry <- water2light do
-                if (s >= entry.src && s < entry.src + entry.runLength) then
-                    t = entry.dest + (s - entry.src)
-
-            if t == -1 then s else t
-        }
-
-        def fromLight2Temp(s: BigInt): BigInt = {
-            var t = BigInt(-1)
-            for entry <- light2temp do
-                if (s >= entry.src && s < entry.src + entry.runLength) then
-                    t = entry.dest + (s - entry.src)
-
-            if t == -1 then s else t
-        }
-
-        def fromTemp2Humidity(s: BigInt): BigInt = {
-            var t = BigInt(-1)
-            for entry <- temp2humidity do
-                if (s >= entry.src && s < entry.src + entry.runLength) then
-                    t = entry.dest + (s - entry.src)
-
-            if t == -1 then s else t
-        }
-
-        def fromHumidity2Location(s: BigInt): BigInt = {
-            var t = BigInt(-1)
-            for entry <- humidity2location do
-                if (s >= entry.src && s < entry.src + entry.runLength) then
-                    t = entry.dest + (s - entry.src)
-
-            if t == -1 then s else t
+            if temp == -1 then s else temp
         }
 
         // strt with seed, find location
         for s <- seeds do
             var temp = BigInt(0)
             println(s"0. $s")
-            temp = fromSeedToSoil(s)
+            temp = fromSource2Destination(s,seedsToSoil)
             println(s"1. $temp")
-            temp = fromSoil2Fert(temp)
+            temp = fromSource2Destination(temp, soil2fert)
             println(s"2. $temp")
-            temp = fromFert2Water(temp)
+            temp = fromSource2Destination(temp, fert2water)
             println(s"3. $temp")
-            temp = fromWater2Light(temp)
+            temp = fromSource2Destination(temp, water2light)
             println(s"5. $temp")
-            temp = fromLight2Temp(temp)
+            temp = fromSource2Destination(temp, light2temp)
             println(s"6. $temp")
-            temp = fromTemp2Humidity(temp)
+            temp = fromSource2Destination(temp, temp2humidity)
             println(s"7. $temp")
-            temp = fromHumidity2Location(temp)
+            temp = fromSource2Destination(temp, humidity2location)
             println(s"8. $temp")
             locs += temp
         end for
