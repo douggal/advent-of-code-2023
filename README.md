@@ -9,6 +9,7 @@ Solutions are in Scala 3 unless otherwise noted.
 2. Day  2:  Cube Conundrum
 3. Day  3:  Gear Ratios
 4. Day  4:  Scratchcards
+5. Day  5:  If You Give A Seed A Fertilizer
 
 ### Notes
 
@@ -61,3 +62,6 @@ Part 2: What is the sum of all of the gear ratios in your engine schematic?  A: 
 Part 1: How many points are they worth in total?  A: 23941 in approx 42 milliseconds
 Part 2: Including the original set of scratchcards, how many total scratchcards do you end up with? A: 5571760 in approx 5635 milliseconds
 ```
+
+#### Day 5
+-
