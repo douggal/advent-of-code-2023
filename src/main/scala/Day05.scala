@@ -132,8 +132,6 @@ object Day05:
         // ----------
         val p1T0 = Instant.now()
 
-        val locs = ArrayBuffer[BigInt]()
-
         def fromSource2Destination(s:BigInt, mapping: List[mapEntry]): BigInt = {
             var temp = BigInt(-1)
             for entry <- mapping do
@@ -143,7 +141,8 @@ object Day05:
             if temp == -1 then s else temp
         }
 
-        // strt with seed, find location
+        // build up a listing, using each seed - start with seed, find location, add to list
+        val locs = ArrayBuffer[BigInt]()
         for s <- seeds do
             var temp = BigInt(0)
             // println(s"0. $s")
@@ -176,7 +175,34 @@ object Day05:
         // ----------
         val p2T0 = Instant.now()
 
-        println(s"Part 2: TBD ???")
+        val locs2 = ArrayBuffer[BigInt]()
+
+        // start with seed, find location
+        for s <- seeds.grouped(2).toList do
+            for t <- s.head until s.head+s.tail.head do
+                //println(t)
+                var temp = BigInt(0)
+                // println(s"0. $s")
+                temp = fromSource2Destination(t, seedsToSoil)
+                // println(s"1. $temp")
+                temp = fromSource2Destination(temp, soil2fert)
+                // println(s"2. $temp")
+                temp = fromSource2Destination(temp, fert2water)
+                // println(s"3. $temp")
+                temp = fromSource2Destination(temp, water2light)
+                // println(s"5. $temp")
+                temp = fromSource2Destination(temp, light2temp)
+                // println(s"6. $temp")
+                temp = fromSource2Destination(temp, temp2humidity)
+                // println(s"7. $temp")
+                temp = fromSource2Destination(temp, humidity2location)
+                // println(s"8. $temp")
+                locs2 += temp
+            end for
+        end for
+        val answerP2 = locs2.min
+        println(s"Part 2: Consider all of the initial seed numbers listed in the ranges on the first line of the almanac.")
+        println(s"What is the lowest location number that corresponds to any of the initial seed numbers?  A: $answerP2")
 
         val delta2 = Duration.between(p2T0, Instant.now())
         println(f"Part 2 run time approx ${delta2.toMillis} milliseconds")
