@@ -64,4 +64,5 @@ Part 2: Including the original set of scratchcards, how many total scratchcards 
 ```
 
 #### Day 5
--
+- DNF
+
