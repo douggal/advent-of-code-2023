@@ -269,14 +269,21 @@ object Day05:
         // strt with seed, find location
         for s <- seeds do
             var temp = BigInt(0)
+            println(s"0. $s")
             temp = fromSeedToSoil(s)
+            println(s"1. $temp")
             temp = fromSoil2Fert(temp)
+            println(s"2. $temp")
             temp = fromFert2Water(temp)
-            temp = fromFert2Water(temp)
+            println(s"3. $temp")
             temp = fromWater2Light(temp)
+            println(s"5. $temp")
             temp = fromLight2Temp(temp)
+            println(s"6. $temp")
             temp = fromTemp2Humidity(temp)
+            println(s"7. $temp")
             temp = fromHumidity2Location(temp)
+            println(s"8. $temp")
             locs += temp
         end for
 
