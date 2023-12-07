@@ -79,11 +79,17 @@ Part 2 run time approx 910402 milliseconds (about 15 minutes)
 
 #### Day 6
 - Easiest day so far
+- Used the extra time to compare run times between Python and Scala
 
 ```text
-Python:
-Answer part 1: 625968,  Nbr ways to win:  131, 6.39e-05 seconds
-Answer part 2: 43663323  Nbr ways to win:  43_663_323, 6.37 seconds
-Scala:
+Answer part 1:   625968  Nbr ways to win:         131
+Answer part 2: 43663323  Nbr ways to win:  43_663_323
 
+Python:
+Part 1 Run time:    0.07725 milliseconds
+Part 2 Run time: 5701       milliseconds
+
+Scala:
+Part 1 Run time:   7 milliseconds
+Part 2 Run time: 404 milliseconds
 ```

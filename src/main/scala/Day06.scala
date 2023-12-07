@@ -82,10 +82,10 @@ object Day06:
         // ----------
         val p1T0 = Instant.now()
 
-        val ws = scala.collection.mutable.ArrayBuffer[Long]()
+        val ws = ArrayBuffer[Int]()
         for (t, rd) <- ts zip ds do
             // println("Race:", t, rd)
-            var ways_to_win = 0L
+            var ways_to_win = 0
             for h <- 0 to t do
                 val d = (t - h) * h
                 if d > rd then
@@ -106,18 +106,18 @@ object Day06:
         // ----------
         val p2T0 = Instant.now()
 
-        val ts2 = List(input.head.substring(7).split("\\s+").toList.mkString.trim.toInt)
-        val ds2 = List(input.last.substring(10).split("\\s+").toList.mkString.trim.toInt)
-        val ws2 = ArrayBuffer[Long]()
-        for (t, rd) <- ts2 zip ds2 do
-            // println("Race:", t, rd)
-            var ways_to_win = 0L
-            for h <- 0 to t do
-                val d = (t - h) * h
-                if d > rd then
-                    // print("Win! time, hold, rate, dist", t, h, h, d)
-                    ways_to_win += 1
-            ws2 += ways_to_win
+        val ts2 = BigInt(input.head.substring(7).split("\\s+").toList.mkString.toLong)
+        val ds2 = BigInt(input.last.substring(10).split("\\s+").toList.mkString.toLong)
+        val ws2 = ArrayBuffer[BigInt]()
+        var ways_to_win = 0L
+        var h = BigInt(0)
+        while h <= ts2 do
+            val d = (ts2 - h) * h
+            if d > ds2 then
+                // print("Win! time, hold, rate, dist", t, h, h, d)
+                ways_to_win += 1
+            h += 1
+        ws2 += ways_to_win
 
         val answerP2 = ws2(0)
         println(s"Part 2: How many ways can you beat the record in this one much longer race?  A: $answerP2, Nbr of wins ${ws2(0)}")
