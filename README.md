@@ -10,6 +10,7 @@ Solutions are in Scala 3 unless otherwise noted.
 3. Day  3:  Gear Ratios
 4. Day  4:  Scratchcards
 5. Day  5:  If You Give A Seed A Fertilizer
+6. Day  6:  Wait For It
 
 ### Notes
 
@@ -74,4 +75,21 @@ Part 1 run time approx 6 milliseconds
 Part 2: Consider all of the initial seed numbers listed in the ranges on the first line of the almanac.
 What is the lowest location number that corresponds to any of the initial seed numbers?  A: 28580589
 Part 2 run time approx 910402 milliseconds (about 15 minutes)
+```
+
+#### Day 6
+- Easiest day so far
+- Used the extra time to compare run times between Python and Scala
+
+```text
+Answer part 1:   625968  Nbr ways to win:         131
+Answer part 2: 43663323  Nbr ways to win:  43_663_323
+
+Python:
+Part 1 Run time:    0.07725 milliseconds
+Part 2 Run time: 5701       milliseconds
+
+Scala:
+Part 1 Run time:   7 milliseconds
+Part 2 Run time: 404 milliseconds
 ```
