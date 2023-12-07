@@ -1,5 +1,6 @@
 import scala.io.Source
 import java.time.{Duration, Instant}
+import scala.collection.mutable.{ArrayBuffer}
 
 /** Advent of Code 2023 Day 06
  *
@@ -70,24 +71,6 @@ object Day06:
         //  Common to both parts
         // ----------------------
 
-        /*
-        with open(fn) as f:
-            for line in f:
-                if line.strip() != "":
-                    if line[0:5] == "Time:":
-                        time_list = re.split(' +', line[5:].strip())
-                        # print(time_list)
-
-                    if line[0:9] == "Distance:":
-                        dist_list = re.split(' +', line[9:].strip())
-                        # print(dist_list)
-
-        # Part 1
-        start_time_p1 = time.time()
-
-        ts = list(map(int, time_list))
-        ds = list(map(int, dist_list))
-         */
         // list of run times (1st line of input)
         val ts = input.head.substring(7).trim.split(" +").map(x => x.trim.toInt).toList
 
@@ -99,10 +82,20 @@ object Day06:
         // ----------
         val p1T0 = Instant.now()
 
+        val ws = scala.collection.mutable.ArrayBuffer[Long]()
+        for (t, rd) <- ts zip ds do
+            // println("Race:", t, rd)
+            var ways_to_win = 0L
+            for h <- 0 to t do
+                val d = (t - h) * h
+                if d > rd then
+                    // print("Win! time, hold, rate, dist", t, h, h, d)
+                    ways_to_win += 1
+            ws += ways_to_win
 
-        val answerP1 = 0
+        val answerP1 = ws.product
         println(s"Part 1: Determine the number of ways you could beat the record in each race. ")
-        println(s"What do you get if you multiply these numbers together?  A:  $answerP1")
+        println(s"What do you get if you multiply these numbers together?  A:  $answerP1, Nbr of wins ${ws.sum}")
 
         val delta1 = Duration.between(p1T0, Instant.now())
         println(s"Part 1 run time approx ${delta1.toMillis} milliseconds\n")
@@ -113,10 +106,21 @@ object Day06:
         // ----------
         val p2T0 = Instant.now()
 
+        val ts2 = List(input.head.substring(7).split("\\s+").toList.mkString.trim.toInt)
+        val ds2 = List(input.last.substring(10).split("\\s+").toList.mkString.trim.toInt)
+        val ws2 = ArrayBuffer[Long]()
+        for (t, rd) <- ts2 zip ds2 do
+            // println("Race:", t, rd)
+            var ways_to_win = 0L
+            for h <- 0 to t do
+                val d = (t - h) * h
+                if d > rd then
+                    // print("Win! time, hold, rate, dist", t, h, h, d)
+                    ways_to_win += 1
+            ws2 += ways_to_win
 
-
-        val answerP2 = 0
-        println(s"Part 2: How many ways can you beat the record in this one much longer race?  A: $answerP2")
+        val answerP2 = ws2(0)
+        println(s"Part 2: How many ways can you beat the record in this one much longer race?  A: $answerP2, Nbr of wins ${ws2(0)}")
         val delta2 = Duration.between(p2T0, Instant.now())
         println(f"Part 2 run time approx ${delta2.toMillis} milliseconds")
 
