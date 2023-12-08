@@ -12,6 +12,7 @@ Solutions are in Scala 3 unless otherwise noted.
 5. Day  5:  If You Give A Seed A Fertilizer
 6. Day  6:  Wait For It
 7. Day  7:  Camel Cards
+8. Day  8:  Haunted Wasteland
 
 ### Notes
 
@@ -109,3 +110,6 @@ the relative card strengths to letters of the alphabet so that each hand sorts o
 ```text
 Part 1: Find the rank of every hand in your set. What are the total winnings? A: 251806792
 ```
+
+#### Day 8
+-
