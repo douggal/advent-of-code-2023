@@ -73,10 +73,13 @@ object Day07:
         enum HandType:
             case HighCard, OnePair, TwoPair, Three, FullHouse, Four, Five
 
-        val suits = "AKQJT98765432"
-        val valueOfSuits = suits.reverse.zipWithIndex.toMap
-        // valueOfSuits.foreach(println)
-        val relStrength = suits.map(_.toString).reverse.toList
+        val suits =          "AKQJT98765432"
+
+        // map relative card strengths to letters of the alphabet so
+        // that when hands of same type are sorted they will be in order by card strength
+        // ascending - lower ranks to higher for final ranked order list
+        val suitsSortOrder = "ABCDEFGHIJKLM".reverse
+        val suitsSortOrderMap = (suits zip suitsSortOrder).toMap
 
         val parseHandRE = raw"([\d\w]+) ([\d ]+)".r
         val FiveRE = s"([${suits}])\\1{4}".r.unanchored
@@ -151,13 +154,15 @@ object Day07:
                     rankedHands += sortedByType(key)(0)
                 else
                     /* compare cards */
-                    val byStrength = scala.collection.mutable.Map[Long, Hand]()
-                    val g = sortedByType(key)
-                    for h <- g do
-                        var score = 0L
-                        for i <- 0 to 4 do
-                            score += h.cards(i) + ((valueOfSuits(h.cards(i)) + 1) * Math.pow(10, 4-i).toLong)
-                        byStrength += (score -> h)
+                    val byStrength = scala.collection.mutable.Map[String, Hand]()
+                    for h <- sortedByType(key) do
+                        var score = ""
+                        for i <- 0 until h.cards.length do
+                            score += suitsSortOrderMap(h.cards(i))
+                        if byStrength.contains(score) then
+                            println("Error")
+                        else
+                            byStrength += (score -> h)
 
                     val ks = byStrength.keys.toList.sorted
                     for k <- ks do
@@ -168,10 +173,13 @@ object Day07:
              Each hand wins an amount equal to its bid multiplied by its rank,
              where the weakest hand gets rank 1
           */
-        var winnings = 0
+        var winnings = BigInt(0)
         for h <- rankedHands.zipWithIndex do
-            // println(s"${h._1.bid} * ${h._2 + 1}")
+            println(s"${h._1.bid} * ${h._2 + 1}")
             winnings += h._1.bid * (h._2 + 1)
+
+        // 249727050 too low
+        // 251820259 too high
 
         val answerP1 = winnings
         println(s"Part 1: Find the rank of every hand in your set. What are the total winnings? A: $answerP1")
