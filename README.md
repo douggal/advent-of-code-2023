@@ -11,6 +11,7 @@ Solutions are in Scala 3 unless otherwise noted.
 4. Day  4:  Scratchcards
 5. Day  5:  If You Give A Seed A Fertilizer
 6. Day  6:  Wait For It
+7. Day  7:  Camel Cards
 
 ### Notes
 
@@ -93,3 +94,6 @@ Scala:
 Part 1 Run time:   7 milliseconds
 Part 2 Run time: 404 milliseconds
 ```
+
+#### Day 7
+-

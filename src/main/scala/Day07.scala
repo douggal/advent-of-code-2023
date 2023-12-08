@@ -1,29 +1,29 @@
 import scala.io.Source
 import java.time.{Duration, Instant}
 
-/** Advent of Code 2023 Day XX
+/** Advent of Code 2023 Day 7
  *
  * Defines a class, its companion object and a runner method for
- * the AoC Day XX puzzles.
+ * the AoC Day 7 puzzles.
  *
- * Created 1 Dec 2023
- * Link: https://adventofcode.com/2023/day/1
+ * Created 7 Dec 2023
+ * Link: https://adventofcode.com/2023/day/7
  */
 
-class DayXX private (val title: String, val runType: Int ):
+class Day07 private (val title: String, val runType: Int ):
 
     //var title: String = "Advent of Code 2023"
     //var runType: Int = 1 // Default to test data
-    def run():Unit = DayXX.solution(runType)
+    def run():Unit = Day07.solution(runType)
 
-    override def toString: String = s"Class ${DayXX.puzzleTitle}"
+    override def toString: String = s"Class ${Day07.puzzleTitle}"
 
-end DayXX
+end Day07
 
-object DayXX:
+object Day07:
 
-    val day = "XX"
-    val puzzleTitle = "Day XX: ???"
+    val day = "07"
+    val puzzleTitle = "Day 7: Camel Cards"
 
     // input data files
     private val testData: String = s"$day-test.txt"
@@ -31,13 +31,13 @@ object DayXX:
 
     // Factory methods
     // a one-arg constructor
-    def apply(runType: Int): DayXX = {
-        new DayXX("AoC", runType)
+    def apply(runType: Int): Day07 = {
+        new Day07("AoC", runType)
     }
 
     // a two-arg constructor
-    def apply(title: String, runType: Int): DayXX = {
-        new DayXX(title, runType)
+    def apply(title: String, runType: Int): Day07 = {
+        new Day07(title, runType)
     }
 
     private def solution(runType: Int): Unit = {
@@ -69,7 +69,19 @@ object DayXX:
         // ----------------------
         //  Common to both parts
         // ----------------------
-        // code goes here ...
+        enum Color:
+            case HighCard, OnePair, TwoPair, Three, FullHouse, Four, Five
+
+        case class Hand(cards: String, bid: Int)
+
+        val parseHandRE = raw"([\d\w]+) ([\d ]+)".r
+
+        val listHands = input
+            .map(y => y.trim.split(" +"))
+            .map(x => Hand(x(0), x(1).toInt))
+            .toList
+
+        listHands.foreach(println)
 
         // ----------
         //  Part One
@@ -96,4 +108,4 @@ object DayXX:
 
     }
 
-end DayXX
+end Day07

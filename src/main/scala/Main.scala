@@ -1,7 +1,7 @@
 import java.time.ZonedDateTime
 
 @main
-def Main(day: Int = 6, runType: Int = 1): Unit = {
+def Main(day: Int = 7, runType: Int = 1): Unit = {
 
     val title = "Advent of Code 2023"
 
@@ -21,12 +21,14 @@ def Main(day: Int = 6, runType: Int = 1): Unit = {
     val d3 = Day03(s"$title Day 3", runType)
     val d4 = Day04(s"$title Day 4", runType)
     val d5 = Day05(s"$title Day 5", runType)
-    val d6 = Day06(s"$title Day 5", runType)
+    val d6 = Day06(s"$title Day 6", runType)
+    val d7 = Day07(s"$title Day 7", runType)
 
     // Run the selected day's puzzle
     println(s"Begin: ${ZonedDateTime.now()}")
 
     day match {
+        case 7 => d7.run()
         case 6 => d6.run()
         case 5 => d5.run()
         case 4 => d4.run()
