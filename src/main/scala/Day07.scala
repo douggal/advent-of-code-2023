@@ -86,7 +86,6 @@ object Day07:
         val FourRE = s"([${suits}])\\1{3}".r.unanchored
 
         case class Hand(cards: String, sorted: String, bid: Int)
-        case class TypedHand(cards: String, sorted: String, bid: Int, typ: HandType)
 
         val listHands = input
             .map(y => y.trim.split(" +"))
@@ -126,45 +125,74 @@ object Day07:
         }
 
         def typeOfHandJokersWild(h: Hand): HandType = {
-
-            val oldHandType = typeOfHand(h)
-            val jokerCount = h.cards.count(_ == 'J')
-            var newHand = h
-            val charMap = charCountMap(h.cards)
-
-            if jokerCount > 0 then
-                var newCards = ""
-                oldHandType match
-                    case HandType.HighCard | HandType.Five => {
-                        newCards = h.cards.replace('J', 'A')
+            h.sorted match
+                case FiveRE(c) => /* do nothing, same type */ HandType.Five
+                case FourRE(c) => {
+                    val charWith4 = charCountMap(h.cards).find(_._2 == 1).map(_._1)
+                    charWith4 match
+                        case Some(value) => {
+                            if value == 'J' then
+                                HandType.Five
+                            else
+                                HandType.Four
+                        }
+                        case None => ???  // shouldn't happen
+                }
+                case c => /* could be Full House, Three of a kind, or one pair or two pair or High Card */ {
+                    val counts = charCountMap(c)
+                    // counts.foreach(x => println(s"$c: $x"))
+                    val pairs = counts.values.count(_ == 2)
+                    val threes = counts.values.count(_ == 3)
+                    if threes == 1 && pairs == 1 then
+                        val charWith2 = charCountMap(h.cards).find(_._2 == 2).map(_._1)
+                        charWith2 match
+                            case Some(value) => {
+                                if value == 'J' then
+                                    HandType.Four
+                                else
+                                    HandType.FullHouse
+                            }
+                            case None => ???  // shouldn't happen
+                    else if threes == 1 && pairs == 0 then {
+                        val charWith3 = charCountMap(h.cards).find(_._2 == 3).map(_._1)
+                        charWith3 match
+                            case Some(value) => {
+                                if value == 'J' then
+                                    HandType.Three
+                                else
+                                    HandType.Four
+                            }
+                            case None => ???
+                                HandType.Three
                     }
-                    case HandType.OnePair => {
-                        if jokerCount == 1 then
-                            // turn pair into three of a kind
-                            // https://stackoverflow.com/questions/41107398/retrieving-key-from-map-in-scala-using-a-value
-                            var charToReplace = charMap.find(_._2 == 2).map(_._1) match
-                                case Some(value) => value
-                                case None => ???  // shouldn't happen
+                    else if pairs == 2 then
+                        val pairs = charCountMap(h.cards).filter(_._2 == 2).toMap
+                        var isEitherPairAJoker = false
+                        for e <-pairs do
+                            if e._1 == 'J' then
+                                isEitherPairAJoker = true
 
-                            newCards = h.cards.replace('J', charToReplace)
-                    }
-                    case HandType.TwoPair => {
-                        if jokerCount == 1 then
-                            var pairs = charMap.filter(_._2 == 2).toMap
-
-
-
-                        newCards = h.cards.replace('J', ???)
-                    }
-                    case HandType.Three => ???
-                    case HandType.FullHouse => ???
-                    case HandType.Four => ???
-
-                typeOfHand(Hand(newCards, newCards.sorted, h.bid))
-            else
-                oldHandType
-
-
+                        if isEitherPairAJoker then
+                            HandType.TwoPair
+                        else
+                            HandType.Three
+                    else if pairs == 1 then
+                        val charWith2 = charCountMap(h.cards).find(_._2 == 2).map(_._1)
+                        charWith2 match
+                            case Some(value) => {
+                                if value == 'J' then
+                                    HandType.OnePair
+                                else
+                                    HandType.Three
+                            }
+                            case None => ???  // shouldn't happen
+                    else
+                        val charCounts = charCountMap(c)
+                        if charCounts.contains('J') && charCounts('J') ==1  then
+                            HandType.OnePair
+                        else
+                            HandType.HighCard
+                }
         }
 
         // listHands.foreach(x => println(s"Hand: ${x.cards}, Type: ${typeOfHand(x)}"))
