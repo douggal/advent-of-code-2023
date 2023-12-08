@@ -100,9 +100,9 @@ Part 2 Run time: 404 milliseconds
 - 1) My initial idea was to assign a numeric score to each hand within type, but 
 this did not work.  Backtracked and took the hint in the description and mapped 
 the relative card strengths to letters of the alphabet so that each hand sorts out, ascending, by strength.
-- 2) overwriting keys in a mutable.Map
+- 2) overwriting keys in a mutable.Map - I could have caught this if I'd check # of ranked hands and compared with input data
 - 3) not looking for all the type combos - I missed Full House
-- So I was late, no points for today, but I did finish
+- So I was late, no points for today, but I did finish and collect the stars
 
 ```text
 

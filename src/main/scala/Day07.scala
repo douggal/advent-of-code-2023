@@ -147,7 +147,7 @@ object Day07:
                 sortedByType(typ) += hand
             else
                 sortedByType += (typ -> ArrayBuffer[Hand](hand))
-            println(s"${hand.cards} ${hand.bid} $typ")
+            // println(s"${hand.cards} ${hand.bid} $typ")
 
         val rankedHands = ArrayBuffer[Hand]()
         for key <- HandType.values do
@@ -183,6 +183,7 @@ object Day07:
         // 249727050 too low
         // 251820259 too high
         // 251819223 too high
+        // 251806792
 
         val answerP1 = winnings
         println(s"Part 1: Find the rank of every hand in your set. What are the total winnings? A: $answerP1")
@@ -195,8 +196,10 @@ object Day07:
         // ----------
         val p2T0 = Instant.now()
 
-        println(s"Part 2: TBD ???")
 
+        val answerP2 = 0
+        println(s"Part 2: Using the new joker rule, find the rank of ")
+        println(s"every hand in your set. What are the new total winnings?  A: $answerP2")
         val delta2 = Duration.between(p2T0, Instant.now())
         println(f"Part 2 run time approx ${delta2.toMillis} milliseconds")
 
