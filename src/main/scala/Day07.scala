@@ -99,7 +99,7 @@ object Day07:
             h.sorted match
                 case FiveRE(c) => HandType.Five
                 case FourRE(c) => HandType.Four
-                case c => /* could be one pair or two pair */
+                case c => /* could be Full House, Three of a kind, or one pair or two pair or High Card */
                     {
                         // Ref: https://stackoverflow.com/questions/61631731/char-count-in-string
                         val counts =
@@ -120,6 +120,16 @@ object Day07:
                         else
                             HandType.HighCard
                     }
+        }
+
+        def typeOfHandJokersWild(h: Hand): HandType = {
+
+            val temp  = h.cards
+            val newCards = h.cards.replace('J','X')
+
+            var newHand = Hand(newCards, newCards.sorted, h.bid)
+
+            typeOfHand(newHand)
         }
 
         // listHands.foreach(x => println(s"Hand: ${x.cards}, Type: ${typeOfHand(x)}"))
@@ -196,6 +206,18 @@ object Day07:
         // ----------
         val p2T0 = Instant.now()
 
+        val suitsP2 = "AKQT98765432J"
+        val suitsSortOrderP2 = "ABCDEFGHIJKLM".reverse
+        val suitsSortOrderMapP2 = (suits zip suitsSortOrder).toMap
+
+        val sortedByTypeP2 = scala.collection.mutable.Map[HandType, ArrayBuffer[Hand]]()
+        for hand <- listHands do
+            val typ = typeOfHand(hand)
+            if sortedByType.contains(typ) then
+                sortedByType(typ) += hand
+            else
+                sortedByType += (typ -> ArrayBuffer[Hand](hand))
+        // println(s"${hand.cards} ${hand.bid} $typ")
 
         val answerP2 = 0
         println(s"Part 2: Using the new joker rule, find the rank of ")
