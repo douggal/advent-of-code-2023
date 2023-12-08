@@ -74,6 +74,8 @@ object Day07:
             case HighCard, OnePair, TwoPair, Three, FullHouse, Four, Five
 
         val suits = "AKQJT98765432"
+        val valueOfSuits = suits.reverse.zipWithIndex.toMap
+        // valueOfSuits.foreach(println)
         val relStrength = suits.map(_.toString).reverse.toList
 
         val parseHandRE = raw"([\d\w]+) ([\d ]+)".r
@@ -103,7 +105,7 @@ object Day07:
                             // Ref: https://stackoverflow.com/questions/61631731/char-count-in-string
                             val counts =
                                 c.foldLeft(Map.empty[Char, Int].withDefaultValue(0)) {
-                                    (counts, c) => counts.updated(c, counts(c) + 1)
+                                    (counts, c) => counts.clone.addOne(c, counts(c) + 1)
                                 }
                             // counts.foreach(x => println(s"$c: $x"))
                             val pairs = counts.values.count(_ == 2)
@@ -116,7 +118,7 @@ object Day07:
                         }
         }
 
-        listHands.foreach(x => println(s"Hand: ${x.cards}, Type: ${typeOfHand(x)}"))
+        // listHands.foreach(x => println(s"Hand: ${x.cards}, Type: ${typeOfHand(x)}"))
 
         // ----------
         //  Part One
@@ -134,7 +136,7 @@ object Day07:
         // val sortedByType = listHands.sortWith(typeOfHand(_).ordinal < typeOfHand(_).ordinal)
         // sortedByType.foreach(x => println(s"${typeOfHand(x)}, $x"))
 
-        val sortedByType = Map[HandType, ArrayBuffer[Hand]]()
+        val sortedByType = scala.collection.mutable.Map[HandType, ArrayBuffer[Hand]]()
         for hand <- listHands do
             val typ = typeOfHand(hand)
             if sortedByType.contains(typ) then
@@ -142,30 +144,36 @@ object Day07:
             else
                 sortedByType += (typ -> ArrayBuffer[Hand](hand))
 
-        val sortedHands = ArrayBuffer[Hand]()
+        val rankedHands = ArrayBuffer[Hand]()
         for key <- HandType.values do
             if sortedByType.contains(key) then
                 if sortedByType(key).length == 1 then
-                    sortedHands += sortedByType(key)(0)
+                    rankedHands += sortedByType(key)(0)
                 else
-                    val i = 0
                     /* compare cards */
-                    for s <- suits do
-                        for h <- sortedByType(key) do
-                            if (h.cards)
+                    val byStrength = scala.collection.mutable.Map[Long, Hand]()
+                    val g = sortedByType(key)
+                    for h <- g do
+                        var score = 0L
+                        for i <- 0 to 4 do
+                            score += h.cards(i) + ((valueOfSuits(h.cards(i)) + 1) * Math.pow(10, 4-i).toLong)
+                        byStrength += (score -> h)
 
+                    val ks = byStrength.keys.toList.sorted
+                    for k <- ks do
+                        rankedHands += byStrength(k)
 
-
-        val g = 0
-
+        /* should have list with index from 0 to N of each hand in order by hand type and card strength */
         /*
-            Each hand wins an amount equal to its bid multiplied by its rank,
-            where the weakest hand gets rank 1
-         */
+             Each hand wins an amount equal to its bid multiplied by its rank,
+             where the weakest hand gets rank 1
+          */
+        var winnings = 0
+        for h <- rankedHands.zipWithIndex do
+            // println(s"${h._1.bid} * ${h._2 + 1}")
+            winnings += h._1.bid * (h._2 + 1)
 
-
-
-        val answerP1 = 0
+        val answerP1 = winnings
         println(s"Part 1: Find the rank of every hand in your set. What are the total winnings? A: $answerP1")
         val delta1 = Duration.between(p1T0, Instant.now())
         println(s"Part 1 run time approx ${delta1.toMillis} milliseconds\n")
