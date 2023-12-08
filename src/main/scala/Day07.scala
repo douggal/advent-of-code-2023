@@ -75,11 +75,10 @@ object Day07:
         val relStrength = Vector[String]("A", "K", "Q", "J", "T", "9", "8", "7", "6", "5", "4", "3", "2")
 
         val parseHandRE = raw"([\d\w]+) ([\d ]+)".r
-        val Five = raw"([AKQJT98765432])\1{4}".r
-        val Four = raw"([AKQJT98765432])\1{3}".r
-        val FullHouse = raw"([AKQJT98765432])\1{2}".r
-        val Three = raw"([AKQJT98765432])\1{2}".r
-        val Pair = raw"([AKQJT98765432])\1{1}".r
+        val FiveRE = raw"([AKQJT98765432])\1{4}".r.unanchored
+        val FourRE = raw"([AKQJT98765432])\1{3}".r.unanchored
+        val ThreeRE = raw"([AKQJT98765432])\1{2}".r.unanchored
+        val PairRE = raw"([AKQJT98765432])\1{1}".r.unanchored
 
         case class Hand(cards: String, sorted: String, bid: Int)
         case class TypedHand(cards: String, sorted: String, bid: Int, typ: HandType)
@@ -93,11 +92,11 @@ object Day07:
 
         def typeOfHand(h: Hand): HandType = {
                 h.sorted match
-                    case Five(c) => HandType.Five
-                    case Four(c) => HandType.Four
-                    case Three(c) if Pair.matches(c) => HandType.FullHouse
-                    case Three(c) => HandType.Three
-                    case Pair(c) => /* one pair or two pair */
+                    case FiveRE(c) => HandType.Five
+                    case FourRE(c) => HandType.Four
+                    case ThreeRE(c) if PairRE.matches(c) => HandType.FullHouse
+                    case ThreeRE(c) => HandType.Three
+                    case PairRE(c) => /* one pair or two pair */
                         {
                             val counts = c.map(x => c.count(y => y == x))
                             if counts.count(_ == 2) == 2 then
@@ -108,6 +107,7 @@ object Day07:
                     case _ => HandType.HighCard
         }
 
+        listHands.foreach(x => println(s"Hand: ${x.cards}, Type: ${typeOfHand(x)}"))
 
         // ----------
         //  Part One
@@ -115,8 +115,15 @@ object Day07:
         val p1T0 = Instant.now()
 
         /*
+            the first step is to put the hands in order of strength:
           Rank: rule 1) by type of hand, rule 2) relative strength of cards
          */
+
+        /*
+            Each hand wins an amount equal to its bid multiplied by its rank,
+            where the weakest hand gets rank 1
+         */
+
 
 
         val answerP1 = 0

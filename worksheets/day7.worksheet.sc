@@ -17,14 +17,3 @@ z.foreach(println)
 
 val listHands = input
     .map(x => parseHandRE.findAllIn(x).matchData.toVector)
-
-def buildListHands(input: Vector[String]): List[Hand] = {
-    input
-        .map(x => parseHandRE.findAllIn(x).toVector)
-        .map(x => Hand(x(0).trim, x(1).trim.toInt))
-        .toList
-}
-
-//val listHands = buildListHands(input)
-//
-//listHands.foreach(println)
