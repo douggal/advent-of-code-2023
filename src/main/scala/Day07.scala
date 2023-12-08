@@ -1,5 +1,6 @@
 import scala.io.Source
 import java.time.{Duration, Instant}
+import scala.collection.mutable.{ArrayBuffer, Map}
 
 /** Advent of Code 2023 Day 7
  *
@@ -130,12 +131,32 @@ object Day07:
             Note: https://stackoverflow.com/questions/40104898/scala-enumeration-compare-order
          */
         // sort by enum, lowest rank to have lowest index
-        val sortedByType = listHands.sortWith(typeOfHand(_).ordinal < typeOfHand(_).ordinal)
-        sortedByType.foreach(x => println(s"${typeOfHand(x)}, $x"))
+        // val sortedByType = listHands.sortWith(typeOfHand(_).ordinal < typeOfHand(_).ordinal)
+        // sortedByType.foreach(x => println(s"${typeOfHand(x)}, $x"))
 
-        for e <- HandType.values do
-            println(e)
+        val sortedByType = Map[HandType, ArrayBuffer[Hand]]()
+        for hand <- listHands do
+            val typ = typeOfHand(hand)
+            if sortedByType.contains(typ) then
+                sortedByType(typ) += hand
+            else
+                sortedByType += (typ -> ArrayBuffer[Hand](hand))
 
+        val sortedHands = ArrayBuffer[Hand]()
+        for key <- HandType.values do
+            if sortedByType.contains(key) then
+                if sortedByType(key).length == 1 then
+                    sortedHands += sortedByType(key)(0)
+                else
+                    val i = 0
+                    /* compare cards */
+                    for s <- suits do
+                        for h <- sortedByType(key) do
+                            if (h.cards)
+
+
+
+        val g = 0
 
         /*
             Each hand wins an amount equal to its bid multiplied by its rank,
