@@ -72,13 +72,14 @@ object Day07:
         enum HandType:
             case HighCard, OnePair, TwoPair, Three, FullHouse, Four, Five
 
-        val relStrength = Vector[String]("A", "K", "Q", "J", "T", "9", "8", "7", "6", "5", "4", "3", "2")
+        val suits = "AKQJT98765432"
+        val relStrength = suits.map(_.toString).reverse.toList
 
         val parseHandRE = raw"([\d\w]+) ([\d ]+)".r
-        val FiveRE = raw"([AKQJT98765432])\1{4}".r.unanchored
-        val FourRE = raw"([AKQJT98765432])\1{3}".r.unanchored
-        val ThreeRE = raw"([AKQJT98765432])\1{2}".r.unanchored
-        val PairRE = raw"([AKQJT98765432])\1{1}".r.unanchored
+        val FiveRE = s"([${suits}])\\1{4}".r.unanchored
+        val FourRE = s"([${suits}])\\1{3}".r.unanchored
+        val ThreeRE = s"([${suits}])\\1{2}".r.unanchored
+        val PairRE = s"([${suits}])\\1{1}".r.unanchored
 
         case class Hand(cards: String, sorted: String, bid: Int)
         case class TypedHand(cards: String, sorted: String, bid: Int, typ: HandType)
@@ -88,7 +89,7 @@ object Day07:
             .map(x => Hand(x(0), x(0).sorted, x(1).toInt))
             .toList
 
-        listHands.foreach(println)
+        // listHands.foreach(println)
 
         def typeOfHand(h: Hand): HandType = {
                 h.sorted match
@@ -96,15 +97,22 @@ object Day07:
                     case FourRE(c) => HandType.Four
                     case ThreeRE(c) if PairRE.matches(c) => HandType.FullHouse
                     case ThreeRE(c) => HandType.Three
-                    case PairRE(c) => /* one pair or two pair */
+                    case c => /* one pair or two pair */
                         {
-                            val counts = c.map(x => c.count(y => y == x))
-                            if counts.count(_ == 2) == 2 then
+                            // Ref: https://stackoverflow.com/questions/61631731/char-count-in-string
+                            val counts =
+                                c.foldLeft(Map.empty[Char, Int].withDefaultValue(0)) {
+                                    (counts, c) => counts.updated(c, counts(c) + 1)
+                                }
+                            // counts.foreach(x => println(s"$c: $x"))
+                            val pairs = counts.values.count(_ == 2)
+                            if pairs == 2 then
                                 HandType.TwoPair
-                            else
+                            else if pairs == 1 then
                                 HandType.OnePair
+                            else
+                                HandType.HighCard
                         }
-                    case _ => HandType.HighCard
         }
 
         listHands.foreach(x => println(s"Hand: ${x.cards}, Type: ${typeOfHand(x)}"))
@@ -116,8 +124,18 @@ object Day07:
 
         /*
             the first step is to put the hands in order of strength:
-          Rank: rule 1) by type of hand, rule 2) relative strength of cards
+          Rank: rule 1) by type of hand,
+                rule 2) relative strength of cards
+
+            Note: https://stackoverflow.com/questions/40104898/scala-enumeration-compare-order
          */
+        // sort by enum, lowest rank to have lowest index
+        val sortedByType = listHands.sortWith(typeOfHand(_).ordinal < typeOfHand(_).ordinal)
+        sortedByType.foreach(x => println(s"${typeOfHand(x)}, $x"))
+
+        for e <- HandType.values do
+            println(e)
+
 
         /*
             Each hand wins an amount equal to its bid multiplied by its rank,
