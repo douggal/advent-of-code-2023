@@ -231,13 +231,13 @@ object Day07:
                     /* compare cards */
                     val byStrength = scala.collection.mutable.Map[String, Hand]()
                     for h <- sortedByType(key) do
-                        var score = ""
+                        var sortOnThis = ""
                         for i <- 0 until h.cards.length do
-                            score += suitsSortOrderMap(h.cards(i))
-                        if byStrength.contains(score) then
+                            sortOnThis += suitsSortOrderMap(h.cards(i))
+                        if byStrength.contains(sortOnThis) then
                             println("Error")
                         else
-                            byStrength += (score -> h)
+                            byStrength += (sortOnThis -> h)
 
                     val ks = byStrength.keys.toList.sorted
                     for k <- ks do
@@ -275,14 +275,42 @@ object Day07:
 
         val sortedByTypeP2 = scala.collection.mutable.Map[HandType, ArrayBuffer[Hand]]()
         for hand <- listHands do
-            val typ = typeOfHand(hand)
+            val typ = typeOfHandJokersWild(hand)
             if sortedByType.contains(typ) then
                 sortedByType(typ) += hand
             else
                 sortedByType += (typ -> ArrayBuffer[Hand](hand))
         // println(s"${hand.cards} ${hand.bid} $typ")
 
-        val answerP2 = 0
+        val rankedHandsP2 = ArrayBuffer[Hand]()
+        for key <- HandType.values do
+            if sortedByType.contains(key) then
+                if sortedByType(key).length == 1 then
+                    rankedHandsP2 += sortedByType(key)(0)
+                else
+                    /* compare cards */
+                    val byStrength = scala.collection.mutable.Map[String, Hand]()
+                    for h <- sortedByType(key) do
+                        var sortOnThis = ""
+                        for i <- 0 until h.cards.length do
+                            sortOnThis += suitsSortOrderMapP2(h.cards(i))
+                        if byStrength.contains(sortOnThis) then
+                            println(s"Error $sortOnThis")
+                        else
+                            byStrength += (sortOnThis -> h)
+
+                    val ks = byStrength.keys.toList.sorted
+                    for k <- ks do
+                        rankedHandsP2 += byStrength(k)
+
+
+        var winningsP2 = BigInt(0)
+        for h <- rankedHandsP2.zipWithIndex do
+            // println(s"${h._1.bid} * ${h._2 + 1}")
+            winnings += h._1.bid * (h._2 + 1)
+
+
+        val answerP2 = winningsP2
         println(s"Part 2: Using the new joker rule, find the rank of ")
         println(s"every hand in your set. What are the new total winnings?  A: $answerP2")
         val delta2 = Duration.between(p2T0, Instant.now())
