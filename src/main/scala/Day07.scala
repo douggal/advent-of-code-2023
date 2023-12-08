@@ -84,8 +84,6 @@ object Day07:
         val parseHandRE = raw"([\d\w]+) ([\d ]+)".r
         val FiveRE = s"([${suits}])\\1{4}".r.unanchored
         val FourRE = s"([${suits}])\\1{3}".r.unanchored
-        val ThreeRE = s"([${suits}])\\1{2}".r.unanchored
-        val PairRE = s"([${suits}])\\1{1}".r.unanchored
 
         case class Hand(cards: String, sorted: String, bid: Int)
         case class TypedHand(cards: String, sorted: String, bid: Int, typ: HandType)
@@ -98,27 +96,30 @@ object Day07:
         // listHands.foreach(println)
 
         def typeOfHand(h: Hand): HandType = {
-                h.sorted match
-                    case FiveRE(c) => HandType.Five
-                    case FourRE(c) => HandType.Four
-                    case ThreeRE(c) if PairRE.matches(c) => HandType.FullHouse
-                    case ThreeRE(c) => HandType.Three
-                    case c => /* one pair or two pair */
-                        {
-                            // Ref: https://stackoverflow.com/questions/61631731/char-count-in-string
-                            val counts =
-                                c.foldLeft(Map.empty[Char, Int].withDefaultValue(0)) {
-                                    (counts, c) => counts.clone.addOne(c, counts(c) + 1)
-                                }
-                            // counts.foreach(x => println(s"$c: $x"))
-                            val pairs = counts.values.count(_ == 2)
-                            if pairs == 2 then
-                                HandType.TwoPair
-                            else if pairs == 1 then
-                                HandType.OnePair
-                            else
-                                HandType.HighCard
-                        }
+            h.sorted match
+                case FiveRE(c) => HandType.Five
+                case FourRE(c) => HandType.Four
+                case c => /* could be one pair or two pair */
+                    {
+                        // Ref: https://stackoverflow.com/questions/61631731/char-count-in-string
+                        val counts =
+                            c.foldLeft(Map.empty[Char, Int].withDefaultValue(0)) {
+                                (counts, c) => counts.clone.addOne(c, counts(c) + 1)
+                            }
+                        // counts.foreach(x => println(s"$c: $x"))
+                        val pairs = counts.values.count(_ == 2)
+                        val threes = counts.values.count(_ == 3)
+                        if threes == 1 && pairs == 1 then
+                            HandType.FullHouse
+                        else if threes == 1 && pairs == 0 then
+                            HandType.Three
+                        else if pairs == 2 then
+                            HandType.TwoPair
+                        else if pairs == 1 then
+                            HandType.OnePair
+                        else
+                            HandType.HighCard
+                    }
         }
 
         // listHands.foreach(x => println(s"Hand: ${x.cards}, Type: ${typeOfHand(x)}"))
@@ -146,6 +147,7 @@ object Day07:
                 sortedByType(typ) += hand
             else
                 sortedByType += (typ -> ArrayBuffer[Hand](hand))
+            println(s"${hand.cards} ${hand.bid} $typ")
 
         val rankedHands = ArrayBuffer[Hand]()
         for key <- HandType.values do
@@ -175,11 +177,12 @@ object Day07:
           */
         var winnings = BigInt(0)
         for h <- rankedHands.zipWithIndex do
-            println(s"${h._1.bid} * ${h._2 + 1}")
+            // println(s"${h._1.bid} * ${h._2 + 1}")
             winnings += h._1.bid * (h._2 + 1)
 
         // 249727050 too low
         // 251820259 too high
+        // 251819223 too high
 
         val answerP1 = winnings
         println(s"Part 1: Find the rank of every hand in your set. What are the total winnings? A: $answerP1")

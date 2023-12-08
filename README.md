@@ -96,11 +96,13 @@ Part 2 Run time: 404 milliseconds
 ```
 
 #### Day 7
-- Burned, again, by overwriting keys in a mutable.Map
-- My initial idea was to assign a numeric score to each hand within type, but 
+- I made 3 mistakes 
+- 1) My initial idea was to assign a numeric score to each hand within type, but 
 this did not work.  Backtracked and took the hint in the description and mapped 
 the relative card strengths to letters of the alphabet so that each hand sorts out, ascending, by strength.
-- Late, no points for today, but I did finish
+- 2) overwriting keys in a mutable.Map
+- 3) not looking for all the type combos - I missed Full House
+- So I was late, no points for today, but I did finish
 
 ```text
 
