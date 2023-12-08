@@ -14,7 +14,7 @@ class DayXX private (val title: String, val runType: Int ):
 
     //var title: String = "Advent of Code 2023"
     //var runType: Int = 1 // Default to test data
-    def run():Unit = DayXX.runPuzzle(runType)
+    def run():Unit = DayXX.solution(runType)
 
     override def toString: String = s"Class ${DayXX.puzzleTitle}"
 
@@ -40,7 +40,7 @@ object DayXX:
         new DayXX(title, runType)
     }
 
-    private def runPuzzle(runType: Int): Unit = {
+    private def solution(runType: Int): Unit = {
 
         println(s"--- Advent of Code 2023 ---")
         println(s"--- $puzzleTitle ---\n")
