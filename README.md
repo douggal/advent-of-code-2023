@@ -103,6 +103,7 @@ the relative card strengths to letters of the alphabet so that each hand sorts o
 - 2) overwriting keys in a mutable.Map - I could have caught this if I'd check # of ranked hands and compared with input data
 - 3) not looking for all the type combos - I missed Full House
 - So I was late, no points for today, but I did finish and collect the stars
+- [Count chars in a string](https://stackoverflow.com/questions/61631731/char-count-in-string)
 
 ```text
 
