@@ -96,15 +96,16 @@ Part 2 Run time: 404 milliseconds
 ```
 
 #### Day 7
+- Part 1 - Go,Part 2 - No go
 - I made 3 mistakes 
 - 1) My initial idea was to assign a numeric score to each hand within type, but 
 this did not work.  Backtracked and took the hint in the description and mapped 
 the relative card strengths to letters of the alphabet so that each hand sorts out, ascending, by strength.
 - 2) overwriting keys in a mutable.Map - I could have caught this if I'd check # of ranked hands and compared with input data
 - 3) not looking for all the type combos - I missed Full House
-- So I was late, no points for today, but I did finish and collect the stars
+- So I was late, no points for today, but I did finish and collect 1 star
 - [Count chars in a string](https://stackoverflow.com/questions/61631731/char-count-in-string)
 
 ```text
-
+Part 1: Find the rank of every hand in your set. What are the total winnings? A: 251806792
 ```
