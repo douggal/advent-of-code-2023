@@ -69,27 +69,58 @@ object Day07:
         // ----------------------
         //  Common to both parts
         // ----------------------
-        enum Color:
+        enum HandType:
             case HighCard, OnePair, TwoPair, Three, FullHouse, Four, Five
 
-        case class Hand(cards: String, bid: Int)
+        val relStrength = Vector[String]("A", "K", "Q", "J", "T", "9", "8", "7", "6", "5", "4", "3", "2")
 
         val parseHandRE = raw"([\d\w]+) ([\d ]+)".r
+        val Five = raw"([AKQJT98765432])\1{4}".r
+        val Four = raw"([AKQJT98765432])\1{3}".r
+        val FullHouse = raw"([AKQJT98765432])\1{2}".r
+        val Three = raw"([AKQJT98765432])\1{2}".r
+        val Pair = raw"([AKQJT98765432])\1{1}".r
+
+        case class Hand(cards: String, sorted: String, bid: Int)
+        case class TypedHand(cards: String, sorted: String, bid: Int, typ: HandType)
 
         val listHands = input
             .map(y => y.trim.split(" +"))
-            .map(x => Hand(x(0), x(1).toInt))
+            .map(x => Hand(x(0), x(0).sorted, x(1).toInt))
             .toList
 
         listHands.foreach(println)
+
+        def typeOfHand(h: Hand): HandType = {
+                h.sorted match
+                    case Five(c) => HandType.Five
+                    case Four(c) => HandType.Four
+                    case Three(c) if Pair.matches(c) => HandType.FullHouse
+                    case Three(c) => HandType.Three
+                    case Pair(c) => /* one pair or two pair */
+                        {
+                            val counts = c.map(x => c.count(y => y == x))
+                            if counts.count(_ == 2) == 2 then
+                                HandType.TwoPair
+                            else
+                                HandType.OnePair
+                        }
+                    case _ => HandType.HighCard
+        }
+
 
         // ----------
         //  Part One
         // ----------
         val p1T0 = Instant.now()
 
-        println(s"Part 1: TBD ???")
+        /*
+          Rank: rule 1) by type of hand, rule 2) relative strength of cards
+         */
 
+
+        val answerP1 = 0
+        println(s"Part 1: Find the rank of every hand in your set. What are the total winnings? A: $answerP1")
         val delta1 = Duration.between(p1T0, Instant.now())
         println(s"Part 1 run time approx ${delta1.toMillis} milliseconds\n")
 
