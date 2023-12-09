@@ -113,3 +113,9 @@ Part 1: Find the rank of every hand in your set. What are the total winnings? A:
 
 #### Day 8
 - Keep it simple and just pick up the stars today
+
+```text
+Part 1: Starting at AAA, follow the left/right instructions. 
+How many steps are required to reach ZZZ?  A: 23147
+
+```

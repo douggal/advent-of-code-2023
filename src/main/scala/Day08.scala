@@ -70,12 +70,6 @@ object Day08:
         //  Common to both parts
         // ----------------------
 
-
-        // ----------
-        //  Part One
-        // ----------
-        val p1T0 = Instant.now()
-
         // List of Left Right instructions
         val leftRights = input(0).trim.map(_.toString).toVector
 
@@ -85,14 +79,16 @@ object Day08:
         // https://stackoverflow.com/questions/39747453/scala-string-pattern-matching-and-splitting
         // Parse each row of data
         def matchStr(str: String): Option[(String, (String, String))] = {
-            val regex = raw"([A-Z][A-Z][A-Z]) = \(([A-Z][A-Z][A-Z]), ([A-Z][A-Z][A-Z])\)".r.unanchored
+            //val regex = raw"([A-Z][A-Z][A-Z]) = \(([A-Z][A-Z][A-Z]), ([A-Z][A-Z][A-Z])\)".r.unanchored
+            val regex = raw"([\w][\w][\w]) = \(([\w][\w][\w]), ([\w][\w][\w])\)".r.unanchored
             str match {
                 case regex(a, b, c) => Some(a -> (b, c))
                 case _ => None
             }
         }
+
         // extract the data from the Option wrapper
-        def extract(maybeData:Option[(String, (String, String))]): (String, (String, String)) = {
+        def extract(maybeData: Option[(String, (String, String))]): (String, (String, String)) = {
             maybeData.getOrElse("Null" -> ("Null", "Null"))
         }
 
@@ -104,16 +100,22 @@ object Day08:
         if runType == 1 then
             network.foreach(println)
 
-        var node = "AAA"
-        var steps = 0
+        // ----------
+        //  Part One
+        // ----------
+        val p1T0 = Instant.now()
+
+        var steps = 0L
         var instrPtr = 0
-        while node != "ZZZ" do
-            println(s"$node $steps, $instrPtr")
-            val next = leftRights(instrPtr)
-            node = if next == "L" then network(node)._1 else network(node)._2
-            instrPtr = (instrPtr + 1) % leftRights.length
-            steps += 1
-            println(s"$node $steps, $instrPtr")
+
+        if false then  // skip for part 2 test data
+            var node = "AAA"
+            while node != "ZZZ" do
+                val next = leftRights(instrPtr)
+                node = if next == "L" then network(node)._1 else network(node)._2
+                instrPtr = (instrPtr + 1) % leftRights.length
+                steps += 1
+                //println(s"$node $steps, $instrPtr")
 
 
         val answerP1 = steps
@@ -128,7 +130,20 @@ object Day08:
         // ----------
         val p2T0 = Instant.now()
 
-        println(s"Part 2: TBD ???")
+        var nodesP2 = network.keys.filter(x => x.last == 'A').toList
+        steps = 0
+        instrPtr = 0
+        while nodesP2.count(x => x.last != 'Z') > 0 do
+            nodesP2 = if leftRights(instrPtr) == "L" then nodesP2.map(x => network(x)._1) else nodesP2.map(x => network(x)._2)
+            instrPtr = (instrPtr + 1) % leftRights.length
+            steps += 1
+            if steps % 1e6 == 0 then println(s"Steps $steps")
+            // println(s"$steps, $instrPtr, $next, $nodesP2")
+
+
+        val answerP2 = steps
+        println(s"Part 2: Simultaneously start on every node that ends with A. ")
+        println(s"How many steps does it take before you're only on nodes that end with Z?  A: $answerP2")
 
         val delta2 = Duration.between(p2T0, Instant.now())
         println(f"Part 2 run time approx ${delta2.toMillis} milliseconds")
