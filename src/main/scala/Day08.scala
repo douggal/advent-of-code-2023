@@ -1,5 +1,6 @@
 import scala.io.Source
 import java.time.{Duration, Instant}
+import scala.collection.mutable.ListBuffer
 
 /** Advent of Code 2023 Day 8
  *
@@ -68,15 +69,54 @@ object Day08:
         // ----------------------
         //  Common to both parts
         // ----------------------
-        // code goes here ...
+
 
         // ----------
         //  Part One
         // ----------
         val p1T0 = Instant.now()
 
+        // List of Left Right instructions
+        val leftRights = input(0).trim.map(_.toString).toVector
 
-        val answerP1 = 0
+        // Parse input data and build the network as a Map strings to tuples: key -> (left, right)
+
+        // Parse string using regex:
+        // https://stackoverflow.com/questions/39747453/scala-string-pattern-matching-and-splitting
+        // Parse each row of data
+        def matchStr(str: String): Option[(String, (String, String))] = {
+            val regex = raw"([A-Z][A-Z][A-Z]) = \(([A-Z][A-Z][A-Z]), ([A-Z][A-Z][A-Z])\)".r.unanchored
+            str match {
+                case regex(a, b, c) => Some(a -> (b, c))
+                case _ => None
+            }
+        }
+        // extract the data from the Option wrapper
+        def extract(maybeData:Option[(String, (String, String))]): (String, (String, String)) = {
+            maybeData.getOrElse("Null" -> ("Null", "Null"))
+        }
+
+        // Could check for None / bad data
+        // Note: this does not fail if there are duplicate keys
+        val network = input.drop(2).map(x => matchStr(x)).map(x => extract(x)).toMap
+
+        // View Network when using test data set:
+        if runType == 1 then
+            network.foreach(println)
+
+        var node = "AAA"
+        var steps = 0
+        var instrPtr = 0
+        while node != "ZZZ" do
+            println(s"$node $steps, $instrPtr")
+            val next = leftRights(instrPtr)
+            node = if next == "L" then network(node)._1 else network(node)._2
+            instrPtr = (instrPtr + 1) % leftRights.length
+            steps += 1
+            println(s"$node $steps, $instrPtr")
+
+
+        val answerP1 = steps
         println(s"Part 1: Starting at AAA, follow the left/right instructions. ")
         println(s"How many steps are required to reach ZZZ?  A: $answerP1")
         val delta1 = Duration.between(p1T0, Instant.now())
