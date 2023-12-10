@@ -70,16 +70,16 @@ object Day10:
         //  Common to both parts
         // ----------------------
         // represent pipe maze as an adjacency list
-        // 1-D list of Nodes
-        // Each node has an ID, the index of its position in the list
-        // Each node has a List of nodes to which it is connected
+        // in a 1-D list of tiles (nodes)
+        // Each tile has an ID, the index of its position in the list, a face symbol, and
+        // a List of nodes to which it is connected/adjacent
         // The degree of each node is given by count of connected nodes
         val symbols = ("SF-|7J").toCharArray.toSet
         val maxRow = input.length
         val maxCol = input.head.count(_ => true)
 
-        // clockwise from top, (row, column), y-down
-        val neighbors = List((-1, 0), (-1, 1), (0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1))
+        // clockwise from top, no diagonals, Tuple is (row, column), and orientation is y/row-down
+        val neighbors = List((-1, 0), (0, 1), (1, 0), (0, -1))
         val neighborsF = List((0,1),(1,0))
         val neighbors7 = List((0,-1),(1,0))
         val neighborsJ = List((-1,0),(0,-1))
@@ -92,40 +92,113 @@ object Day10:
             r * maxCol + c
         }
 
+        def getOneNeighbor(rr: Int, cc: Int): Option[Int] = {
+            if rr >= 0 && rr < maxRow && cc >= 0 && cc < maxCol && input(rr)(cc) != '.' then
+                Option(toIndex(rr, cc))
+            else
+                None
+        }
+
         def getNeighbors(r: Int, c: Int, symbol: Char): List[Int] = {
             val ns = ArrayBuffer[Int]() // this tiles neighbors
-            c match
+
+            // where to look?  depends on what symbol this tile contains
+            symbol match
+                case 'S' => {
+                    // special case - cover all 8 neighbors, should be connection to only 2
+                    for t <- neighbors do
+                        val x = getOneNeighbor(r + t._1, c + t._2)
+                        x match
+                            case Some(value) => ns += value
+                            case None => () /* no action */
+                    if ns.length > 2 || ns.length == 0 then
+                        println("Error - bad S tile")
+                }
                 case 'F' => {
                     // right, and down
                     for t <- neighborsF do
-                        ns += getNeighbors()
+                        val x = getOneNeighbor(r + t._1, c + t._2)
+                        x match
+                            case Some(value) => ns += value
+                            case None => ()
                 }
-                case '-' => {}
-                case '|' => {}
-                case '7' => {}
-                case 'J' => {}
-                case 'L' => {}
+                case '-' => {
+                    // right, left
+                    for t <- neighborsDash do
+                        val x = getOneNeighbor(r + t._1, c + t._2)
+                        x match
+                            case Some(value) => ns += value
+                            case None => () /* no action */
+                }
+                case '|' => {
+                    // top bottom
+                    for t <- neighborsPipe do
+                        val x = getOneNeighbor(r + t._1, c + t._2)
+                        x match
+                            case Some(value) => ns += value
+                            case None => () /* no action */
+                }
+                case '7' => {
+                    // down and left
+                    for t <- neighbors7 do
+                        val x = getOneNeighbor(r + t._1, c + t._2)
+                        x match
+                            case Some(value) => ns += value
+                            case None => () /* no action */
+                }
+                case 'J' => {
+                    // top and left
+                    for t <- neighborsJ do
+                        val x = getOneNeighbor(r + t._1, c + t._2)
+                        x match
+                            case Some(value) => ns += value
+                            case None => () /* no action */
+                }
+                case 'L' => {
+                    // top and right
+                    for t <- neighborsL do
+                        val x = getOneNeighbor(r + t._1, c + t._2)
+                        x match
+                            case Some(value) => ns += value
+                            case None => () /* no action */
+                }
+                case _ => () /* no action */
+
+            ns.toList
         }
 
-        case class Tile(id: Int, isAdjTo: List[Int])
+        case class Tile(id: Int, face: Char, isConnectedTo: List[Int])
+
         val pipeMaze = ArrayBuffer[Tile]()
         for li <- input.zipWithIndex do
             for c <- li._1.zipWithIndex do
-                if c._1 == '.' then
-                    pipeMaze += Tile(toIndex(li._2,c._2),getNeighbors(li._2,c._2,c._1))
+                val i = toIndex(li._2,c._2)
+                val ns = getNeighbors(li._2,c._2,c._1)
+                if ns.length > 0 then
+                    pipeMaze += Tile(i,c._1,ns)
                 else
+                    pipeMaze += Tile(i,c._1, List())
 
-        pipeMaze.foreach(x => println(s"Node $x.id, Connected to ${x.isAdjTo.mkString(",")}"))
+        pipeMaze.foreach(x => println(s"Tile ${x.id} has Face ${x.face}, and is Connected to Tiles: ${x.isConnectedTo.mkString(",")}"))
 
         // ----------
         //  Part One
         // ----------
         val p1T0 = Instant.now()
 
+        /*
+        If you want to get out ahead of the animal, you should find the tile in the loop that is farthest from
+        the starting position. Because the animal is in the pipe, it doesn't make sense to measure this by
+        direct distance. Instead, you need to find the tile that would take the longest number of steps
+        along the loop to reach from the starting point - regardless of which way around the loop the animal went.
+         */
+
+        //  ??? DFS !
 
 
         val answerP1 = 0
-        println(s"Part 1: TBD ???  A: $answerP1")
+        println(s"Part 1: Find the single giant loop starting at S. How many steps along the loop does it take to get ")
+        println(s"from the starting position to the point farthest from the starting position?   A: $answerP1")
 
         val delta1 = Duration.between(p1T0, Instant.now())
         println(s"Part 1 run time approx ${delta1.toMillis} milliseconds\n")
