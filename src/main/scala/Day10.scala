@@ -74,7 +74,7 @@ object Day10:
         // Each tile has an ID, the index of its position in the list, a face symbol, and
         // a List of nodes to which it is connected/adjacent
         // The degree of each node is given by count of connected nodes
-        val symbols = ("SF-|7J").toCharArray.toSet
+        val symbols = ("SFL-|7J").toCharArray.toSet
         val maxRow = input.length
         val maxCol = input.head.count(_ => true)
 
@@ -84,7 +84,7 @@ object Day10:
         val neighbors7 = List((0,-1),(1,0))
         val neighborsJ = List((-1,0),(0,-1))
         val neighborsL = List((-1,0),(0,1))
-        val neighborsPipe = List((-1,0),(1,0))
+        val neighborsPipe = List((-1, 0),(1,0))
         val neighborsDash = List((0,-1),(0,1))
 
         def toIndex(r: Int, c: Int): Int = {
@@ -105,11 +105,21 @@ object Day10:
             // where to look?  depends on what symbol this tile contains
             symbol match
                 case 'S' => {
-                    // special case - cover all 8 neighbors, should be connection to only 2
+                    // special case - cover all 8 neighbors, S can connect to only 2 of them
                     for t <- neighbors do
                         val x = getOneNeighbor(r + t._1, c + t._2)
                         x match
-                            case Some(value) => ns += value
+                            case Some(value) => {
+                                // up
+                                if t._1 == -1 && (value == '|' || value == 'F') then
+                                    ns += value
+                                else if t._1 == 1 && (value == '|' || value == 'L' || value == 'J') then
+                                    ns += value
+                                else if t._2 == 1 && (value == '-' || value == 'J' || value == '7') then
+                                    ns += value
+                                else if t._2 == -1 && (value == 'L' || value == '-' || value == 'F') then
+                                    ns += value
+                            }
                             case None => () /* no action */
                     if ns.length > 2 || ns.length == 0 then
                         println("Error - bad S tile")
@@ -179,7 +189,7 @@ object Day10:
                 else
                     pipeMaze += Tile(i,c._1, List())
 
-        pipeMaze.foreach(x => println(s"Tile ${x.id} has Face ${x.face}, and is Connected to Tiles: ${x.isConnectedTo.mkString(",")}"))
+        // pipeMaze.foreach(x => println(s"Tile ${x.id} has Face ${x.face}, and is Connected to Tiles: ${x.isConnectedTo.mkString(",")}"))
 
         // ----------
         //  Part One
@@ -307,12 +317,17 @@ object Day10:
         val startTile = pipeMaze.filter(x => x.face == 'S').head.id
         val paths = ArrayBuffer[ArrayBuffer[Int]]()
         for endTile <- 0 until maxCol*maxRow do
-            if startTile != endTile then
-                paths += solve(startTile, endTile)
+            if startTile != endTile && pipeMaze(endTile).face != '.' then
+                val ps = solve(startTile, endTile)
+                if ps.length > 0 then
+                    paths += ps
         end for
-        // paths.foreach(x => println(s"Start: path: ${x.mkString(",")}"))
+
+        // paths.foreach(x => {if x.length > 0 then println(s"Start: path: ${x.mkString(",")}")})
 
         val mostStepsBFS = paths.map(_.length).max - 1
+
+        // no go 6932 is too low
 
         val answerP1 = mostStepsBFS
         println(s"Part 1: Find the single giant loop starting at S. How many steps along the loop does it take to get ")
