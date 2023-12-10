@@ -13,7 +13,15 @@ Solutions are in Scala 3 unless otherwise noted.
 6. Day  6:  Wait For It
 7. Day  7:  Camel Cards
 8. Day  8:  Haunted Wasteland
-9. Day  9;  Mirage Maintenance
+9. Day  9:  Mirage Maintenance
+10. Day 10: Pipe Maze
+
+### Straightforward to solve
+4,6,9
+
+### Hard to solve
+7 (part 2), 8 (part2)
+
 
 ### Notes
 
@@ -133,3 +141,6 @@ Part 2: Analyze your OASIS report again, this time extrapolating the previous va
 What is the sum of these extrapolated values?  A: 966
 Run time approx 16 milliseconds
 ```
+
+#### Day 10
+-

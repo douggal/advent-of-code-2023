@@ -1,5 +1,6 @@
 import scala.io.Source
 import java.time.{Duration, Instant}
+import scala.collection.mutable.ArrayBuffer
 
 /** Advent of Code 2023 Day 10
  *
@@ -23,7 +24,7 @@ end Day10
 object Day10:
 
     val day = "10"
-    val puzzleTitle = "Day 10: ???"
+    val puzzleTitle = "Day 10: Pipe Maze"
 
     // input data files
     private val testData: String = s"$day-test.txt"
@@ -53,7 +54,6 @@ object Day10:
         else
             println("REAL INPUT DATA ...")
 
-        // simple text file read:  Jan-Pieter van den Heuvel [Saving Christmas Using Scala](https://www.youtube.com/watch?v=tHU36gQ5iAI)
         val input = Source.fromResource(filename).getLines().toVector
 
         println("\nData Quality Control:")
@@ -69,7 +69,53 @@ object Day10:
         // ----------------------
         //  Common to both parts
         // ----------------------
-        // code goes here ...
+        // represent pipe maze as an adjacency list
+        // 1-D list of Nodes
+        // Each node has an ID, the index of its position in the list
+        // Each node has a List of nodes to which it is connected
+        // The degree of each node is given by count of connected nodes
+        val symbols = ("SF-|7J").toCharArray.toSet
+        val maxRow = input.length
+        val maxCol = input.head.count(_ => true)
+
+        // clockwise from top, (row, column), y-down
+        val neighbors = List((-1, 0), (-1, 1), (0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1))
+        val neighborsF = List((0,1),(1,0))
+        val neighbors7 = List((0,-1),(1,0))
+        val neighborsJ = List((-1,0),(0,-1))
+        val neighborsL = List((-1,0),(0,1))
+        val neighborsPipe = List((-1,0),(1,0))
+        val neighborsDash = List((0,-1),(0,1))
+
+        def toIndex(r: Int, c: Int): Int = {
+            // convert row and column to index in the grid
+            r * maxCol + c
+        }
+
+        def getNeighbors(r: Int, c: Int, symbol: Char): List[Int] = {
+            val ns = ArrayBuffer[Int]() // this tiles neighbors
+            c match
+                case 'F' => {
+                    // right, and down
+                    for t <- neighborsF do
+                        ns += getNeighbors()
+                }
+                case '-' => {}
+                case '|' => {}
+                case '7' => {}
+                case 'J' => {}
+                case 'L' => {}
+        }
+
+        case class Tile(id: Int, isAdjTo: List[Int])
+        val pipeMaze = ArrayBuffer[Tile]()
+        for li <- input.zipWithIndex do
+            for c <- li._1.zipWithIndex do
+                if c._1 == '.' then
+                    pipeMaze += Tile(toIndex(li._2,c._2),getNeighbors(li._2,c._2,c._1))
+                else
+
+        pipeMaze.foreach(x => println(s"Node $x.id, Connected to ${x.isAdjTo.mkString(",")}"))
 
         // ----------
         //  Part One
