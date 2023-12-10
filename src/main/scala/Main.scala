@@ -24,11 +24,13 @@ def Main(day: Int = 8, runType: Int = 1): Unit = {
     val d6 = Day06(s"$title Day 6", runType)
     val d7 = Day07(s"$title Day 7", runType)
     val d8 = Day08(s"$title Day 8", runType)
+    val d9 = Day09(s"$title Day 9", runType)
 
     // Run the selected day's puzzle
     println(s"Begin: ${ZonedDateTime.now()}")
 
     day match {
+        case 9 => d9.run()
         case 8 => d8.run()
         case 7 => d7.run()
         case 6 => d6.run()
