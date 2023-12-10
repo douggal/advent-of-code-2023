@@ -193,10 +193,46 @@ object Day10:
         along the loop to reach from the starting point - regardless of which way around the loop the animal went.
          */
 
-        //  ??? DFS !
+        //  What to do ???
+        //  idea ! DFS
+        /*
+            https://en.wikipedia.org/wiki/Depth-first_search
+            procedure DFS(G, v) is
+                label v as discovered
+                for all directed edges from v to w that are in G.adjacentEdges(v) do
+                    if vertex w is not labeled as discovered then
+                        recursively call DFS(G, w)
+         */
 
+        // depth of each tile from starting tile
+        val depths = ArrayBuffer[Int]()
 
-        val answerP1 = 0
+        // keep track of which tiles have be processed
+        val discovered = ArrayBuffer[Boolean]()
+
+        // intialize
+        val startTile = pipeMaze.filter(x => x.face == 'S').head.id
+        for i <- 0 until (maxCol * maxRow) do
+            discovered += false
+            depths += 0
+
+        // Depth First Search from starting tile S to
+        // each connected tile in the pipe maze diagram
+        def DFS(G: ArrayBuffer[Tile], v: Int): Unit = {
+            discovered(v) = true
+            depths(v) += 1
+            for tile <- G(v).isConnectedTo do
+                if !discovered(v) then
+                    DFS(G,tile)
+                end if
+            end for
+            ()
+        }
+
+        DFS(pipeMaze, startTile)
+        val mostSteps = depths.max
+
+        val answerP1 = mostSteps
         println(s"Part 1: Find the single giant loop starting at S. How many steps along the loop does it take to get ")
         println(s"from the starting position to the point farthest from the starting position?   A: $answerP1")
 

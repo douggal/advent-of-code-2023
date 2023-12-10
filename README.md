@@ -143,4 +143,5 @@ Run time approx 16 milliseconds
 ```
 
 #### Day 10
--
+- [DFS](https://en.wikipedia.org/wiki/Depth-first_search)
+- Fun activity for a rainy Sunday
