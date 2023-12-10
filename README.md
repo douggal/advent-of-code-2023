@@ -119,8 +119,17 @@ Part 1: Find the rank of every hand in your set. What are the total winnings? A:
 ```text
 Part 1: Starting at AAA, follow the left/right instructions. 
 How many steps are required to reach ZZZ?  A: 23147
-
 ```
 
 #### Day 9
--
+- One of the easier puzzles
+
+```text
+Part 1: Analyze your OASIS report and extrapolate the next value for each history. 
+What is the sum of these extrapolated values?  A: 1916822650
+Run time approx 71 milliseconds
+
+Part 2: Analyze your OASIS report again, this time extrapolating the previous value for each history. 
+What is the sum of these extrapolated values?  A: 966
+Run time approx 16 milliseconds
+```

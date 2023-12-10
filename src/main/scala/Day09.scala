@@ -54,7 +54,6 @@ object Day09:
         else
             println("REAL INPUT DATA ...")
 
-        // simple text file read:  Jan-Pieter van den Heuvel [Saving Christmas Using Scala](https://www.youtube.com/watch?v=tHU36gQ5iAI)
         val input = Source.fromResource(filename).getLines().toVector
 
         println("\nData Quality Control:")
@@ -121,7 +120,36 @@ object Day09:
         // ----------
         val p2T0 = Instant.now()
 
-        println(s"Part 2: TBD ???")
+        val firstItemInEachHistory = ArrayBuffer[Int]()
+
+        for history <- dataset do
+            val diffs = ArrayBuffer[List[Int]]()
+            diffs += history.sliding(2).map {
+                case Array(a, b) => b - a
+            }.toList
+            var sum = Long.MaxValue
+            while sum != 0 do
+                diffs += diffs.last.sliding(2).map {
+                    case List(a, b) => b - a
+                }.toList
+                sum = diffs.last.sum
+            end while
+
+            val firstItems = ArrayBuffer[Int](0)
+            for x <- diffs.reverse.drop(1) do
+                firstItems += x.head - firstItems.last
+
+            firstItemInEachHistory += history.head - firstItems.last
+
+            // println("History:")
+            // diffs.map(_.mkString(",")).foreach(println)
+            // firstItemInEachHistory.foreach(println)
+        end for
+
+
+        val answerP2 = firstItemInEachHistory.sum
+        println(s"Part 2: Analyze your OASIS report again, this time extrapolating the previous value for each history. ")
+        println(s"What is the sum of these extrapolated values?  A: $answerP2")
 
         val delta2 = Duration.between(p2T0, Instant.now())
         println(f"Part 2 run time approx ${delta2.toMillis} milliseconds")
