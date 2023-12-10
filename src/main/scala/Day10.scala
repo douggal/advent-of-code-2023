@@ -92,9 +92,9 @@ object Day10:
             r * maxCol + c
         }
 
-        def getOneNeighbor(rr: Int, cc: Int): Option[Int] = {
+        def getOneNeighbor(rr: Int, cc: Int): Option[(Int,Char)] = {
             if rr >= 0 && rr < maxRow && cc >= 0 && cc < maxCol && input(rr)(cc) != '.' then
-                Option(toIndex(rr, cc))
+                Option((toIndex(rr, cc), input(rr)(cc)))
             else
                 None
         }
@@ -110,26 +110,27 @@ object Day10:
                         val x = getOneNeighbor(r + t._1, c + t._2)
                         x match
                             case Some(value) => {
-                                // up
-                                if t._1 == -1 && (value == '|' || value == 'F') then
-                                    ns += value
-                                else if t._1 == 1 && (value == '|' || value == 'L' || value == 'J') then
-                                    ns += value
-                                else if t._2 == 1 && (value == '-' || value == 'J' || value == '7') then
-                                    ns += value
-                                else if t._2 == -1 && (value == 'L' || value == '-' || value == 'F') then
-                                    ns += value
+                                // up, down, right, left
+                                val face = value._2
+                                if t._1 == -1 && (face == '|' || face == 'F'|| face == '7') then
+                                    ns += value._1
+                                if t._1 == 1 && (face == '|' || face == 'L' || face == 'J') then
+                                    ns += value._1
+                                if t._2 == 1 && (face == '-' || face == 'J' || face == '7') then
+                                    ns += value._1
+                                if t._2 == -1 && (face == 'L' || face == '-' || face == 'F') then
+                                    ns += value._1
                             }
                             case None => () /* no action */
                     if ns.length > 2 || ns.length == 0 then
-                        println("Error - bad S tile")
+                        println(s"Error - bad S tile: ($r, $c) ")
                 }
                 case 'F' => {
                     // right, and down
                     for t <- neighborsF do
                         val x = getOneNeighbor(r + t._1, c + t._2)
                         x match
-                            case Some(value) => ns += value
+                            case Some(value) => ns += value._1
                             case None => ()
                 }
                 case '-' => {
@@ -137,7 +138,7 @@ object Day10:
                     for t <- neighborsDash do
                         val x = getOneNeighbor(r + t._1, c + t._2)
                         x match
-                            case Some(value) => ns += value
+                            case Some(value) => ns += value._1
                             case None => () /* no action */
                 }
                 case '|' => {
@@ -145,7 +146,7 @@ object Day10:
                     for t <- neighborsPipe do
                         val x = getOneNeighbor(r + t._1, c + t._2)
                         x match
-                            case Some(value) => ns += value
+                            case Some(value) => ns += value._1
                             case None => () /* no action */
                 }
                 case '7' => {
@@ -153,7 +154,7 @@ object Day10:
                     for t <- neighbors7 do
                         val x = getOneNeighbor(r + t._1, c + t._2)
                         x match
-                            case Some(value) => ns += value
+                            case Some(value) => ns += value._1
                             case None => () /* no action */
                 }
                 case 'J' => {
@@ -161,7 +162,7 @@ object Day10:
                     for t <- neighborsJ do
                         val x = getOneNeighbor(r + t._1, c + t._2)
                         x match
-                            case Some(value) => ns += value
+                            case Some(value) => ns += value._1
                             case None => () /* no action */
                 }
                 case 'L' => {
@@ -169,7 +170,7 @@ object Day10:
                     for t <- neighborsL do
                         val x = getOneNeighbor(r + t._1, c + t._2)
                         x match
-                            case Some(value) => ns += value
+                            case Some(value) => ns += value._1
                             case None => () /* no action */
                 }
                 case _ => () /* no action */
