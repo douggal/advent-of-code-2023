@@ -1,5 +1,6 @@
 import scala.io.Source
 import java.time.{Duration, Instant}
+import scala.collection.mutable.{ArrayBuffer}
 
 /** Advent of Code 2023 Day 9
  *
@@ -76,7 +77,40 @@ object Day09:
         // ----------
         val p1T0 = Instant.now()
 
-        println(s"Part 1: TBD ???")
+        val dataset = input.map(x => x.split(" +").map(_.toInt))
+        // dataset.map(_.mkString(",")).foreach(println)
+
+        val nextItemInEachHistory = ArrayBuffer[Int]()
+
+        for history <- dataset do
+            val diffs = ArrayBuffer[List[Int]]()
+            diffs += history.sliding(2).map {
+                case Array(a, b) => b - a
+            }.toList
+            var sum = Long.MaxValue
+            while sum != 0 do
+                diffs += diffs.last.sliding(2).map {
+                    case List(a,b)=> b - a
+                }.toList
+                sum = diffs.last.sum
+            end while
+
+            val nextItems = ArrayBuffer[Int](0)
+            for x <- diffs.reverse.drop(1) do
+                nextItems += x.last + nextItems.last
+
+            nextItemInEachHistory += nextItems.last + history.last
+
+            // println("History:")
+            // diffs.map(_.mkString(",")).foreach(println)
+        end for
+
+
+        
+        
+        val answerP1 = nextItemInEachHistory.sum
+        println(s"Part 1: Analyze your OASIS report and extrapolate the next value for each history. ")
+        println(s"What is the sum of these extrapolated values?  A: $answerP1")
 
         val delta1 = Duration.between(p1T0, Instant.now())
         println(s"Part 1 run time approx ${delta1.toMillis} milliseconds\n")
