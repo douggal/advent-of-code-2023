@@ -1,6 +1,6 @@
 import scala.io.Source
 import java.time.{Duration, Instant}
-import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable.{ArrayBuffer, Queue}
 
 /** Advent of Code 2023 Day 10
  *
@@ -218,21 +218,70 @@ object Day10:
 
         // Depth First Search from starting tile S to
         // each connected tile in the pipe maze diagram
+        // this traversal works, but I have no way to know when I'm at the furthest # steps from start
+        var currLevel = 0
         def DFS(G: ArrayBuffer[Tile], v: Int): Unit = {
+            println(s"Visiting tile $v, level $currLevel")
             discovered(v) = true
-            depths(v) += 1
+            depths(v) += currLevel
+            currLevel += 1
             for tile <- G(v).isConnectedTo do
-                if !discovered(v) then
+                if !discovered(tile) then
                     DFS(G,tile)
                 end if
             end for
+            currLevel = currLevel - 1
             ()
         }
 
-        DFS(pipeMaze, startTile)
-        val mostSteps = depths.max
 
-        val answerP1 = mostSteps
+        // DFS did not give needed answer. What to do next ???
+        //  idea ! BFS
+        // prev -  is each tiles's parent (index gives tile ID)
+        // depth of each tile from starting tile
+        val prev = ArrayBuffer[Int]()
+        val depthsBFS = ArrayBuffer[Int]()
+
+        // keep track of which tiles have be processed
+        val discoveredBFS = ArrayBuffer[Boolean]()
+
+        // initialize parent of each node to empty string
+        for i <- 0 until maxCol*maxRow do
+            prev.append(-1)
+            discoveredBFS += false
+            depthsBFS += 0
+        val q = Queue[Int](startTile)
+
+        var level = 0
+        def BFS(G: ArrayBuffer[Tile], v: Int): Unit = {
+            while !q.isEmpty do
+                val tile = q.dequeue()
+                discoveredBFS(tile) = true
+                depthsBFS(tile) = level
+                println(s"Visited tile $tile")
+
+                // add all node's neighbors to the the queue, if not already there
+                for neighbor <- G(tile).isConnectedTo do
+                    level += 1
+                    // ignore n if already explored
+                    // else add to queue
+                    if discoveredBFS(neighbor) == false then
+                        discoveredBFS(neighbor) = true
+                        q.enqueue(neighbor)
+                        prev(neighbor) = tile // n's parent is "node"
+                    end if
+                end for
+            end while
+        }
+
+
+        DFS(pipeMaze, startTile)
+        val mostStepsDFS = depths.max
+
+        BFS(pipeMaze, startTile)
+        val mostStepsBFS = depthsBFS.max
+
+        val answerP1 = mostStepsBFS
         println(s"Part 1: Find the single giant loop starting at S. How many steps along the loop does it take to get ")
         println(s"from the starting position to the point farthest from the starting position?   A: $answerP1")
 
