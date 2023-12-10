@@ -13,6 +13,7 @@ Solutions are in Scala 3 unless otherwise noted.
 6. Day  6:  Wait For It
 7. Day  7:  Camel Cards
 8. Day  8:  Haunted Wasteland
+9. Day  9;  Mirage Maintenance
 
 ### Notes
 
@@ -113,9 +114,22 @@ Part 1: Find the rank of every hand in your set. What are the total winnings? A:
 
 #### Day 8
 - Keep it simple and just pick up the stars today
+- Part 1 solved, part 2 no go.  Tried brute force but after 24 hours still had not reached a solution.
 
 ```text
 Part 1: Starting at AAA, follow the left/right instructions. 
 How many steps are required to reach ZZZ?  A: 23147
+```
 
+#### Day 9
+- One of the easier puzzles
+
+```text
+Part 1: Analyze your OASIS report and extrapolate the next value for each history. 
+What is the sum of these extrapolated values?  A: 1916822650
+Run time approx 71 milliseconds
+
+Part 2: Analyze your OASIS report again, this time extrapolating the previous value for each history. 
+What is the sum of these extrapolated values?  A: 966
+Run time approx 16 milliseconds
 ```
