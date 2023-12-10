@@ -204,39 +204,39 @@ object Day10:
                         recursively call DFS(G, w)
          */
 
-        // depth of each tile from starting tile
-        val depths = ArrayBuffer[Int]()
-
-        // keep track of which tiles have be processed
-        val discovered = ArrayBuffer[Boolean]()
-
-        // intialize
-        val startTile = pipeMaze.filter(x => x.face == 'S').head.id
-        for i <- 0 until (maxCol * maxRow) do
-            discovered += false
-            depths += 0
-
-        // Depth First Search from starting tile S to
-        // each connected tile in the pipe maze diagram
-        // this traversal works, but I have no way to know when I'm at the furthest # steps from start
-        var currLevel = 0
-        def DFS(G: ArrayBuffer[Tile], v: Int): Unit = {
-            println(s"Visiting tile $v, level $currLevel")
-            discovered(v) = true
-            depths(v) += currLevel
-            currLevel += 1
-            for tile <- G(v).isConnectedTo do
-                if !discovered(tile) then
-                    DFS(G,tile)
-                end if
-            end for
-            currLevel = currLevel - 1
-            ()
-        }
-
-        println("DFS")
-        DFS(pipeMaze, startTile)
-        val mostStepsDFS = depths.max
+//        // depth of each tile from starting tile
+//        val depths = ArrayBuffer[Int]()
+//
+//        // keep track of which tiles have be processed
+//        val discovered = ArrayBuffer[Boolean]()
+//
+//        // intialize
+//        val startTile = pipeMaze.filter(x => x.face == 'S').head.id
+//        for i <- 0 until (maxCol * maxRow) do
+//            discovered += false
+//            depths += 0
+//
+//        // Depth First Search from starting tile S to
+//        // each connected tile in the pipe maze diagram
+//        // this traversal works, but I have no way to know when I'm at the furthest # steps from start
+//        var currLevel = 0
+//        def DFS(G: ArrayBuffer[Tile], v: Int): Unit = {
+//            println(s"Visiting tile $v, level $currLevel")
+//            discovered(v) = true
+//            depths(v) += currLevel
+//            currLevel += 1
+//            for tile <- G(v).isConnectedTo do
+//                if !discovered(tile) then
+//                    DFS(G,tile)
+//                end if
+//            end for
+//            currLevel = currLevel - 1
+//            ()
+//        }
+//
+//        println("DFS")
+//        DFS(pipeMaze, startTile)
+//        val mostStepsDFS = depths.max
 
 
         // -----------------------------------------------------
@@ -257,12 +257,12 @@ object Day10:
                 discoveredBFS += false
 
             // Queue to store tiles awaiting processing
-            val q = Queue[Int](startTile)
+            val q = Queue[Int](s)
 
             while !q.isEmpty do
                 val tile = q.dequeue()
                 discoveredBFS(tile) = true
-                println(s"Visited tile $tile")
+                // println(s"Visited tile $tile")
 
                 // add all node's neighbors to the the queue, if not already there
                 for neighbor <- pipeMaze(tile).isConnectedTo do
@@ -304,12 +304,13 @@ object Day10:
 
         // Run BFS from Start tile to all possible end tiles
         println("\n\nBFS:")
+        val startTile = pipeMaze.filter(x => x.face == 'S').head.id
         val paths = ArrayBuffer[ArrayBuffer[Int]]()
         for endTile <- 0 until maxCol*maxRow do
             if startTile != endTile then
                 paths += solve(startTile, endTile)
         end for
-        paths.foreach(x => println(s"Start: path: ${x.mkString(",")}"))
+        // paths.foreach(x => println(s"Start: path: ${x.mkString(",")}"))
 
         val mostStepsBFS = paths.map(_.length).max - 1
 
