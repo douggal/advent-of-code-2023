@@ -140,6 +140,8 @@ object Day08:
             if steps % 1e6 == 0 then println(s"Steps $steps")
             // println(s"$steps, $instrPtr, $next, $nodesP2")
 
+        
+        // No go, reached Steps 404255000000 after 24 hours with no answer yet.
 
         val answerP2 = steps
         println(s"Part 2: Simultaneously start on every node that ends with A. ")
