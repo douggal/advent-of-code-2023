@@ -82,7 +82,7 @@ object DayXX:
         println(s"Part 1: TBD ???  A: $answerP1")
 
         val delta1 = Duration.between(p1T0, Instant.now())
-        println(s"Part 1 run time approx ${delta1.toMillis} milliseconds\n")
+        println(s"Run time approx ${delta1.toMillis} milliseconds\n")
 
 
         // ----------
@@ -93,10 +93,10 @@ object DayXX:
 
 
         val answerP2 = 0
-        println(s"Part 2: TBD ???  A: $answerP2?")
+        println(s"Part 2: TBD ???  A: $answerP2")
 
         val delta2 = Duration.between(p2T0, Instant.now())
-        println(f"Part 2 run time approx ${delta2.toMillis} milliseconds")
+        println(f"Run time approx ${delta2.toMillis} milliseconds")
 
         // errata...for visualization with Excel chart
 

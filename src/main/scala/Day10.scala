@@ -234,35 +234,39 @@ object Day10:
             ()
         }
 
+        println("DFS")
+        DFS(pipeMaze, startTile)
+        val mostStepsDFS = depths.max
 
+
+        // -----------------------------------------------------
         // DFS did not give needed answer. What to do next ???
         //  idea ! BFS
-        // prev -  is each tiles's parent (index gives tile ID)
-        // depth of each tile from starting tile
-        val prev = ArrayBuffer[Int]()
-        val depthsBFS = ArrayBuffer[Int]()
+        // -----------------------------------------------------
 
-        // keep track of which tiles have be processed
-        val discoveredBFS = ArrayBuffer[Boolean]()
+        def BFS(s: Int, e: Int): ArrayBuffer[Int] = {
+            // prev -  is each node's parent (index gives node ID)
+            val prev = ArrayBuffer[Int]()
 
-        // initialize parent of each node to empty string
-        for i <- 0 until maxCol*maxRow do
-            prev.append(-1)
-            discoveredBFS += false
-            depthsBFS += 0
-        val q = Queue[Int](startTile)
+            // keep track of which tiles have be processed
+            val discoveredBFS = ArrayBuffer[Boolean]()
 
-        var level = 0
-        def BFS(G: ArrayBuffer[Tile], v: Int): Unit = {
+            // initialize parent of each node to empty string
+            for i <- 0 until maxCol * maxRow do
+                prev += -1
+                discoveredBFS += false
+
+            // Queue to store tiles awaiting processing
+            val q = Queue[Int](startTile)
+
             while !q.isEmpty do
                 val tile = q.dequeue()
                 discoveredBFS(tile) = true
-                depthsBFS(tile) = level
                 println(s"Visited tile $tile")
 
                 // add all node's neighbors to the the queue, if not already there
-                for neighbor <- G(tile).isConnectedTo do
-                    level += 1
+                for neighbor <- pipeMaze(tile).isConnectedTo do
+
                     // ignore n if already explored
                     // else add to queue
                     if discoveredBFS(neighbor) == false then
@@ -272,21 +276,49 @@ object Day10:
                     end if
                 end for
             end while
+
+            prev
         }
 
+        def reconstructPath(s: Int, e: Int, prev: ArrayBuffer[Int]): ArrayBuffer[Int] = {
+            val path = ArrayBuffer[Int]()
+            var at = e
+            while at != -1 do
+                path += at
+                at = prev(at)
 
-        DFS(pipeMaze, startTile)
-        val mostStepsDFS = depths.max
+            val pathr = path.reverse
 
-        BFS(pipeMaze, startTile)
-        val mostStepsBFS = depthsBFS.max
+            if pathr(0) == s then
+                pathr
+            else
+                ArrayBuffer[Int]()
+        }
+
+        def solve(s: Int, e: Int): ArrayBuffer[Int] = {
+            // do a BSF of g starting at s
+            val prev = BFS(s, e)
+            // return reconstructed path s -> e
+            reconstructPath(s, e, prev)
+        }
+
+        // Run BFS from Start tile to all possible end tiles
+        println("\n\nBFS:")
+        val paths = ArrayBuffer[ArrayBuffer[Int]]()
+        for endTile <- 0 until maxCol*maxRow do
+            if startTile != endTile then
+                paths += solve(startTile, endTile)
+        end for
+        paths.foreach(x => println(s"Start: path: ${x.mkString(",")}"))
+
+        val mostStepsBFS = paths.map(_.length).max - 1
 
         val answerP1 = mostStepsBFS
         println(s"Part 1: Find the single giant loop starting at S. How many steps along the loop does it take to get ")
         println(s"from the starting position to the point farthest from the starting position?   A: $answerP1")
 
         val delta1 = Duration.between(p1T0, Instant.now())
-        println(s"Part 1 run time approx ${delta1.toMillis} milliseconds\n")
+        println(s"Run time approx ${delta1.toMillis} milliseconds\n")
 
 
         // ----------
@@ -297,10 +329,10 @@ object Day10:
 
 
         val answerP2 = 0
-        println(s"Part 2: TBD ???  A: $answerP2?")
+        println(s"Part 2: TBD ???  A: $answerP2")
 
         val delta2 = Duration.between(p2T0, Instant.now())
-        println(f"Part 2 run time approx ${delta2.toMillis} milliseconds")
+        println(f"Run time approx ${delta2.toMillis} milliseconds")
 
         // errata...for visualization with Excel chart
 
