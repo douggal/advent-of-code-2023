@@ -15,6 +15,7 @@ Solutions are in Scala 3 unless otherwise noted.
 8. Day  8:  Haunted Wasteland
 9. Day  9:  Mirage Maintenance
 10. Day 10: Pipe Maze
+11. Day 11: Cosmic Expansion
 
 ### Straightforward to solve
 4,6,9
@@ -154,3 +155,7 @@ BFS:  Part 1: Find the single giant loop starting at S. How many steps along the
 from the starting position to the point farthest from the starting position?   A: 7005
 Run time approx 11579 milliseconds
 ```
+
+#### Day 11
+- 
+
