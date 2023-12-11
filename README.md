@@ -20,7 +20,7 @@ Solutions are in Scala 3 unless otherwise noted.
 4,6,9
 
 ### Hard to solve
-7 (part 2), 8 (part2)
+7 (part 2), 8 (part2), 10 (part 2)
 
 
 ### Notes
@@ -145,5 +145,12 @@ Run time approx 16 milliseconds
 #### Day 10
 - [DFS](https://en.wikipedia.org/wiki/Depth-first_search)
 - Fun activity for a rainy Sunday
+- Part 1: do
+- Part 2: DNF
 - Started with DFS traversal algo, and after a while realized I needed a BFS
-- 
+
+```text
+BFS:  Part 1: Find the single giant loop starting at S. How many steps along the loop does it take to get 
+from the starting position to the point farthest from the starting position?   A: 7005
+Run time approx 11579 milliseconds
+```
