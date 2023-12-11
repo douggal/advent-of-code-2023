@@ -1,5 +1,6 @@
 import scala.io.Source
 import java.time.{Duration, Instant}
+import scala.collection.mutable.{ArrayBuffer, Set}
 
 /** Advent of Code 2023 Day 11
  *
@@ -53,17 +54,16 @@ object Day11:
         else
             println("REAL INPUT DATA ...")
 
-        // simple text file read:  Jan-Pieter van den Heuvel [Saving Christmas Using Scala](https://www.youtube.com/watch?v=tHU36gQ5iAI)
-        val input = Source.fromResource(filename).getLines().toVector
+        val input = Source.fromResource(filename).getLines().map(_.toCharArray).toVector
 
         println("\nData Quality Control:")
         println(s"  Input file name: $filename")
         println(s"  Each line is a: ${input.head.getClass}")
         println(s"  Number lines: ${input.length}")
         println(s"  Number items per line: ${input.head.count(_ => true)}")
-        println(s"  First line: ${input.head}")
+        println(s"  First line: ${input.head.mkString(" ")}")
         if input.size > 1 then
-            println(s"  Last line: ${input.last}")
+            println(s"  Last line: ${input.last.mkString(" ")}")
         println
 
         // ----------------------
@@ -76,7 +76,31 @@ object Day11:
         // ----------
         val p1T0 = Instant.now()
 
+        // which rows need to be expanded
+        val rowsToExpand = input
+            .zipWithIndex
+            .filter(x => x._1.count(_ != '.') == 0)
+            .map(x => x._2)
 
+        // which columns to expand
+        val colsToExpand = ArrayBuffer[Int]()
+        for i <- input(0).indices do // columns
+            val slice = ArrayBuffer[Char]()
+            for j <- input.indices do // iterate down the rows
+                slice += input(j)(i)
+            end for
+            if slice.count(_ != '.') == 0 then
+                colsToExpand += i
+            end if
+
+        case class Point(r: Int, c: Int)
+        case class Galaxy(N: Int, p: Point)
+        val universe = ArrayBuffer[ArrayBuffer[Char]]()
+
+
+        // Expand the universe
+
+        // Find the Manhattan distance between each pair of galaxies
 
 
 
