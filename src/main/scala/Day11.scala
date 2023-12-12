@@ -137,7 +137,7 @@ object Day11:
                 val d = Math.abs(universe3(i).coord.c - universe3(j).coord.c) + Math.abs(universe3(i).coord.r - universe3(j).coord.r)
                 dists += Distance(Set(universe3(i).N,universe3(j).N), d)
 
-        dists.foreach(println)
+        // dists.foreach(println)
 
         val answerP1 = dists.map(_.dist).sum
         println(s"Part 1: Expand the universe, then find the length of the shortest path between every pair of galaxies. ")
@@ -188,7 +188,7 @@ object Day11:
                 val d = bigAbsX + bigAbsY
                 bigDists += BigDistance(Set(bigUniverse3(i).N, bigUniverse3(j).N), d)
 
-        bigDists.foreach(println)
+        // bigDists.foreach(println)
 
         // 79027312336 too low
         // 790194712336

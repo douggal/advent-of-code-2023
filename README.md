@@ -158,4 +158,15 @@ Run time approx 11579 milliseconds
 
 #### Day 11
 - [Taxi cab or Manhattan distance](https://en.wikipedia.org/wiki/Taxicab_geometry)
+- Straightforward once I realized I need only transform coordinates of the galaxies. 
+No need to expand the whole universe.
 
+```text
+Part 1: Expand the universe, then find the length of the shortest path between every pair of galaxies. 
+What is the sum of these lengths? A: 10292708
+Run time approx 75 milliseconds
+
+Part 2: Starting with the same initial image, expand the universe according to these new rules, then 
+find the length of the shortest path between every pair of galaxies. What is the sum of these lengths?  A: 790194712336
+Run time approx 36 milliseconds
+```
