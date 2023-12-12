@@ -94,15 +94,53 @@ object Day11:
             end if
 
         case class Point(r: Int, c: Int)
-        case class Galaxy(N: Int, p: Point)
-        val universe = ArrayBuffer[ArrayBuffer[Char]]()
-
+        case class Galaxy(N: Int, coord: Point)
 
         // Expand the universe
+        // each new column adds one to column number in original universe
+        val newCols = colsToExpand.zipWithIndex.map(x => x._1+x._2)
+        val newRows = rowsToExpand.zipWithIndex.map(x => x._1+x._2)
+
+        // The universe is a list of galaxies
+        val universe = ArrayBuffer[Galaxy]()
+        var i = 1
+        for r <- input.indices do
+            for c <- input(0).indices do
+                if input(r)(c) == '#' then
+                    universe += Galaxy(i,Point(r,c))
+                    i += 1
+                end if
+            end for
+        end for
+
+        // universe.foreach(println)
+
+        // expand the universe:  rows
+        val universe2 = ArrayBuffer[Galaxy]()
+        for g <- universe do
+            val xtransform = rowsToExpand.takeWhile(_ < g.coord.r).length
+            universe2 += Galaxy(g.N, Point(g.coord.r + xtransform, g.coord.c))
+        end for
+
+
+        // expand the universe by columns
+        val universe3 = ArrayBuffer[Galaxy]()
+        for g <- universe2 do
+            val xtransform = colsToExpand.takeWhile(_ < g.coord.c).length
+            universe3 += Galaxy(g.N, Point(g.coord.r, g.coord.c + xtransform))
+        end for
+
 
         // Find the Manhattan distance between each pair of galaxies
+        case class Distance(galaxies: Set[Int], dist: Int)
+        val dists = ArrayBuffer[Distance]()
+        for i <- universe3.indices do
+            for j <- i+1 until universe3.length do
+                // taxi cab or manhattan distance
+                val d = Math.abs(universe3(i).coord.c - universe3(j).coord.c) + Math.abs(universe3(i).coord.r - universe3(j).coord.r)
+                dists += Distance(Set(universe3(i).N,universe3(j).N), d)
 
-
+        dists.foreach(println)
 
         val answerP1 = 0
         println(s"Part 1: Expand the universe, then find the length of the shortest path between every pair of galaxies. ")

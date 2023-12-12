@@ -157,5 +157,5 @@ Run time approx 11579 milliseconds
 ```
 
 #### Day 11
-- 
+- [Taxi cab or Manhattan distance](https://en.wikipedia.org/wiki/Taxicab_geometry)
 
