@@ -142,7 +142,7 @@ object Day11:
 
         dists.foreach(println)
 
-        val answerP1 = 0
+        val answerP1 = dists.map(_.dist).sum
         println(s"Part 1: Expand the universe, then find the length of the shortest path between every pair of galaxies. ")
         println(s"What is the sum of these lengths? A: $answerP1")
 
