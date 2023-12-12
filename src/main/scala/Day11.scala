@@ -76,13 +76,13 @@ object Day11:
         // ----------
         val p1T0 = Instant.now()
 
-        // which rows need to be expanded
+        // which rows will expand
         val rowsToExpand = input
             .zipWithIndex
             .filter(x => x._1.count(_ != '.') == 0)
             .map(x => x._2)
 
-        // which columns to expand
+        // which columns will expand
         val colsToExpand = ArrayBuffer[Int]()
         for i <- input(0).indices do // columns
             val slice = ArrayBuffer[Char]()
@@ -96,18 +96,13 @@ object Day11:
         case class Point(r: Int, c: Int)
         case class Galaxy(N: Int, coord: Point)
 
-        // Expand the universe
-        // each new column adds one to column number in original universe
-        val newCols = colsToExpand.zipWithIndex.map(x => x._1+x._2)
-        val newRows = rowsToExpand.zipWithIndex.map(x => x._1+x._2)
-
         // The universe is a list of galaxies
         val universe = ArrayBuffer[Galaxy]()
         var i = 1
         for r <- input.indices do
             for c <- input(0).indices do
                 if input(r)(c) == '#' then
-                    universe += Galaxy(i,Point(r,c))
+                    universe += Galaxy(i, Point(r, c))
                     i += 1
                 end if
             end for
@@ -115,15 +110,17 @@ object Day11:
 
         // universe.foreach(println)
 
-        // expand the universe:  rows
+        // Expand the universe, that is,
+        // apply a transformation to the coords of each galaxy
+
+        // 1. expand the universe:  rows
         val universe2 = ArrayBuffer[Galaxy]()
         for g <- universe do
             val xtransform = rowsToExpand.takeWhile(_ < g.coord.r).length
             universe2 += Galaxy(g.N, Point(g.coord.r + xtransform, g.coord.c))
         end for
 
-
-        // expand the universe by columns
+        // 2. expand the universe by columns
         val universe3 = ArrayBuffer[Galaxy]()
         for g <- universe2 do
             val xtransform = colsToExpand.takeWhile(_ < g.coord.c).length
@@ -131,7 +128,7 @@ object Day11:
         end for
 
 
-        // Find the Manhattan distance between each pair of galaxies
+        // 3. Using the expanded universe, find the Manhattan distance between each pair of galaxies
         case class Distance(galaxies: Set[Int], dist: Int)
         val dists = ArrayBuffer[Distance]()
         for i <- universe3.indices do
@@ -156,9 +153,42 @@ object Day11:
         val p2T0 = Instant.now()
 
 
+        // Expand the universe, that is,
+        // apply a transformation to the coords of each galaxy
+        case class BigPoint(r: BigInt, c: BigInt)
+        case class BigGalaxy(N: Int, coord: BigPoint)
 
-        val answerP2 = 0
-        println(s"Part 2: TBD ???  A: $answerP2")
+        // 1. expand the universe:  rows
+        val bigUniverse2 = ArrayBuffer[BigGalaxy]()
+        for g <- universe do
+            val xtransform = rowsToExpand.takeWhile(_ < g.coord.r).length * 10
+            bigUniverse2 += BigGalaxy(g.N, BigPoint(g.coord.r + xtransform, g.coord.c))
+        end for
+
+        // 2. expand the universe by columns
+        val bigUniverse3 = ArrayBuffer[BigGalaxy]()
+        for g <- bigUniverse2 do
+            val xtransform = colsToExpand.takeWhile(_ < g.coord.c).length * 10
+            bigUniverse3 += BigGalaxy(g.N, BigPoint(g.coord.r, g.coord.c + xtransform))
+        end for
+
+        case class BigDistance(galaxies: Set[Int], dist: BigInt)
+        val bigDists = ArrayBuffer[BigDistance]()
+        for i <- bigUniverse3.indices do
+            for j <- i + 1 until bigUniverse3.length do
+                // taxi cab or manhattan distance
+                val bigAbsX = if bigUniverse3(i).coord.c > bigUniverse3(j).coord.c then bigUniverse3(i).coord.c - bigUniverse3(j).coord.c
+                                else bigUniverse3(j).coord.c - bigUniverse3(i).coord.c
+                val bigAbsY = if bigUniverse3(i).coord.r > bigUniverse3(j).coord.r then bigUniverse3(i).coord.r - bigUniverse3(j).coord.r
+                                else bigUniverse3(j).coord.r - bigUniverse3(i).coord.r
+                val d = bigAbsX + bigAbsY
+                bigDists += BigDistance(Set(bigUniverse3(i).N, bigUniverse3(j).N), d)
+
+        bigDists.foreach(println)
+
+        val answerP2 = bigDists.map(_.dist).sum
+        println(s"Part 2: Starting with the same initial image, expand the universe according to these new rules, then ")
+        println(s"find the length of the shortest path between every pair of galaxies. What is the sum of these lengths?  A: $answerP2")
 
         val delta2 = Duration.between(p2T0, Instant.now())
         println(f"Run time approx ${delta2.toMillis} milliseconds")
