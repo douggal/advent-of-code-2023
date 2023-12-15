@@ -182,12 +182,11 @@ Run time approx 36 milliseconds
 
 #### Day 14
 - Part 1 was straightforward
-- Part 2 naive solution should give answer and get the 2nd star but wow how slow it runs!
-
+- Part 2 DNF - my naive solution of just rolling in each of the 4 directions didn't work
+- Estimate would need 135 days to complete!
+- 
 ```text
 Part 1: Tilt the platform so that the rounded rocks all roll north.
  Afterward, what is the total load on the north support beams?  A: 109098
 Run time approx 8 milliseconds
-
-
 ```
