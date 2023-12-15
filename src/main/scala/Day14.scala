@@ -218,17 +218,24 @@ object Day14:
 
         // Spin
         // north, then west, then south, then east
-        platform.foreach(x => println(x.mkString(" ")))
+        // platform.foreach(x => println(x.mkString(" ")))
         for i <- 1 to 1000000000 do
             rollPlatformNorth()
+            //println(f"N: Run time approx ${Duration.between(p2T0, Instant.now()).toMillis} milliseconds")
             rollPlatformWest()
+            //println(f"W: Run time approx ${Duration.between(p2T0, Instant.now()).toMillis} milliseconds")
             rollPlatformSouth()
+            //println(f"S: Run time approx ${Duration.between(p2T0, Instant.now()).toMillis} milliseconds")
             rollPlatformEast()
-            if (i % 1e7) == 0 then println(s"\nAfter Spin cycle $i")
+            //println(f"E: Run time approx ${Duration.between(p2T0, Instant.now()).toMillis} milliseconds")
+            if (i % 1e3) == 0 then {
+                print(s"\nAfter Spin cycle $i")
+                println(f" ${Duration.between(p2T0, Instant.now()).toMillis} milliseconds")
+            }
             // println(s"\nAfter Spin cycle $i")
             // platform.foreach(x => println(x.mkString(" ")))
 
-        platform.foreach(x => println(x.mkString(" ")))
+       //  platform.foreach(x => println(x.mkString(" ")))
 
         val answerP2 = calcLoadOnNorthBeams()
         println(s"Part 2: Run the spin cycle for 1000000000 cycles. Afterward, ")
