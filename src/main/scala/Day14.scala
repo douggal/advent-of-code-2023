@@ -81,17 +81,19 @@ object Day14:
         val maxRow = platform.length - 1
         val maxCol = platform.head.length - 1
 
-
-
-        // ----------
-        //  Part One
-        // ----------
-        val p1T0 = Instant.now()
+        def calcLoadOnNorthBeams(): Int = {
+            var sum = 0
+            for r <- platform.indices do
+                for c <- platform.head.indices do
+                    if platform(r)(c) == 'O' then
+                        sum += maxCol - r + 1
+            sum
+        }
 
         @tailrec
         def rollNorth(r: Int, c: Int): Unit = {
-            // roll North
-            if r > maxCol || r < 0 then
+            // roll north, that is upwards
+            if r > maxRow || r < 0 then
                 ()
             else if platform(r)(c) == '#' || platform(r)(c) == '.' then
                 rollNorth(r + 1, c)
@@ -108,19 +110,100 @@ object Day14:
                 rollNorth(r + 1, c)
         }
 
-        //  Roll the rocks North (to the top)
-        for c <- platform.head.indices do
-            rollNorth(0, c)
+        @tailrec
+        def rollSouth(r: Int, c: Int): Unit = {
+            // roll north, that is upwards
+            if r > maxRow || r < 0 then
+                ()
+            else if platform(r)(c) == '#' || platform(r)(c) == '.' then
+                rollSouth(r - 1, c)
+            else
+                // round rock
+                var next = r + 1
+                var curr = r
+                while next <= maxRow && platform(next)(c) == '.' do
+                    platform(next)(c) = 'O'
+                    platform(curr)(c) = '.'
+                    curr = next
+                    next += 1
+                end while
+                rollSouth(r - 1, c)
+        }
 
-        platform.foreach(x => println(x.mkString(" ")))
+        @tailrec
+        def rollWest(r: Int, c: Int): Unit = {
+            // roll North
+            if c > maxCol || c < 0 then
+                ()
+            else if platform(r)(c) == '#' || platform(r)(c) == '.' then
+                rollWest(r, c + 1)
+            else
+                // roll a round rock
+                var prev = c - 1
+                var curr = c
+                while prev >= 0 && platform(r)(prev) == '.' do
+                    platform(r)(prev) = 'O'
+                    platform(r)(curr) = '.'
+                    curr = prev
+                    prev -= 1
+                end while
+                rollWest(r, c + 1)
+        }
 
-        var sum = 0
-        for r <- platform.indices do
+        @tailrec
+        def rollEast(r: Int, c: Int): Unit = {
+            // roll North
+            if c > maxCol || c < 0 then
+                ()
+            else if platform(r)(c) == '#' || platform(r)(c) == '.' then
+                rollEast(r, c - 1)
+            else
+                // roll a round rock
+                var next = c + 1
+                var curr = c
+                while next <= maxCol  && platform(r)(next) == '.' do
+                    platform(r)(next) = 'O'
+                    platform(r)(curr) = '.'
+                    curr = next
+                    next += 1
+                end while
+                rollEast(r, c - 1)
+        }
+
+
+        def rollPlatformNorth(): Unit = {
             for c <- platform.head.indices do
-                if platform(r)(c) == 'O' then
-                    sum += maxCol - r + 1
+                rollNorth(0, c)
+        }
 
-        val answerP1 = sum
+        def rollPlatformSouth(): Unit = {
+            for c <- platform.head.indices.reverse do
+                rollSouth(maxRow, c)
+        }
+
+        def rollPlatformWest(): Unit = {
+            // rolling back starting from min row to max
+            for r <- platform.indices do
+                rollWest(r, 0)
+        }
+
+        def rollPlatformEast(): Unit = {
+            // rolling back starting from max down to min
+            for r <- platform.indices.reverse do
+                rollEast(r, maxCol)
+        }
+
+        // ----------
+        //  Part One
+        // ----------
+        val p1T0 = Instant.now()
+
+        //  Roll the round rocks North (to the top)
+        //rollPlatformNorth()
+
+        // platform.foreach(x => println(x.mkString(" ")))
+
+        val answerP1 = calcLoadOnNorthBeams()
         println(s"Part 1: Tilt the platform so that the rounded rocks all roll north.")
         println(s" Afterward, what is the total load on the north support beams?  A: $answerP1")
 
@@ -133,10 +216,23 @@ object Day14:
         // ----------
         val p2T0 = Instant.now()
 
+        // Spin
+        // north, then west, then south, then east
+        platform.foreach(x => println(x.mkString(" ")))
+        for i <- 1 to 1000000000 do
+            rollPlatformNorth()
+            rollPlatformWest()
+            rollPlatformSouth()
+            rollPlatformEast()
+            if (i % 1e7) == 0 then println(s"\nAfter Spin cycle $i")
+            // println(s"\nAfter Spin cycle $i")
+            // platform.foreach(x => println(x.mkString(" ")))
 
+        platform.foreach(x => println(x.mkString(" ")))
 
-        val answerP2 = 0
-        println(s"Part 2: TBD ???  A: $answerP2")
+        val answerP2 = calcLoadOnNorthBeams()
+        println(s"Part 2: Run the spin cycle for 1000000000 cycles. Afterward, ")
+        println(s"what is the total load on the north support beams?  A: $answerP2")
 
         val delta2 = Duration.between(p2T0, Instant.now())
         println(f"Run time approx ${delta2.toMillis} milliseconds")
