@@ -1,7 +1,7 @@
 import java.time.ZonedDateTime
 
 @main
-def Main(day: Int = 11, runType: Int = 1): Unit = {
+def Main(day: Int = 12, runType: Int = 1): Unit = {
 
     val title = "Advent of Code 2023"
 
@@ -16,22 +16,24 @@ def Main(day: Int = 11, runType: Int = 1): Unit = {
     // val day = 3
 
     // Implement each day's puzzle
-    val d1 = Day01(s"$title Day 1", runType)
-    val d2 = Day02(s"$title Day 2", runType)
-    val d3 = Day03(s"$title Day 3", runType)
-    val d4 = Day04(s"$title Day 4", runType)
-    val d5 = Day05(s"$title Day 5", runType)
-    val d6 = Day06(s"$title Day 6", runType)
-    val d7 = Day07(s"$title Day 7", runType)
-    val d8 = Day08(s"$title Day 8", runType)
-    val d9 = Day09(s"$title Day 9", runType)
-    val d10 = Day10(s"$title Day 10", runType)
-    val d11 = Day11(s"$title Day 11", runType)
+    val d1 = Day01(s"$title Day $day", runType)
+    val d2 = Day02(s"$title Day $day", runType)
+    val d3 = Day03(s"$title Day $day", runType)
+    val d4 = Day04(s"$title Day $day", runType)
+    val d5 = Day05(s"$title Day $day", runType)
+    val d6 = Day06(s"$title Day $day", runType)
+    val d7 = Day07(s"$title Day $day", runType)
+    val d8 = Day08(s"$title Day $day", runType)
+    val d9 = Day09(s"$title Day $day", runType)
+    val d10 = Day10(s"$title Day $day", runType)
+    val d11 = Day11(s"$title Day $day", runType)
+    val d12 = Day12(s"$title Day $day", runType)
 
     // Run the selected day's puzzle
     println(s"Begin: ${ZonedDateTime.now()}")
 
     day match {
+        case 12 => d12.run()
         case 11 => d11.run()
         case 10 => d10.run()
         case 9 => d9.run()
