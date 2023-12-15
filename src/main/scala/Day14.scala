@@ -70,6 +70,9 @@ object Day14:
         //  Context
         // ----------------------
 
+        // the platform is modelled as a list
+        // of mutable arrays of char.  Coords are (row, column) with  y (rows)
+        // increasing downwards
         val platform =
             input
                 .map(x => x.toCharArray)
@@ -78,13 +81,20 @@ object Day14:
         val maxRow = platform.length - 1
         val maxCol = platform.head.length - 1
 
+
+
+        // ----------
+        //  Part One
+        // ----------
+        val p1T0 = Instant.now()
+
         @tailrec
-        def rollNorth(r: Int, c:Int): Unit = {
+        def rollNorth(r: Int, c: Int): Unit = {
             // roll North
             if r > maxCol || r < 0 then
                 ()
             else if platform(r)(c) == '#' || platform(r)(c) == '.' then
-                rollNorth(r+1, c)
+                rollNorth(r + 1, c)
             else
                 // round rock
                 var prev = r - 1
@@ -98,11 +108,7 @@ object Day14:
                 rollNorth(r + 1, c)
         }
 
-        // ----------
-        //  Part One
-        // ----------
-        val p1T0 = Instant.now()
-
+        //  Roll the rocks North (to the top)
         for c <- platform.head.indices do
             rollNorth(0, c)
 
