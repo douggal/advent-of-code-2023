@@ -1,5 +1,6 @@
 import scala.io.Source
 import java.time.{Duration, Instant}
+import scala.annotation.tailrec
 
 /** Advent of Code 2023 Day 14
  *
@@ -53,7 +54,6 @@ object Day14:
         else
             println("REAL INPUT DATA ...")
 
-        // simple text file read:  Jan-Pieter van den Heuvel [Saving Christmas Using Scala](https://www.youtube.com/watch?v=tHU36gQ5iAI)
         val input = Source.fromResource(filename).getLines().toVector
 
         println("\nData Quality Control:")
@@ -67,19 +67,56 @@ object Day14:
         println
 
         // ----------------------
-        //  Common to both parts
+        //  Context
         // ----------------------
-        // code goes here ...
+
+        val platform =
+            input
+                .map(x => x.toCharArray)
+                .toList
+
+        val maxRow = platform.length - 1
+        val maxCol = platform.head.length - 1
+
+        @tailrec
+        def rollNorth(r: Int, c:Int): Unit = {
+            // roll North
+            if r > maxCol || r < 0 then
+                ()
+            else if platform(r)(c) == '#' || platform(r)(c) == '.' then
+                rollNorth(r+1, c)
+            else
+                // round rock
+                var prev = r - 1
+                var curr = r
+                while prev >= 0 && platform(prev)(c) == '.' do
+                    platform(prev)(c) = 'O'
+                    platform(curr)(c) = '.'
+                    curr = prev
+                    prev -= 1
+                end while
+                rollNorth(r + 1, c)
+        }
 
         // ----------
         //  Part One
         // ----------
         val p1T0 = Instant.now()
 
+        for c <- platform.head.indices do
+            rollNorth(0, c)
 
+        platform.foreach(x => println(x.mkString(" ")))
 
-        val answerP1 = 0
-        println(s"Part 1: TBD ???  A: $answerP1")
+        var sum = 0
+        for r <- platform.indices do
+            for c <- platform.head.indices do
+                if platform(r)(c) == 'O' then
+                    sum += maxCol - r + 1
+
+        val answerP1 = sum
+        println(s"Part 1: Tilt the platform so that the rounded rocks all roll north.")
+        println(s" Afterward, what is the total load on the north support beams?  A: $answerP1")
 
         val delta1 = Duration.between(p1T0, Instant.now())
         println(s"Run time approx ${delta1.toMillis} milliseconds\n")
