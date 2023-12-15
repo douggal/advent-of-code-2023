@@ -16,6 +16,9 @@ Solutions are in Scala 3 unless otherwise noted.
 9. Day  9:  Mirage Maintenance
 10. Day 10: Pipe Maze
 11. Day 11: Cosmic Expansion
+12. Day 12: Hot Springs  (DNF)
+13. Day 13: Point of Incidence (DNF)
+14. Day 14: Parabolic Reflector Dish
 
 ### Straightforward to solve
 4,6,9
@@ -170,3 +173,11 @@ Part 2: Starting with the same initial image, expand the universe according to t
 find the length of the shortest path between every pair of galaxies. What is the sum of these lengths?  A: 790194712336
 Run time approx 36 milliseconds
 ```
+
+#### Day 12
+- DNF
+
+#### Day 13
+- DNF
+
+#### Day 14
