@@ -69,17 +69,31 @@ object Day15:
         // ----------------------
         //  Common to both parts
         // ----------------------
+        def hash(cs: Array[Char]): Int = {
 
+            // a Char in Scala is a 16-bit unsigned integer
+
+            var h = 0
+            for c <-cs do
+                h += c.charValue()
+                h *= 17
+                h = h % 256
+
+            h
+        }
 
         // ----------
         //  Part One
         // ----------
         val p1T0 = Instant.now()
 
+        // initialization sequence
+        val is = input.head.split(",").map(x => x.toCharArray).toList
+        val hashs = is.map(x => hash(x)).toVector
 
-
-        val answerP1 = 0
-        println(s"Part 1: TBD ???  A: $answerP1")
+        val answerP1 = hashs.sum
+        println(s"Part 1: Run the HASH algorithm on each step in the initialization sequence.")
+        println(s"What is the sum of the results?   A: $answerP1")
 
         val delta1 = Duration.between(p1T0, Instant.now())
         println(s"Run time approx ${delta1.toMillis} milliseconds\n")
