@@ -19,6 +19,7 @@ Solutions are in Scala 3 unless otherwise noted.
 12. Day 12: Hot Springs  (DNF)
 13. Day 13: Point of Incidence (DNF)
 14. Day 14: Parabolic Reflector Dish
+15. Day 15: Lens Library
 
 ### Straightforward to solve
 4,6,9
@@ -190,3 +191,6 @@ Part 1: Tilt the platform so that the rounded rocks all roll north.
  Afterward, what is the total load on the north support beams?  A: 109098
 Run time approx 8 milliseconds
 ```
+
+#### Day 15
+-
