@@ -118,11 +118,11 @@ object Day25:
         val ids = ArrayBuffer[Int]()
         val low = ArrayBuffer[Int]()
         val visited = ArrayBuffer[Boolean]()
-        for node <- nodes do
+        for id <- nodes.values do
             visited += false
             ids += 0
             low += 0
-
+        
         var id = 0
         def dfs(at: Int, parent:Int, bridges:ArrayBuffer[Int]): Unit = {
             visited(at) = true
@@ -130,6 +130,8 @@ object Day25:
             ids(at) = id
             low(at) = ids(at)
 
+            // todo: given ID which node is it in wiring diagram ?
+            // from each edge from node "at" to node "to"
             for to <- wd(nodes(at)).isConnectedTo do
                 if to == parent then
                     continue
@@ -146,19 +148,14 @@ object Day25:
 
         def findBridges(): ArrayBuffer[Int] = {
             val bridges = ArrayBuffer[Int]()
-            for i <- 0 to n do
+            // for each node by its ID in nodes Map
+            for i <- nodes.values do
                 if !visited(i) then
                     dfs(i, -1, bridges)
             bridges
         }
 
-
-
-
-
-
-
-
+        
 
         val answerP1 = 0
         println(s"Part 1: Find the three wires you need to disconnect in order to divide the components into two separate groups.")
