@@ -94,7 +94,7 @@ object Day25:
 
         // ??? Refactor the graph
         // to make the algo work, need all the nodes with what each node is connected to
-        
+
         // ! a bit clumsy but I'll add all the nodes to a mutable Map
         val nodes = mutable.Map[String,mutable.Set[String]]()
         // Go thru the input data
@@ -107,7 +107,7 @@ object Day25:
             if ! nodes.contains(x.descr) then
                 nodes += (x.descr -> mutable.Set[String]())
             // add all the nodes it's connected to
-            for y <- x.isConnectedTo do 
+            for y <- x.isConnectedTo do
                 nodes(x.descr) += y
                 // each node in the isConnectedTo list, check and add
                 // reverse direction to the Map.  It's a Set no need to check if exist or not already
@@ -131,7 +131,7 @@ object Day25:
 
         // Count up number of nodes
         val n = nodes.size
-        
+
         nodes.foreach(println)
         toID.foreach(println)
         toNode.foreach(println)
@@ -145,7 +145,7 @@ object Day25:
             visited += false
             ids += 0
             low += 0
-        
+
         var id = 0
         def dfs(at: Int, parent:Int, bridges:ArrayBuffer[Int]): Unit = {
             visited(at) = true
@@ -153,33 +153,34 @@ object Day25:
             ids(at) = id
             low(at) = ids(at)
 
-            // todo: given ID which node is it in wiring diagram ?
             // from each edge from node "at" to node "to"
             for to <- nodes(toNode(at)) do
                 val too = toID(to)
-                if too == parent then
-                    ()
-
-                if !visited(too) then
-                    dfs(too, at, bridges)
-                    low(at) = Math.min(low(at), low(too))
-                    if ids(at) < low(too) then
-                        bridges += at
-                        bridges += too
-                    else
-                        low(at) = Math.min(low(at), ids(too))
+                if too != parent then
+                    if ! visited(too) then
+                        dfs(too, at, bridges)
+                        low(at) = Math.min(low(at), low(too))
+                        if ids(at) < low(too) then
+                            bridges += at
+                            bridges += too
+                        else
+                            low(at) = Math.min(low(at), ids(too))
         }
 
         def findBridges(): ArrayBuffer[Int] = {
             val bridges = ArrayBuffer[Int]()
             // for each node by its ID in nodes Map
-            for node <- nodes.keys do
-                if !visited(toID(node)) then
-                    dfs(toID(node), -1, bridges)
+            for node <- toNode.keys.toList.sorted do
+                if ! visited(node) then
+                    dfs(node, -1, bridges)
             bridges
         }
 
-        
+        // Expect bridges to have 6 values in it ???
+        val bridges = findBridges()
+
+        println(s"\nBridges:")
+        bridges.grouped(2).foreach(x => println(s"${toNode(x(0))} -  ${toNode(x(1))}"))
 
         val answerP1 = 0
         println(s"Part 1: Find the three wires you need to disconnect in order to divide the components into two separate groups.")
