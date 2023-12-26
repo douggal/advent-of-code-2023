@@ -89,7 +89,7 @@ object Day25:
         val p1T0 = Instant.now()
 
         // following algo to find bridges between connected components
-        // presented by William Fiset on Udemy [Graph Theory Algorithms](https://armyciv.udemy.com/course/graph-theory-algorithms/learn/lecture/10794156#overview)
+        // presented by William Fiset on Udemy [Graph Theory Algorithms](https://www.udemy.com/course/graph-theory-algorithms/)
         // wd = the graph, a list of connected nodes of type Component
 
         // Determine the size of the graph
@@ -104,22 +104,55 @@ object Day25:
 
         // and use the mutable Map to give each node an ID
         // doesn't matter which nodes gets which ID ???
-        var i = 0
-        for n <- nodes do
-            i += 1
-            nodes(n._1) = i
+        var z = 0
+        for node <- nodes.keys do
+            nodes(node) = z
+            z += 1
+
+        // Count up number of nodes
         val n = nodes.size
+        nodes.foreach(println)
 
         // all will be of size n
         // in each ArrayBuffer the index is the ID of of the node as assigned above
         val ids = ArrayBuffer[Int]()
         val low = ArrayBuffer[Int]()
-        val visited = ArrayBuffer[Int]()
+        val visited = ArrayBuffer[Boolean]()
+        for node <- nodes do
+            visited += false
+            ids += 0
+            low += 0
+
+        var id = 0
+        def dfs(at: Int, parent:Int, bridges:ArrayBuffer[Int]): Unit = {
+            visited(at) = true
+            id += 1
+            ids(at) = id
+            low(at) = ids(at)
+
+            for to <- wd(nodes(at)).isConnectedTo do
+                if to == parent then
+                    continue
+
+                if !visited(to) then
+                    dfs(to, at, bridges)
+                    low(at) = min(low(at), low(to))
+                    if ids(at) < low(to) then
+                        bridges += at
+                        bridges += to
+                    else
+                        low(at) = min(low(at), ids(to))
+        }
 
         def findBridges(): ArrayBuffer[Int] = {
-
-            ArrayBuffer[Int]()
+            val bridges = ArrayBuffer[Int]()
+            for i <- 0 to n do
+                if !visited(i) then
+                    dfs(i, -1, bridges)
+            bridges
         }
+
+
 
 
 
