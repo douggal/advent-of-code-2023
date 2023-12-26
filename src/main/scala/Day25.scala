@@ -1,5 +1,7 @@
 import scala.io.Source
 import java.time.{Duration, Instant}
+import scala.collection.mutable
+import scala.collection.mutable.{ArrayBuffer, Map}
 
 /** Advent of Code 2023 Day 25
  *
@@ -69,12 +71,59 @@ object Day25:
         // ----------------------
         //  Common to both parts
         // ----------------------
-        // code goes here ...
+
+        case class Component(descr: String, isConnectedTo: List[String])
+
+        val wd: List[Component] =
+            input
+                .map(x => x.split(":"))
+                .map(x =>
+                    Component(x(0).trim,
+                        x(1).trim.split(" +").toList))
+                .toList
+        wd.foreach(println)
 
         // ----------
         //  Part One
         // ----------
         val p1T0 = Instant.now()
+
+        // following algo to find bridges between connected components
+        // presented by William Fiset on Udemy [Graph Theory Algorithms](https://armyciv.udemy.com/course/graph-theory-algorithms/learn/lecture/10794156#overview)
+        // wd = the graph, a list of connected nodes of type Component
+
+        // Determine the size of the graph
+        // ??? how many nodes are there?
+        // ! a bit clumsy but I'll add all the nodes to a mutable Map
+        val nodes = mutable.Map[String,Int]()
+        wd.foreach(x => {
+            if ! nodes.contains(x.descr) then
+                nodes += (x.descr -> 0)
+            x.isConnectedTo.foreach(y => nodes += (y -> 0))
+            })
+
+        // and use the mutable Map to give each node an ID
+        // doesn't matter which nodes gets which ID ???
+        var i = 0
+        for n <- nodes do
+            i += 1
+            nodes(n._1) = i
+        val n = nodes.size
+
+        // all will be of size n
+        // in each ArrayBuffer the index is the ID of of the node as assigned above
+        val ids = ArrayBuffer[Int]()
+        val low = ArrayBuffer[Int]()
+        val visited = ArrayBuffer[Int]()
+
+        def findBridges(): ArrayBuffer[Int] = {
+
+            ArrayBuffer[Int]()
+        }
+
+
+
+
 
 
 
