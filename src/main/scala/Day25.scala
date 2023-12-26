@@ -92,26 +92,49 @@ object Day25:
         // presented by William Fiset on Udemy [Graph Theory Algorithms](https://www.udemy.com/course/graph-theory-algorithms/)
         // wd = the graph, a list of connected nodes of type Component
 
-        // Determine the size of the graph
-        // ??? how many nodes are there?
+        // ??? Refactor the graph
+        // to make the algo work, need all the nodes with what each node is connected to
+        
         // ! a bit clumsy but I'll add all the nodes to a mutable Map
-        val nodes = mutable.Map[String,Int]()
+        val nodes = mutable.Map[String,mutable.Set[String]]()
+        // Go thru the input data
+        // Build an adjacency list - list of nodes in the graph
+        // and to what each node is connected to
+        // In the input data, for each node found, build up what it is connected to
         wd.foreach(x => {
+            // look at each component, its key is connected to 1 or more nodes
+            // if component not already in Map, add it
             if ! nodes.contains(x.descr) then
-                nodes += (x.descr -> 0)
-            x.isConnectedTo.foreach(y => nodes += (y -> 0))
+                nodes += (x.descr -> mutable.Set[String]())
+            // add all the nodes it's connected to
+            for y <- x.isConnectedTo do 
+                nodes(x.descr) += y
+                // each node in the isConnectedTo list, check and add
+                // reverse direction to the Map.  It's a Set no need to check if exist or not already
+                if ! nodes.contains(y) then
+                    nodes += (y -> mutable.Set[String]())
+                nodes(y) += x.descr
             })
 
-        // and use the mutable Map to give each node an ID
-        // doesn't matter which nodes gets which ID ???
+        // ??? How to give each node and ID?
+        // ??? does it matter which nodes gets which ID ???
+        // ! make a another map to translate each 3-char string description to an ID
+        // toID - given ID find 3-char string node description
+        // toNode - given 3-char node description find ID
+        val toID = mutable.Map[String, Int]()
+        val toNode = mutable.Map[Int, String]()
         var z = 0
         for node <- nodes.keys do
-            nodes(node) = z
+            toID(node) = z
+            toNode(z) = node
             z += 1
 
         // Count up number of nodes
         val n = nodes.size
+        
         nodes.foreach(println)
+        toID.foreach(println)
+        toNode.foreach(println)
 
         // all will be of size n
         // in each ArrayBuffer the index is the ID of of the node as assigned above
@@ -132,26 +155,27 @@ object Day25:
 
             // todo: given ID which node is it in wiring diagram ?
             // from each edge from node "at" to node "to"
-            for to <- wd(nodes(at)).isConnectedTo do
-                if to == parent then
-                    continue
+            for to <- nodes(toNode(at)) do
+                val too = toID(to)
+                if too == parent then
+                    ()
 
-                if !visited(to) then
-                    dfs(to, at, bridges)
-                    low(at) = min(low(at), low(to))
-                    if ids(at) < low(to) then
+                if !visited(too) then
+                    dfs(too, at, bridges)
+                    low(at) = Math.min(low(at), low(too))
+                    if ids(at) < low(too) then
                         bridges += at
-                        bridges += to
+                        bridges += too
                     else
-                        low(at) = min(low(at), ids(to))
+                        low(at) = Math.min(low(at), ids(too))
         }
 
         def findBridges(): ArrayBuffer[Int] = {
             val bridges = ArrayBuffer[Int]()
             // for each node by its ID in nodes Map
-            for i <- nodes.values do
-                if !visited(i) then
-                    dfs(i, -1, bridges)
+            for node <- nodes.keys do
+                if !visited(toID(node)) then
+                    dfs(toID(node), -1, bridges)
             bridges
         }
 
