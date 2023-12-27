@@ -49,13 +49,13 @@ object Day25:
 
         // Read the puzzle input data file
         val filename = if (runType == 1) testData else realData
+        // val filename = "25-test-2.txt"
         print("Attempting to read input data file using ")
         if runType == 1 then
             println("TEST DATA ... ")
         else
             println("REAL INPUT DATA ...")
 
-        // simple text file read:  Jan-Pieter van den Heuvel [Saving Christmas Using Scala](https://www.youtube.com/watch?v=tHU36gQ5iAI)
         val input = Source.fromResource(filename).getLines().toVector
 
         println("\nData Quality Control:")
@@ -90,6 +90,8 @@ object Day25:
 
         // following algo to find bridges between connected components
         // presented by William Fiset on Udemy [Graph Theory Algorithms](https://www.udemy.com/course/graph-theory-algorithms/)
+        // Also here: https://algs4.cs.princeton.edu/41graph/Bridge.java.html
+        // And here: https://github.com/williamfiset/Algorithms/blob/master/src/main/java/com/williamfiset/algorithms/graphtheory/BridgesAdjacencyList.java
         // wd = the graph, a list of connected nodes of type Component
 
         // ??? Refactor the graph
@@ -141,7 +143,7 @@ object Day25:
         val ids = ArrayBuffer[Int]()
         val low = ArrayBuffer[Int]()
         val visited = ArrayBuffer[Boolean]()
-        for id <- nodes.values do
+        for x <- nodes.values do
             visited += false
             ids += 0
             low += 0
@@ -163,8 +165,12 @@ object Day25:
                         if ids(at) < low(too) then
                             bridges += at
                             bridges += too
-                        else
-                            low(at) = Math.min(low(at), ids(too))
+                        end if
+                    else
+                        low(at) = Math.min(low(at), ids(too))
+                    end if
+                end if
+            end for
         }
 
         def findBridges(): ArrayBuffer[Int] = {
@@ -179,11 +185,11 @@ object Day25:
         // Expect bridges to have 6 values in it ???
         val bridges = findBridges()
 
-        println(s"\nBridges:")
+        println(s"\nNumber Bridges: ${bridges.length/2}")
         bridges.grouped(2).foreach(x => println(s"${toNode(x(0))} -  ${toNode(x(1))}"))
 
         val answerP1 = 0
-        println(s"Part 1: Find the three wires you need to disconnect in order to divide the components into two separate groups.")
+        println(s"\nPart 1: Find the three wires you need to disconnect in order to divide the components into two separate groups.")
         println(s"What do you get if you multiply the sizes of these two groups together?  A: $answerP1")
 
         val delta1 = Duration.between(p1T0, Instant.now())
