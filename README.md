@@ -198,9 +198,9 @@ Run time approx 8 milliseconds
 - Part 1 straightforward
 
 #### Day 25
-- Help with algo from:
+- First thought was to find bridges in input data.  Help with algo from:
 - [Udemy "Graph Theory Algorithms" by William Fiset](https://www.udemy.com/course/graph-theory-algorithms/)
 - Refactored the input.  For the algo to work I needed to
 represent the input as an adjacency list which each node represented in the list once
 regardless of which side of the ":" it appears on in the input.
-
+- DNF :( no bridges found, need a different approach
