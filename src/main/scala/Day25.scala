@@ -81,7 +81,7 @@ object Day25:
                     Component(x(0).trim,
                         x(1).trim.split(" +").toList))
                 .toList
-        wd.foreach(println)
+        // wd.foreach(println)
 
         // ----------
         //  Part One
@@ -134,9 +134,16 @@ object Day25:
         // Count up number of nodes
         val n = nodes.size
 
+        println(s"The graph:")
         nodes.foreach(println)
-        toID.foreach(println)
-        toNode.foreach(println)
+
+        println(s"\nNumber of vertices: ${nodes.size}")
+
+        println(s"The nodes with small nbr connections:")
+        nodes.filter(x => x._2.size >= 5).foreach(println)
+
+//        toID.foreach(println)
+//        toNode.foreach(println)
 
         // all will be of size n
         // in each ArrayBuffer the index is the ID of of the node as assigned above
