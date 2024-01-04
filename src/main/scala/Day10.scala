@@ -227,26 +227,26 @@ object Day10:
 //            discovered += false
 //            depths += 0
 //
-//        // Depth First Search from starting tile S to
-//        // each connected tile in the pipe maze diagram
-//        // this traversal works, but I have no way to know when I'm at the furthest # steps from start
-//        var currLevel = 0
-//        def DFS(G: ArrayBuffer[Tile], v: Int): Unit = {
-//            println(s"Visiting tile $v, level $currLevel")
-//            discovered(v) = true
-//            depths(v) += currLevel
-//            currLevel += 1
-//            for tile <- G(v).isConnectedTo do
-//                if !discovered(tile) then
-//                    DFS(G,tile)
-//                end if
-//            end for
-//            currLevel = currLevel - 1
-//            ()
-//        }
-//
-//        println("DFS")
-//        DFS(pipeMaze, startTile)
+    //        // Depth First Search from starting tile S to
+    //        // each connected tile in the pipe maze diagram
+    //        // this traversal works, but I have no way to know when I'm at the furthest # steps from start
+    //        var currLevel = 0
+    //        def DFS(G: ArrayBuffer[Tile], v: Int): Unit = {
+    //            println(s"Visiting tile $v, level $currLevel")
+    //            discovered(v) = true
+    //            depths(v) += currLevel
+    //            currLevel += 1
+    //            for tile <- G(v).isConnectedTo do
+    //                if !discovered(tile) then
+    //                    DFS(G,tile)
+    //                end if
+    //            end for
+    //            currLevel = currLevel - 1
+    //            ()
+    //        }
+    //
+    //        println("DFS")
+    //        DFS(pipeMaze, startTile)
 //        val mostStepsDFS = depths.max
 
 

@@ -21,8 +21,10 @@ Solutions are in Scala 3 unless otherwise noted.
 14. Day 14: Parabolic Reflector Dish
 15. Day 15: Lens Library
 
+-25. Day 25: Snowverload
+
 ### Straightforward to solve
-4,6,9
+4,6,9,15 (part 1)
 
 ### Hard to solve
 7 (part 2), 8 (part2), 10 (part 2)
@@ -193,4 +195,12 @@ Run time approx 8 milliseconds
 ```
 
 #### Day 15
--
+- Part 1 straightforward
+
+#### Day 25
+- First thought was to find bridges in input data.  Help with algo from:
+- [Udemy "Graph Theory Algorithms" by William Fiset](https://www.udemy.com/course/graph-theory-algorithms/)
+- Refactored the input.  For the algo to work I needed to
+represent the input as an adjacency list which each node represented in the list once
+regardless of which side of the ":" it appears on in the input.
+- DNF :( no bridges found, need a different approach
