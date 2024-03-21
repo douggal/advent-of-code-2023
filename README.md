@@ -21,7 +21,7 @@ Solutions are in Scala 3 unless otherwise noted.
 14. Day 14: Parabolic Reflector Dish
 15. Day 15: Lens Library
 
--25. Day 25: Snowverload
+-25. Day 25: Snowverload (DNF)
 
 ### Straightforward to solve
 4,6,9,15 (part 1)
@@ -29,6 +29,12 @@ Solutions are in Scala 3 unless otherwise noted.
 ### Hard to solve
 7 (part 2), 8 (part2), 10 (part 2)
 
+### My stats at the end of the official contest
+As of 25 December 2023
+- 21 stars,
+- completed 8 with both parts of puzzle,
+- and total of 13 with at least one part complete.
+- On par with previous years, but I'd hoped for higher star count.
 
 ### Notes
 
