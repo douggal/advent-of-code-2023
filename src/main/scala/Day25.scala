@@ -2,6 +2,7 @@ import scala.io.Source
 import java.time.{Duration, Instant}
 import scala.collection.mutable
 import scala.collection.mutable.{ArrayBuffer, Map}
+import fansi.*
 
 /** Advent of Code 2023 Day 25
  *
@@ -202,6 +203,22 @@ object Day25:
         val delta1 = Duration.between(p1T0, Instant.now())
         println(s"Run time approx ${delta1.toMillis} milliseconds\n")
 
+
+        // fansi
+        val colored: fansi.Str = fansi.Color.Red("Hello World Ansi!")
+        // Or fansi.Str("Hello World Ansi!").overlay(fansi.Color.Red)
+
+        val length = colored.length // Fast and returns the non-colored length of string
+
+        val blueWorld = colored.overlay(fansi.Color.Blue, 6, 11)
+
+        val underlinedWorld = colored.overlay(fansi.Underlined.On, 6, 11)
+
+        val underlinedBlue = blueWorld.overlay(fansi.Underlined.On, 4, 13)
+        println(colored)
+        println(blueWorld)
+        println(underlinedWorld)
+        println(underlinedBlue)
 
         // ----------
         //  Part Two
