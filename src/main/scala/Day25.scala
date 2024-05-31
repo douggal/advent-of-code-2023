@@ -11,6 +11,8 @@ import fansi.*
  *
  * Created 25 Dec 2023
  * Link: https://adventofcode.com/2023/day/25
+ *
+ * 2nd try 31 May 2024
  */
 
 class Day25 private (val title: String, val runType: Int ):
@@ -73,13 +75,15 @@ object Day25:
         //  Common to both parts
         // ----------------------
 
-        case class Component(descr: String, isConnectedTo: List[String])
+        // an Edge class - connects two nodes to form a component
+        case class Edge(descr: String, isConnectedTo: List[String])
 
-        val wd: List[Component] =
+        // read raw input and create a initial (incomplete) graph
+        val inputgraph: List[Edge] =
             input
                 .map(x => x.split(":"))
                 .map(x =>
-                    Component(x(0).trim,
+                    Edge(x(0).trim,
                         x(1).trim.split(" +").toList))
                 .toList
         // wd.foreach(println)
@@ -95,28 +99,32 @@ object Day25:
         // And here: https://github.com/williamfiset/Algorithms/blob/master/src/main/java/com/williamfiset/algorithms/graphtheory/BridgesAdjacencyList.java
         // wd = the graph, a list of connected nodes of type Component
 
-        // ??? Refactor the graph
-        // to make the algo work, need all the nodes with what each node is connected to
+        // Refactor the input graph
+        // Search the input graph and add nodes w/o own line in the input file.
+        // ? The input data does not have a row for every node.
+        // A complete graph will need all the nodes added to the list
+        // with any edges node touches.
 
         // ! a bit clumsy but I'll add all the nodes to a mutable Map
-        val nodes = mutable.Map[String,mutable.Set[String]]()
+        // G is the full graph as adjacency list of nodes mapped to edges
+        val G = mutable.Map[String,mutable.Set[String]]()
         // Go thru the input data
         // Build an adjacency list - list of nodes in the graph
         // and to what each node is connected to
         // In the input data, for each node found, build up what it is connected to
-        wd.foreach(x => {
+        inputgraph.foreach(x => {
             // look at each component, its key is connected to 1 or more nodes
             // if component not already in Map, add it
-            if ! nodes.contains(x.descr) then
-                nodes += (x.descr -> mutable.Set[String]())
+            if ! G.contains(x.descr) then
+                G += (x.descr -> mutable.Set[String]())
             // add all the nodes it's connected to
             for y <- x.isConnectedTo do
-                nodes(x.descr) += y
+                G(x.descr) += y
                 // each node in the isConnectedTo list, check and add
                 // reverse direction to the Map.  It's a Set no need to check if exist or not already
-                if ! nodes.contains(y) then
-                    nodes += (y -> mutable.Set[String]())
-                nodes(y) += x.descr
+                if ! G.contains(y) then
+                    G += (y -> mutable.Set[String]())
+                G(y) += x.descr
             })
 
         // ??? How to give each node and ID?
@@ -127,21 +135,21 @@ object Day25:
         val toID = mutable.Map[String, Int]()
         val toNode = mutable.Map[Int, String]()
         var z = 0
-        for node <- nodes.keys do
+        for node <- G.keys do
             toID(node) = z
             toNode(z) = node
             z += 1
 
         // Count up number of nodes
-        val n = nodes.size
+        val n = G.size
 
         println(s"The graph:")
-        nodes.foreach(println)
+        G.foreach(println)
 
-        println(s"\nNumber of vertices: ${nodes.size}")
+        println(s"\nNumber of vertices: ${G.size}")
 
         println(s"The nodes with small nbr connections:")
-        nodes.filter(x => x._2.size >= 5).foreach(println)
+        G.filter(x => x._2.size >= 5).foreach(println)
 
 //        toID.foreach(println)
 //        toNode.foreach(println)
@@ -151,7 +159,7 @@ object Day25:
         val ids = ArrayBuffer[Int]()
         val low = ArrayBuffer[Int]()
         val visited = ArrayBuffer[Boolean]()
-        for x <- nodes.values do
+        for x <- G.values do
             visited += false
             ids += 0
             low += 0
@@ -164,7 +172,7 @@ object Day25:
             low(at) = ids(at)
 
             // from each edge from node "at" to node "to"
-            for to <- nodes(toNode(at)) do
+            for to <- G(toNode(at)) do
                 val too = toID(to)
                 if too != parent then
                     if ! visited(too) then
@@ -197,12 +205,15 @@ object Day25:
         bridges.grouped(2).foreach(x => println(s"${toNode(x(0))} -  ${toNode(x(1))}"))
 
 
+        // 31 May 2024 - Try Karger's Algorithm
+
 
 
 
 
         val answerP1 = 0
-        println(s"\nPart 1: Find the three wires you need to disconnect in order to divide the components into two separate groups.")
+        println(s"\nPart 1: Find the three wires you need to disconnect in order to")
+        println(s"divide the components into two separate groups.")
         println(s"What do you get if you multiply the sizes of these two groups together?  A: $answerP1")
 
         val delta1 = Duration.between(p1T0, Instant.now())

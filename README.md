@@ -30,7 +30,7 @@ Solutions are in Scala 3 unless otherwise noted.
 7 (part 2), 8 (part2), 10 (part 2)
 
 ### My stats at the end of the official contest
-As of 25 December 2023
+As of end of day 25 December 2023
 - 21 stars,
 - completed 8 with both parts of puzzle,
 - and total of 13 with at least one part complete.
@@ -210,3 +210,6 @@ Run time approx 8 milliseconds
 represent the input as an adjacency list which each node represented in the list once
 regardless of which side of the ":" it appears on in the input.
 - DNF :( no bridges found, need a different approach
+- 31 May 2024:  try again, using [Karger's Algorithm](https://en.wikipedia.org/wiki/Karger's_algorithm)
+
+
