@@ -116,22 +116,35 @@ object Day25:
         // toNode - revers toID - given ID map to node char description
         val toID = G.keys.zipWithIndex.toMap
         val toNode = toID.map(x => (x._2, x._1))
+        // toID.foreach(println)
+        // toNode.foreach(println)
 
-        println(s"The graph has ${G.size} nodes.  The graph as adj list:")
+        println("Completed reading input and building graph.")
+        println(s"The graph has ${G.size} nodes.")
+        println("The graph as adj list:")
         G.foreach(println)
+        println
+
+        // Make a deep copy of G
+        // https://stackoverflow.com/questions/9049117/copy-contents-of-immutable-map-to-new-mutable-map/9049302
+        val Gprime = mutable.Map[String,mutable.ArrayBuffer[String]]() ++ G
 
         // ----------
         //  Part One
         // ----------
         val p1T0 = Instant.now()
 
-        println(s"The nodes with small nbr connections:")
-        G.filter(x => x._2.size >= 5).foreach(println)
+        // Try 1
+        // Q: are there any obvious partitions around nodes with small number of connections ?
+        // A: no
+        // println(s"The nodes with small nbr connections:")
+        // G.filter(x => x._2.size >= 5).foreach(println)
+        // End Try 1
 
-//        toID.foreach(println)
-//        toNode.foreach(println)
+        // Try 2
+        // Q: are there any bridges - graph components with only one edge between them?
+        // A: try to find bridges if they exist.
 
-        // all will be of size n
         // in each ArrayBuffer the index is the ID of of the node as assigned above
         val ids = ArrayBuffer[Int]()
         val low = ArrayBuffer[Int]()
@@ -175,20 +188,22 @@ object Day25:
             bridges
         }
 
-        // Expect bridges to have 6 values in it ???
         val bridges = findBridges()
 
         println(s"\nNumber Bridges: ${bridges.length/2}")
         bridges.grouped(2).foreach(x => println(s"${toNode(x(0))} -  ${toNode(x(1))}"))
 
+        if bridges.isEmpty then
+            println("Outcome:  no go, there are no bridges in this graph")
 
+        // End Try 2
+
+        // Try 3
         // 31 May 2024 - Try Karger's Algorithm
-        // How many nodes does graph G have?
-        println(s"How many nodes does graph G have? ${G.size}")
 
-        /*
+        /* Karger's algo, as I understand it, applied here:
             We know solution exists and min cut == 3 edges
-            Divide graph G into two components, S and T
+            Divide graph G into two components, S and T by merging together nodes chosen at random
             Count edges connecting S and T
             When # edges == 3 then we're done
 
@@ -199,12 +214,40 @@ object Day25:
                 while G.size > 2
                    tqke 2 nodes at random from graph G
                    collapse the selected nodes
-                if  # connections between S, T is == 3
+                if  # edges between S, T is == 3
                     found = true
          */
 
+        val S = mutable.ArrayBuffer[String]()
+        val T = mutable.ArrayBuffer[String]()
         var found = false
         var i = 0
+        while !found && i < 1e6 do
+            i += 1
+            var n1 = ""
+            var n2 = ""
+            while G.size > 2 do
+                // https://stackoverflow.com/questions/34817917/how-to-pick-a-random-value-from-a-collection-in-scala
+                n1 = G.maxBy(_=> scala.util.Random.nextInt)._1
+                n2 = G.maxBy(_=> scala.util.Random.nextInt)._1
+                if n1 != n2 then
+                    // coalesce()
+                    // take all n2's edges and assign to n1
+                    for e <- G(n2) do
+                        if !G(n1).contains(e) then
+                            G(n1) += e
+                    // delete n2 from G
+                    G -= n2
+            end while
+            // how do I count edges between the two groups ???
+            found = true
+        end while
+
+        // assert G has only 2 nodes left
+        if G.size == 2 then
+            println("Works")
+            for e <- G.keys do
+                println(s"Size of element: ${G(e).length}")
 
 
 
