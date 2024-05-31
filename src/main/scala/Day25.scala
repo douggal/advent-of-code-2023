@@ -2,6 +2,7 @@ import scala.io.Source
 import java.time.{Duration, Instant}
 import scala.collection.mutable
 import scala.collection.mutable.{ArrayBuffer, Map}
+import fansi.*
 
 /** Advent of Code 2023 Day 25
  *
@@ -195,12 +196,18 @@ object Day25:
         println(s"\nNumber Bridges: ${bridges.length/2}")
         bridges.grouped(2).foreach(x => println(s"${toNode(x(0))} -  ${toNode(x(1))}"))
 
+
+
+
+
+
         val answerP1 = 0
         println(s"\nPart 1: Find the three wires you need to disconnect in order to divide the components into two separate groups.")
         println(s"What do you get if you multiply the sizes of these two groups together?  A: $answerP1")
 
         val delta1 = Duration.between(p1T0, Instant.now())
         println(s"Run time approx ${delta1.toMillis} milliseconds\n")
+
 
 
         // ----------
@@ -216,7 +223,24 @@ object Day25:
         val delta2 = Duration.between(p2T0, Instant.now())
         println(f"Run time approx ${delta2.toMillis} milliseconds")
 
-        // errata...for visualization with Excel chart
+        // errata...
+        // test fansi console output text coloring:
+        // fansi
+        val colored: fansi.Str = fansi.Color.Red("Hello World Ansi!")
+        // Or fansi.Str("Hello World Ansi!").overlay(fansi.Color.Red)
+
+        val length = colored.length // Fast and returns the non-colored length of string
+
+        val blueWorld = colored.overlay(fansi.Color.Blue, 6, 11)
+
+        val underlinedWorld = colored.overlay(fansi.Underlined.On, 6, 11)
+
+        val underlinedBlue = blueWorld.overlay(fansi.Underlined.On, 4, 13)
+        println(colored)
+        println(blueWorld)
+        println(underlinedWorld)
+        println(underlinedBlue)
+
 
     }
 
