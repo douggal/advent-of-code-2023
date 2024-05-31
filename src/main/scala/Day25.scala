@@ -196,6 +196,11 @@ object Day25:
         println(s"\nNumber Bridges: ${bridges.length/2}")
         bridges.grouped(2).foreach(x => println(s"${toNode(x(0))} -  ${toNode(x(1))}"))
 
+
+
+
+
+
         val answerP1 = 0
         println(s"\nPart 1: Find the three wires you need to disconnect in order to divide the components into two separate groups.")
         println(s"What do you get if you multiply the sizes of these two groups together?  A: $answerP1")
@@ -204,6 +209,22 @@ object Day25:
         println(s"Run time approx ${delta1.toMillis} milliseconds\n")
 
 
+
+        // ----------
+        //  Part Two
+        // ----------
+        val p2T0 = Instant.now()
+
+
+
+        val answerP2 = 0
+        println(s"Part 2: TBD ???  A: $answerP2")
+
+        val delta2 = Duration.between(p2T0, Instant.now())
+        println(f"Run time approx ${delta2.toMillis} milliseconds")
+
+        // errata...
+        // test fansi console output text coloring:
         // fansi
         val colored: fansi.Str = fansi.Color.Red("Hello World Ansi!")
         // Or fansi.Str("Hello World Ansi!").overlay(fansi.Color.Red)
@@ -220,20 +241,6 @@ object Day25:
         println(underlinedWorld)
         println(underlinedBlue)
 
-        // ----------
-        //  Part Two
-        // ----------
-        val p2T0 = Instant.now()
-
-
-
-        val answerP2 = 0
-        println(s"Part 2: TBD ???  A: $answerP2")
-
-        val delta2 = Duration.between(p2T0, Instant.now())
-        println(f"Run time approx ${delta2.toMillis} milliseconds")
-
-        // errata...for visualization with Excel chart
 
     }
 
