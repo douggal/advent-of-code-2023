@@ -75,78 +75,55 @@ object Day25:
         //  Common to both parts
         // ----------------------
 
-        // an Edge class - connects two nodes to form a component
-        case class Edge(descr: String, isConnectedTo: List[String])
+        // an Node class - connects 0 or more other nodes
+        case class Node(descr: String, isConnectedTo: List[String])
 
-        // read raw input and create a initial (incomplete) graph
-        val inputgraph: List[Edge] =
+        // read raw input and create an initial (incomplete) graph
+        val inputgraph: List[Node] =
             input
                 .map(x => x.split(":"))
-                .map(x =>
-                    Edge(x(0).trim,
-                        x(1).trim.split(" +").toList))
+                .map(x => Node(x(0).trim, x(1).trim.split(" +").toList))
                 .toList
-        // wd.foreach(println)
+
+        // observe what was read in:
+        // inputgraph.foreach(println)
+
+        // Refactor the raw input graph
+        //   Q: The input data does not have a row for every node!
+        //       A complete graph will need all the nodes to appear in the list
+        //       with any edges node touches.
+        //   A: I'll add all the nodes to a mutable ArrayBuffer
+
+        // G is full graph in adj. list form
+        val G = mutable.Map[String, mutable.ArrayBuffer[String]]()
+
+        // first pass - populate with given nodes
+        inputgraph.foreach(n => { G += (n.descr -> n._2.to(ArrayBuffer)) })
+
+        // 2nd pass - pick up any nodes not already in G
+        for node <- G do
+             for n <- node._2 do  // each node this node is connected to
+                if !G.contains(n) then
+                    G += (n -> mutable.ArrayBuffer[String]())
+                if !G(n).contains(node._1) then
+                    G(n) += node._1
+
+        // Q: The algos often use small integers to label the nodes
+        //    and the small ints are used to index arrays.
+        //    How can I label the nodes as integers?
+        // A: Make 2 maps to translate each 3-char string description to an ID and vice versa
+        // toID - assign and ID number to each 3 char description
+        // toNode - revers toID - given ID map to node char description
+        val toID = G.keys.zipWithIndex.toMap
+        val toNode = toID.map(x => (x._2, x._1))
+
+        println(s"The graph has ${G.size} nodes.  The graph as adj list:")
+        G.foreach(println)
 
         // ----------
         //  Part One
         // ----------
         val p1T0 = Instant.now()
-
-        // following algo to find bridges between connected components
-        // presented by William Fiset on Udemy [Graph Theory Algorithms](https://www.udemy.com/course/graph-theory-algorithms/)
-        // Also here: https://algs4.cs.princeton.edu/41graph/Bridge.java.html
-        // And here: https://github.com/williamfiset/Algorithms/blob/master/src/main/java/com/williamfiset/algorithms/graphtheory/BridgesAdjacencyList.java
-        // wd = the graph, a list of connected nodes of type Component
-
-        // Refactor the input graph
-        // Search the input graph and add nodes w/o own line in the input file.
-        // ? The input data does not have a row for every node.
-        // A complete graph will need all the nodes added to the list
-        // with any edges node touches.
-
-        // ! a bit clumsy but I'll add all the nodes to a mutable Map
-        // G is the full graph as adjacency list of nodes mapped to edges
-        val G = mutable.Map[String,mutable.Set[String]]()
-        // Go thru the input data
-        // Build an adjacency list - list of nodes in the graph
-        // and to what each node is connected to
-        // In the input data, for each node found, build up what it is connected to
-        inputgraph.foreach(x => {
-            // look at each component, its key is connected to 1 or more nodes
-            // if component not already in Map, add it
-            if ! G.contains(x.descr) then
-                G += (x.descr -> mutable.Set[String]())
-            // add all the nodes it's connected to
-            for y <- x.isConnectedTo do
-                G(x.descr) += y
-                // each node in the isConnectedTo list, check and add
-                // reverse direction to the Map.  It's a Set no need to check if exist or not already
-                if ! G.contains(y) then
-                    G += (y -> mutable.Set[String]())
-                G(y) += x.descr
-            })
-
-        // ??? How to give each node and ID?
-        // ??? does it matter which nodes gets which ID ???
-        // ! make a another map to translate each 3-char string description to an ID
-        // toID - given ID find 3-char string node description
-        // toNode - given 3-char node description find ID
-        val toID = mutable.Map[String, Int]()
-        val toNode = mutable.Map[Int, String]()
-        var z = 0
-        for node <- G.keys do
-            toID(node) = z
-            toNode(z) = node
-            z += 1
-
-        // Count up number of nodes
-        val n = G.size
-
-        println(s"The graph:")
-        G.foreach(println)
-
-        println(s"\nNumber of vertices: ${G.size}")
 
         println(s"The nodes with small nbr connections:")
         G.filter(x => x._2.size >= 5).foreach(println)
@@ -206,8 +183,28 @@ object Day25:
 
 
         // 31 May 2024 - Try Karger's Algorithm
+        // How many nodes does graph G have?
+        println(s"How many nodes does graph G have? ${G.size}")
 
+        /*
+            We know solution exists and min cut == 3 edges
+            Divide graph G into two components, S and T
+            Count edges connecting S and T
+            When # edges == 3 then we're done
 
+           found = false
+           i = 0
+            while not found and i < 1e6
+                i += 1
+                while G.size > 2
+                   tqke 2 nodes at random from graph G
+                   collapse the selected nodes
+                if  # connections between S, T is == 3
+                    found = true
+         */
+
+        var found = false
+        var i = 0
 
 
 
