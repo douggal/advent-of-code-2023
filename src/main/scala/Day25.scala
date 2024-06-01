@@ -218,40 +218,52 @@ object Day25:
                     found = true
          */
 
-        val S = mutable.ArrayBuffer[String]()
-        val T = mutable.ArrayBuffer[String]()
         var found = false
         var i = 0
+        val r = scala.util.Random
         while !found && i < 1e6 do
             i += 1
             var n1 = ""
             var n2 = ""
             while G.size > 2 do
+                // select two nodes at random using a uniform distribution
                 // https://stackoverflow.com/questions/34817917/how-to-pick-a-random-value-from-a-collection-in-scala
-                n1 = G.maxBy(_=> scala.util.Random.nextInt)._1
-                n2 = G.maxBy(_=> scala.util.Random.nextInt)._1
+                n1 = G.maxBy(_=> r.nextInt)._1
+                n2 = G.maxBy(_=> r.nextInt)._1
                 if n1 != n2 then
-                    // coalesce()
-                    // take all n2's edges and assign to n1
+                    // Coalesce
+
+                    // if an n1, n2 edge exists, this goes away as nodes are coalesced
+                    G(n1) -= n2
+                    G(n2) -= n1
+
+                    // and then take all n2's edges and assign to n1
                     for e <- G(n2) do
-                        if !G(n1).contains(e) then
+                        if !G(n1).contains(e) && e != n1 then
                             G(n1) += e
-                    // delete n2 from G
+
+                    // delete node n2 from G
                     G -= n2
             end while
             // how do I count edges between the two groups ???
+            // look at each node in 1st group
+            //  does it connect to a node in 2nd group found by ref to original graph ?
             found = true
         end while
 
         // assert G has only 2 nodes left
         if G.size == 2 then
-            println("Works")
-            for e <- G.keys do
-                println(s"Size of element: ${G(e).length}")
+            println("It worked!")
+        else
+            println("It failed!")
+
+        val ks = G.keys.toList
+        println(s"Size of 'S' component: ${G(ks.head).length}")
+        println(s"Size of 'T' component: ${G(ks.last).length}")
 
 
 
-        val answerP1 = 0
+        val answerP1 = G(ks.head).length * G(ks.last).length
         println(s"\nPart 1: Find the three wires you need to disconnect in order to")
         println(s"divide the components into two separate groups.")
         println(s"What do you get if you multiply the sizes of these two groups together?  A: $answerP1")
