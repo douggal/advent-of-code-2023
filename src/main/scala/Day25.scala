@@ -240,9 +240,9 @@ object Day25:
                     // and lastly, replace edge to n2 with edge to n1
                     for node <- Gcand.keys do
                         if node != n1 then
-                            // replace n2 with n1: edge to n2 is replaced by edge to n1
-                            Gcand(node) -= n2
-                            if !Gcand(node).contains(n1) then
+                            // replace edge to n2 is replaced by edge to n1
+                            if Gcand(node).contains(n2) then
+                                Gcand(node) -= n2
                                 Gcand(node) += n1
 
             end while
@@ -255,6 +255,10 @@ object Day25:
 
             S = Gcand.head._2
             T = Gcand.last._2
+
+            // add node descr of the two remaining nodes to output lists
+            S += Gcand.head._1
+            T += Gcand.last._1
 
             // how do I count edges between the two groups ???
             // look at each node in 1st group
