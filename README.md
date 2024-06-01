@@ -210,6 +210,6 @@ Run time approx 8 milliseconds
 represent the input as an adjacency list which each node represented in the list once
 regardless of which side of the ":" it appears on in the input.
 - DNF :( no bridges found, need a different approach
-- 31 May 2024:  try again, using [Karger's Algorithm](https://en.wikipedia.org/wiki/Karger's_algorithm)
+- 31 May 2024:  found new approach using [Karger's Algorithm](https://en.wikipedia.org/wiki/Karger's_algorithm)
 
 

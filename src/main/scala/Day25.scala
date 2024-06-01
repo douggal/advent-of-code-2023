@@ -139,7 +139,7 @@ object Day25:
         // A: no
         // println(s"The nodes with small nbr connections:")
         // G.filter(x => x._2.size >= 5).foreach(println)
-        // End Try 1
+        // End Try 1 - fail
 
         // Try 2
         // Q: are there any bridges - graph components with only one edge between them?
@@ -196,74 +196,81 @@ object Day25:
         if bridges.isEmpty then
             println("Outcome:  no go, there are no bridges in this graph")
 
-        // End Try 2
+        // End Try 2 - fail
 
         // Try 3
         // 31 May 2024 - Try Karger's Algorithm
 
         /* Karger's algo, as I understand it, applied here:
             We know solution exists and min cut == 3 edges
-            Divide graph G into two components, S and T by merging together nodes chosen at random
+            Divide graph G into two components, S and T by collapsing together nodes chosen at random
             Count edges connecting S and T
-            When # edges == 3 then we're done
-
-           found = false
-           i = 0
-            while not found and i < 1e6
-                i += 1
-                while G.size > 2
-                   tqke 2 nodes at random from graph G
-                   collapse the selected nodes
-                if  # edges between S, T is == 3
-                    found = true
+            Repeat until the # edges between two components == 3 then we're done
          */
 
+        var S = mutable.ArrayBuffer[String]()
+        var T = mutable.ArrayBuffer[String]()
         var found = false
         var i = 0
         val r = scala.util.Random
         while !found && i < 1e6 do
+            val Gcand = mutable.Map[String,mutable.ArrayBuffer[String]]() ++ G
             i += 1
             var n1 = ""
             var n2 = ""
-            while G.size > 2 do
+            while Gcand.size > 2 do
                 // select two nodes at random using a uniform distribution
                 // https://stackoverflow.com/questions/34817917/how-to-pick-a-random-value-from-a-collection-in-scala
-                n1 = G.maxBy(_=> r.nextInt)._1
-                n2 = G.maxBy(_=> r.nextInt)._1
+                n1 = Gcand.maxBy(_=> r.nextInt)._1
+                n2 = Gcand.maxBy(_=> r.nextInt)._1
                 if n1 != n2 then
-                    // Coalesce
+                    // Collapse node n1 with n2
 
                     // if an n1, n2 edge exists, this goes away as nodes are coalesced
-                    G(n1) -= n2
-                    G(n2) -= n1
+                    Gcand(n1) -= n2
 
                     // and then take all n2's edges and assign to n1
-                    for e <- G(n2) do
-                        if !G(n1).contains(e) && e != n1 then
-                            G(n1) += e
+                    for e <- Gcand(n2) do
+                        if !Gcand(n1).contains(e) && e != n1 then
+                            Gcand(n1) += e
 
                     // delete node n2 from G
-                    G -= n2
+                    Gcand -= n2
+
+                    // and lastly, replace edge to n2 with edge to n1
+                    for node <- Gcand.keys do
+                        if node != n1 then
+                            // replace n2 with n1: edge to n2 is replaced by edge to n1
+                            Gcand(node) -= n2
+                            if !Gcand(node).contains(n1) then
+                                Gcand(node) += n1
+
             end while
+
+            // assert Gcand has only 2 nodes left
+            if Gcand.size == 2 then
+                println("It worked!")
+            else
+                println("It failed!")
+
+            S = Gcand.head._2
+            T = Gcand.last._2
+
             // how do I count edges between the two groups ???
             // look at each node in 1st group
             //  does it connect to a node in 2nd group found by ref to original graph ?
+//            for e <- S do
+//                if Gprime(e).find()
+
             found = true
         end while
 
-        // assert G has only 2 nodes left
-        if G.size == 2 then
-            println("It worked!")
-        else
-            println("It failed!")
-
-        val ks = G.keys.toList
-        println(s"Size of 'S' component: ${G(ks.head).length}")
-        println(s"Size of 'T' component: ${G(ks.last).length}")
+        println(s"Size of 'S' group of components: ${S.length}")
+        println(s"Size of 'T' group of components: ${T.length}")
 
 
 
-        val answerP1 = G(ks.head).length * G(ks.last).length
+        val answerP1 = S.length * T.length
         println(s"\nPart 1: Find the three wires you need to disconnect in order to")
         println(s"divide the components into two separate groups.")
         println(s"What do you get if you multiply the sizes of these two groups together?  A: $answerP1")
