@@ -51,8 +51,9 @@ object Day25:
         println(s"--- $puzzleTitle ---\n")
 
         // Read the puzzle input data file
-        val filename = if (runType == 1) testData else realData
-        // val filename = "25-test-2.txt"
+        //val filename = if (runType == 1) testData else realData
+        val filename = "25-test-2.txt"
+
         print("Attempting to read input data file using ")
         if runType == 1 then
             println("TEST DATA ... ")
@@ -216,13 +217,11 @@ object Day25:
         while !found && i < 1e6 do
             val Gcand = mutable.Map[String,mutable.ArrayBuffer[String]]() ++ G
             i += 1
-            var n1 = ""
-            var n2 = ""
             while Gcand.size > 2 do
                 // select two nodes at random using a uniform distribution
                 // https://stackoverflow.com/questions/34817917/how-to-pick-a-random-value-from-a-collection-in-scala
-                n1 = Gcand.maxBy(_=> r.nextInt)._1
-                n2 = Gcand.maxBy(_=> r.nextInt)._1
+                val n1 = Gcand.maxBy(_=> r.nextInt)._1
+                val n2 = Gcand.maxBy(_=> r.nextInt)._1
                 if n1 != n2 then
                     // Collapse node n1 with n2
 
@@ -237,14 +236,17 @@ object Day25:
                     // delete node n2 from G
                     Gcand -= n2
 
-                    // and lastly, replace edge to n2 with edge to n1
+                    // and lastly, for each node in graph, replace deleted edge to n2 with edge to n1
                     for node <- Gcand.keys do
-                        if node != n1 then
-                            // replace edge to n2 is replaced by edge to n1
-                            if Gcand(node).contains(n2) then
-                                Gcand(node) -= n2
+                        if Gcand(node).contains(n2) then
+                            Gcand(node) -= n2
+                            if !Gcand(node).contains(n1) then
                                 Gcand(node) += n1
 
+                if !S.contains(n1) then
+                    S += n1
+                if !T.contains(n2) then
+                    T += n2
             end while
 
             // assert Gcand has only 2 nodes left
@@ -253,12 +255,11 @@ object Day25:
             else
                 println("It failed!")
 
-            S = Gcand.head._2
-            T = Gcand.last._2
-
             // add node descr of the two remaining nodes to output lists
-            S += Gcand.head._1
-            T += Gcand.last._1
+            if !S.contains(Gcand.head._1) then
+                S += Gcand.head._1
+            if !T.contains(Gcand.last._1) then
+                T += Gcand.last._1
 
             // how do I count edges between the two groups ???
             // look at each node in 1st group

@@ -1,3 +1,5 @@
-abc: def xyz
-xyz: def oxy
-def: pdq
+a: f e g
+b: e
+f: a g
+g: e a f
+e: b a g
