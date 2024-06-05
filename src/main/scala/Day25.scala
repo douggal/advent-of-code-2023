@@ -128,76 +128,14 @@ object Day25:
 
         // Make a deep copy of G
         // https://stackoverflow.com/questions/9049117/copy-contents-of-immutable-map-to-new-mutable-map/9049302
-        val Gprime = mutable.Map[String,mutable.ArrayBuffer[String]]() ++ G
+        val Gprime = mutable.Map[String,mutable.ArrayBuffer[String]]()
+        for n <- G.keys do
+            Gprime += (n -> G(n).map(x => x))
 
         // ----------
         //  Part One
         // ----------
         val p1T0 = Instant.now()
-
-        // Try 1
-        // Q: are there any obvious partitions around nodes with small number of connections ?
-        // A: no
-        // println(s"The nodes with small nbr connections:")
-        // G.filter(x => x._2.size >= 5).foreach(println)
-        // End Try 1 - fail
-
-        // Try 2
-        // Q: are there any bridges - graph components with only one edge between them?
-        // A: try to find bridges if they exist.
-
-        // in each ArrayBuffer the index is the ID of of the node as assigned above
-        val ids = ArrayBuffer[Int]()
-        val low = ArrayBuffer[Int]()
-        val visited = ArrayBuffer[Boolean]()
-        for x <- G.values do
-            visited += false
-            ids += 0
-            low += 0
-
-        var id = 0
-        def dfs(at: Int, parent:Int, bridges:ArrayBuffer[Int]): Unit = {
-            visited(at) = true
-            id += 1
-            ids(at) = id
-            low(at) = ids(at)
-
-            // from each edge from node "at" to node "to"
-            for to <- G(toNode(at)) do
-                val too = toID(to)
-                if too != parent then
-                    if ! visited(too) then
-                        dfs(too, at, bridges)
-                        low(at) = Math.min(low(at), low(too))
-                        if ids(at) < low(too) then
-                            bridges += at
-                            bridges += too
-                        end if
-                    else
-                        low(at) = Math.min(low(at), ids(too))
-                    end if
-                end if
-            end for
-        }
-
-        def findBridges(): ArrayBuffer[Int] = {
-            val bridges = ArrayBuffer[Int]()
-            // for each node by its ID in nodes Map
-            for node <- toNode.keys.toList.sorted do
-                if ! visited(node) then
-                    dfs(node, -1, bridges)
-            bridges
-        }
-
-        val bridges = findBridges()
-
-        println(s"\nNumber Bridges: ${bridges.length/2}")
-        bridges.grouped(2).foreach(x => println(s"${toNode(x(0))} -  ${toNode(x(1))}"))
-
-        if bridges.isEmpty then
-            println("Outcome:  no go, there are no bridges in this graph")
-
-        // End Try 2 - fail
 
         // Try 3
         // 31 May 2024 - Try Karger's Algorithm
@@ -245,7 +183,7 @@ object Day25:
                     Gcand -= n1
                     Gcand -= n2
 
-                    // and lastly, for each node in graph, replace deleted edge to n2 with edge to n1
+                    // and lastly, for each node in graph, replace edges to n1, n2 with newNode
                     for node <- Gcand.keys do
                         if node != newNode then
                             if Gcand(node).contains(n1) then
@@ -261,10 +199,10 @@ object Day25:
             end while
 
             // assert Gcand has only 2 nodes left
-            if Gcand.size == 2 then
-                println("It worked!")
-            else
-                println("It failed!")
+//            if Gcand.size == 2 then
+//                println("It worked!")
+//            else
+//                println("It failed!")
 
             // candidate graph Gcand has two groups left, 0 and 1
             // remove group 1 node from S and place in T
@@ -276,15 +214,23 @@ object Day25:
             // how do I count edges between the two groups ???
             // look at each node in 1st group
             //  does it connect to a node in 2nd group found by ref to original graph ?
-//            for e <- S do
-//                for f <- Gprime.keys do
-//                    if Gprime(f).contains(e)
+            var cnt = 0
+            for s <- S do
+                for t <- T do
+                    if Gprime(t).contains(s) then
+                        cnt += 1
 
-            found = true
+            //println(cnt)
+            if cnt == 3 then
+                found = true
         end while
 
         println(s"Size of 'S' group of components: ${S.length}")
+        println("S:")
+        S.foreach(println)
         println(s"Size of 'T' group of components: ${T.length}")
+        println("T:")
+        T.foreach(println)
 
 
 
@@ -328,6 +274,72 @@ object Day25:
         println(blueWorld)
         println(underlinedWorld)
         println(underlinedBlue)
+
+
+        // Try 1
+        // Q: are there any obvious partitions around nodes with small number of connections ?
+        // A: no
+        // println(s"The nodes with small nbr connections:")
+        // G.filter(x => x._2.size >= 5).foreach(println)
+        // End Try 1 - fail
+
+        // Try 2
+        // Q: are there any bridges - graph components with only one edge between them?
+        // A: try to find bridges if they exist.
+
+        // in each ArrayBuffer the index is the ID of of the node as assigned above
+        //        val ids = ArrayBuffer[Int]()
+        //        val low = ArrayBuffer[Int]()
+        //        val visited = ArrayBuffer[Boolean]()
+        //        for x <- G.values do
+        //            visited += false
+        //            ids += 0
+        //            low += 0
+        //
+        //        var id = 0
+        //        def dfs(at: Int, parent:Int, bridges:ArrayBuffer[Int]): Unit = {
+        //            visited(at) = true
+        //            id += 1
+        //            ids(at) = id
+        //            low(at) = ids(at)
+        //
+        //            // from each edge from node "at" to node "to"
+        //            for to <- G(toNode(at)) do
+        //                val too = toID(to)
+        //                if too != parent then
+        //                    if ! visited(too) then
+        //                        dfs(too, at, bridges)
+        //                        low(at) = Math.min(low(at), low(too))
+        //                        if ids(at) < low(too) then
+        //                            bridges += at
+        //                            bridges += too
+        //                        end if
+        //                    else
+        //                        low(at) = Math.min(low(at), ids(too))
+        //                    end if
+        //                end if
+        //            end for
+        //        }
+        //
+        //        def findBridges(): ArrayBuffer[Int] = {
+        //            val bridges = ArrayBuffer[Int]()
+        //            // for each node by its ID in nodes Map
+        //            for node <- toNode.keys.toList.sorted do
+        //                if ! visited(node) then
+        //                    dfs(node, -1, bridges)
+        //            bridges
+        //        }
+        //
+        //        val bridges = findBridges()
+        //
+        //        println(s"\nNumber Bridges: ${bridges.length/2}")
+        //        bridges.grouped(2).foreach(x => println(s"${toNode(x(0))} -  ${toNode(x(1))}"))
+        //
+        //        if bridges.isEmpty then
+        //            println("Outcome:  no go, there are no bridges in this graph")
+
+        // End Try 2 - fail
+
 
 
     }
