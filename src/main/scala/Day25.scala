@@ -122,8 +122,8 @@ object Day25:
 
         println("Completed reading input and building graph.")
         println(s"The graph has ${G.size} nodes.")
-        println("The graph as adj list:")
-        G.foreach(println)
+        //println("The graph as adj list:")
+        //G.foreach(println)
         println
 
         // Make a deep copy of G
@@ -157,6 +157,7 @@ object Day25:
             T.clear()
             val Gcand = mutable.Map[String, mutable.ArrayBuffer[String]]() ++ G
             i += 1
+            var nodeNbr = 0
             while Gcand.size > 2 do
                 // select two nodes at random using a uniform distribution
                 // https://stackoverflow.com/questions/34817917/how-to-pick-a-random-value-from-a-collection-in-scala
@@ -164,7 +165,8 @@ object Day25:
                 val n2 = Gcand.maxBy(_=> r.nextInt)._1
                 if n1 != n2 then
                     // Collapse node n1 with n2 and create a new node
-                    val newNode = n1 + n2
+                    nodeNbr += 1
+                    val newNode =  s"p${i}_${nodeNbr}" // n1 + n2
                     Gcand += (newNode -> ArrayBuffer[String]())
                     if n1.length == 3 then
                         S += n1
@@ -215,14 +217,22 @@ object Day25:
             // look at each node in 1st group
             //  does it connect to a node in 2nd group found by ref to original graph ?
             var cnt = 0
-            for s <- S do
-                for t <- T do
-                    if Gprime(t).contains(s) then
+            var j = 0
+            while cnt < 4 && j < S.length do
+                var k = 0
+                while cnt < 4 && k < T.length do
+                    if Gprime(T(k)).contains(S(j)) then
                         cnt += 1
+                    k += 1
+                end while
+                j += 1
+            end while
 
-            //println(cnt)
             if cnt == 3 then
                 found = true
+
+            // heartbeat and error check  sum of S and T should equal # nodes and always be the same
+            if found || i % 10 == 0 then println(s"$i iterations min cut (S,T) = (${S.length},${T.length}), sum = ${S.length+T.length}")
         end while
 
         println(s"Size of 'S' group of components: ${S.length}")
