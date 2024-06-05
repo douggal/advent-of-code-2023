@@ -51,8 +51,8 @@ object Day25:
         println(s"--- $puzzleTitle ---\n")
 
         // Read the puzzle input data file
-        //val filename = if (runType == 1) testData else realData
-        val filename = "25-test-2.txt"
+        val filename = if (runType == 1) testData else realData
+        // val filename = "25-test-2.txt"
 
         print("Attempting to read input data file using ")
         if runType == 1 then
@@ -209,13 +209,15 @@ object Day25:
             Repeat until the # edges between two components == 3 then we're done
          */
 
-        var S = mutable.ArrayBuffer[String]()
-        var T = mutable.ArrayBuffer[String]()
+        val S = mutable.ArrayBuffer[String]()
+        val T = mutable.ArrayBuffer[String]()
         var found = false
         var i = 0
         val r = scala.util.Random
         while !found && i < 1e6 do
-            val Gcand = mutable.Map[String,mutable.ArrayBuffer[String]]() ++ G
+            S.clear()
+            T.clear()
+            val Gcand = mutable.Map[String, mutable.ArrayBuffer[String]]() ++ G
             i += 1
             while Gcand.size > 2 do
                 // select two nodes at random using a uniform distribution
@@ -223,30 +225,39 @@ object Day25:
                 val n1 = Gcand.maxBy(_=> r.nextInt)._1
                 val n2 = Gcand.maxBy(_=> r.nextInt)._1
                 if n1 != n2 then
-                    // Collapse node n1 with n2
+                    // Collapse node n1 with n2 and create a new node
+                    val newNode = n1 + n2
+                    Gcand += (newNode -> ArrayBuffer[String]())
+                    if n1.length == 3 then
+                        S += n1
+                    if n2 .length == 3 then
+                        T += n2
 
-                    // if an n1, n2 edge exists, this goes away as nodes are coalesced
-                    Gcand(n1) -= n2
-
-                    // and then take all n2's edges and assign to n1
+                    // and then combine n2 and n1 edges into new node newNode
+                    for e <- Gcand(n1) do
+                        if !Gcand(newNode).contains(e) then
+                            Gcand(newNode) += e
                     for e <- Gcand(n2) do
-                        if !Gcand(n1).contains(e) && e != n1 then
-                            Gcand(n1) += e
+                        if !Gcand(newNode).contains(e) then
+                            Gcand(newNode) += e
 
-                    // delete node n2 from G
+                    // delete node n1 and n2 from G
+                    Gcand -= n1
                     Gcand -= n2
 
                     // and lastly, for each node in graph, replace deleted edge to n2 with edge to n1
                     for node <- Gcand.keys do
-                        if Gcand(node).contains(n2) then
-                            Gcand(node) -= n2
-                            if !Gcand(node).contains(n1) then
-                                Gcand(node) += n1
-
-                if !S.contains(n1) then
-                    S += n1
-                if !T.contains(n2) then
-                    T += n2
+                        if node != newNode then
+                            if Gcand(node).contains(n1) then
+                                Gcand(node) -= n1
+                                Gcand(node) += newNode
+                            end if
+                            if Gcand(node).contains(n2) then
+                                Gcand(node) -= n2
+                                Gcand(node) += newNode
+                            end if
+                        end if
+                    end for
             end while
 
             // assert Gcand has only 2 nodes left
@@ -255,17 +266,19 @@ object Day25:
             else
                 println("It failed!")
 
-            // add node descr of the two remaining nodes to output lists
-            if !S.contains(Gcand.head._1) then
+            // candidate graph Gcand has two groups left, 0 and 1
+            // remove group 1 node from S and place in T
+            if Gcand.head._1.length == 3 then
                 S += Gcand.head._1
-            if !T.contains(Gcand.last._1) then
+            if Gcand.last._1.length == 3 then
                 T += Gcand.last._1
 
             // how do I count edges between the two groups ???
             // look at each node in 1st group
             //  does it connect to a node in 2nd group found by ref to original graph ?
 //            for e <- S do
-//                if Gprime(e).find()
+//                for f <- Gprime.keys do
+//                    if Gprime(f).contains(e)
 
             found = true
         end while
