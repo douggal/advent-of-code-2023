@@ -79,6 +79,10 @@ object Day25:
         // an Node class - connects 0 or more other nodes
         case class Node(descr: String, isConnectedTo: List[String])
 
+        // random nbr
+        val seed = new java.util.Date().hashCode
+        val r = new scala.util.Random(seed)
+
         // read raw input and create an initial (incomplete) graph
         val inputgraph: List[Node] =
             input
@@ -151,11 +155,15 @@ object Day25:
         val T = mutable.ArrayBuffer[String]()
         var found = false
         var i = 0
-        val r = scala.util.Random
         while !found && i < 1e6 do
             S.clear()
             T.clear()
-            val Gcand = mutable.Map[String, mutable.ArrayBuffer[String]]() ++ G
+
+            // Make a deep copy of G
+            val Gcand = mutable.Map[String, mutable.ArrayBuffer[String]]()
+            for n <- G.keys do
+                Gcand += (n -> G(n).map(x => x))
+
             i += 1
             var nodeNbr = 0
             while Gcand.size > 2 do
@@ -198,6 +206,7 @@ object Day25:
                             end if
                         end if
                     end for
+                end if
             end while
 
             // assert Gcand has only 2 nodes left
