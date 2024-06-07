@@ -79,22 +79,24 @@ object Day25:
         // an Node class - connects 0 or more other nodes
         case class Node(descr: String, isConnectedTo: List[String])
 
+        // a Vertex with memory of what vertices were used to create it
         case class Vertex(ID: String,
                           connectedTo: mutable.ArrayBuffer[String],
                           madeFrom: mutable.ArrayBuffer[String])
 
-        // random nbr
+        // random nbr generator
+        // https://stackoverflow.com/questions/34817917/how-to-pick-a-random-value-from-a-collection-in-scala
+        // which is better maxBy or calling this method?
         val seed = new java.util.Date().hashCode
         val r = new scala.util.Random(seed)
 
-        // https://stackoverflow.com/questions/34817917/how-to-pick-a-random-value-from-a-collection-in-scala
-        // which is better maxBy or calling this method?
         def choose[A](it: Iterator[A], r: util.Random): A =
             it.zip(Iterator.iterate(1)(_ + 1)).reduceLeft((x, y) =>
                 if (r.nextInt(y._2) == 0) y else x
             )._1
 
         // read raw input and create an initial (incomplete) graph
+        // pretty cool - creates an immutable data structure direct from input file
         val inputgraph: List[Node] =
             input
                 .map(x => x.split(":"))
@@ -104,41 +106,35 @@ object Day25:
         // observe what was read in:
         // inputgraph.foreach(println)
 
-        // Refactor the raw input graph
+        // but the graph is incomplete. Refactor the raw input graph
         //   Q: The input data does not have a row for every node!
         //       A complete graph will need all the nodes to appear in the list
         //       with any edges node touches.
         //   A: I'll add all the nodes to a mutable ArrayBuffer
 
-        // G is full graph in adj. list form
+        // G is full graph in adjacency list form
         val G = mutable.Map[String, Vertex]()
 
-        // first pass - populate with given nodes
+        // first pass - populate G with vertices read in from input file
         inputgraph.foreach(n => { G += (n._1 -> Vertex(n.descr, n._2.to(ArrayBuffer), mutable.ArrayBuffer[String]())) })
 
-        // 2nd pass - pick up any nodes not already in G
+        // 2nd pass - add vertices found in input and not already in G
         for v <- G do
-             for n <- v._2.connectedTo do  // each node this node is connected to
+            // add v to list to madeFrom
+            if !G(v._1).madeFrom.contains(v._1) then
+                G(v._1).madeFrom += v._1
+            // check each vertex this vertex is connected to.  if not in G, add it.
+            for n <- v._2.connectedTo do  // each node this node is connected to
                 if !G.contains(n) then
                     G += (n -> Vertex(n, mutable.ArrayBuffer[String](), mutable.ArrayBuffer[String]()))
+                    G(n).madeFrom += n
                 if !G(n).connectedTo.contains(v._1) then
                     G(n).connectedTo += v._1
 
-        // Q: The algos often use small integers to label the nodes
-        //    and the small ints are used to index arrays.
-        //    How can I label the nodes as integers?
-        // A: Make 2 maps to translate each 3-char string description to an ID and vice versa
-        // toID - assign and ID number to each 3 char description
-        // toNode - revers toID - given ID map to node char description
-        val toID = G.keys.zipWithIndex.toMap
-        val toNode = toID.map(x => (x._2, x._1))
-        // toID.foreach(println)
-        // toNode.foreach(println)
-
         println("Completed reading input and building graph.")
         println(s"The graph has ${G.size} nodes.")
-        //println("The graph as adj list:")
-        //G.foreach(println)
+        // println("The graph as adj list:")
+        // G.foreach(println)
         println
 
         // Assert each vertex v in G does not contain duplicates
@@ -151,7 +147,7 @@ object Day25:
         // https://stackoverflow.com/questions/9049117/copy-contents-of-immutable-map-to-new-mutable-map/9049302
         val Gprime = mutable.Map[String, Vertex]()
         for n <- G.keys do
-            Gprime += (n -> Vertex(n, G(n).connectedTo.map(x => x), mutable.ArrayBuffer[String]()))
+            Gprime += (n -> Vertex(n, G(n).connectedTo.map(x => x),G(n).madeFrom.map(x => x)))
 
         // ----------
         //  Part One
@@ -160,11 +156,11 @@ object Day25:
 
         // Try 1
         // Q: are there any obvious partitions around nodes with small number of connections ?
+        // println(s"The nodes with small nbr connections:")
+        // G.filter(x => x._2.size < 5).foreach(println)
+        // println(s"The nodes with many connections:")
+        // G.filter(x => x._2.size >= 9).foreach(println)
         // A: no
-//        println(s"The nodes with small nbr connections:")
-//        G.filter(x => x._2.size < 5).foreach(println)
-//        println(s"The nodes with many connections:")
-//        G.filter(x => x._2.size >= 9).foreach(println)
         // End Try 1 - fail
 
 
@@ -172,8 +168,8 @@ object Day25:
         // 31 May 2024 - Try Karger's Algorithm
 
         /* Karger's algo, as I understand it, applied here:
-            We know solution exists and min cut == 3 edges
-            Divide graph G into two components, S and T by collapsing together nodes chosen at random
+            We know a solution exists and min cut == 3 edges
+            Divide graph G into two components, S and T by collapsing together vertices chosen at random
             Count edges connecting S and T
             Repeat until the # edges between two components == 3 then we're done
          */
@@ -190,7 +186,7 @@ object Day25:
             // Candidate graph - start with a deep copy of G
             val Gcand = mutable.Map[String, Vertex]()
             for n <- G.keys do
-                Gcand += (n -> Vertex(n, G(n).connectedTo.map(x => x),mutable.ArrayBuffer[String]()))
+                Gcand += (n -> Vertex(n, G(n).connectedTo.map(x => x),G(n).madeFrom.map(x => x)))
 
             while Gcand.size > 2 do
                 // select two nodes at random using a uniform distribution
@@ -202,9 +198,8 @@ object Day25:
                     // and with edges that are the combined edges of n1 and n2
                     val newNode = (n1 -> Vertex(n1, mutable.ArrayBuffer[String](), mutable.ArrayBuffer[String]()))
 
-                    // the new node is make from everything that make up n1 and n2 + n1 and n2 themselves
-                    newNode._2.madeFrom += n1
-                    newNode._2.madeFrom += n2
+                    // the new node is made from everything that make up n1 and n2 + n1 and n2 themselves
+                    // duplicates are ok, will filter out with distinct
                     for (x <- Gcand(n1).madeFrom) do
                         newNode._2.madeFrom += x
                     for (x <- Gcand(n2).madeFrom) do
@@ -221,10 +216,9 @@ object Day25:
                     for v <- newVertices do
                         newNode._2.connectedTo += v
 
-                    // delete node n1 and n2 from G
+                    // delete old vertices n1 and n2 and add new combined vertex
                     Gcand -= n1
                     Gcand -= n2
-
                     Gcand += newNode
 
                     // and for each node in graph, replace edges to n2 with edge to newNode
@@ -232,35 +226,28 @@ object Day25:
                         Gcand(v).connectedTo -= n2
                         if !Gcand(v).connectedTo.contains(newNode._1) && newNode._1 != v then
                             Gcand(v).connectedTo += newNode._1
-
-//                        if Gcand(v).connectedTo.size != Gcand(v).connectedTo.distinct.size then
-//                            println("Duplicate!")
-//                            println(Gcand(v).connectedTo.mkString(", "))
-//                            System.exit(100)
-//                        end if
                     end for
-
                 end if
             end while
+
+            // candidate graph Gcand has two groups left, 0 and 1
+            for s <- Gcand.head._2.madeFrom.distinct do
+                S += s
+            for t <- Gcand.last._2.madeFrom.distinct do
+                T += t
 
             // Assertions to ascertain if the candidate solution is plausible:
             if Gcand.size != 2 then
                 println("It failed! More than 2 groups.")
                 System.exit(1)
             if S.intersect(T).nonEmpty then
-                println("It failed S U T is not empty!")
+                println("It failed S intersect T is not empty!")
                 println(S.sortWith(_ < _).mkString(", "))
                 println(T.sortWith(_ < _).mkString(", "))
                 System.exit(2)
             if S.length + T.length != Gprime.size then
-                println("It failed! Nbr nodes S + T != Gprime")
+                println("It failed! Nbr nodes S + T != nbr nodes in Gprime")
                 System.exit(3)
-
-            // candidate graph Gcand has two groups left, 0 and 1
-            for s <- Gcand.head._2.madeFrom do
-                S += s
-            for t <- Gcand.last._2.madeFrom do
-                T += t
 
             // how do I count edges between the two groups ???
             // look at each node in 1st group
@@ -282,10 +269,10 @@ object Day25:
 
         // check answer
         println(s"Size of 'S' group of components: ${S.length}")
-        print("S:")
+        print("S: ")
         print(S.sortWith(_ < _).mkString(", "))
         println(s"\nSize of 'T' group of components: ${T.length}")
-        print("T:")
+        print("T: ")
         print(T.sortWith(_ < _).mkString(", "))
 
         // print answer
@@ -315,25 +302,34 @@ object Day25:
         // errata...
         // test fansi console output text coloring:
         // fansi
-//        val colored: fansi.Str = fansi.Color.Red("Hello World Ansi!")
-//        // Or fansi.Str("Hello World Ansi!").overlay(fansi.Color.Red)
-//
-//        val length = colored.length // Fast and returns the non-colored length of string
-//
-//        val blueWorld = colored.overlay(fansi.Color.Blue, 6, 11)
-//
-//        val underlinedWorld = colored.overlay(fansi.Underlined.On, 6, 11)
-//
-//        val underlinedBlue = blueWorld.overlay(fansi.Underlined.On, 4, 13)
-//        println(colored)
-//        println(blueWorld)
-//        println(underlinedWorld)
-//        println(underlinedBlue)
+        //        val colored: fansi.Str = fansi.Color.Red("Hello World Ansi!")
+        //        // Or fansi.Str("Hello World Ansi!").overlay(fansi.Color.Red)
+        //
+        //        val length = colored.length // Fast and returns the non-colored length of string
+        //
+        //        val blueWorld = colored.overlay(fansi.Color.Blue, 6, 11)
+        //
+        //        val underlinedWorld = colored.overlay(fansi.Underlined.On, 6, 11)
+        //
+        //        val underlinedBlue = blueWorld.overlay(fansi.Underlined.On, 4, 13)
+        //        println(colored)
+        //        println(blueWorld)
+        //        println(underlinedWorld)
+        //        println(underlinedBlue)
 
 
-        // Try 2
+        // Try 2 - this failed
         // Q: are there any bridges - graph components with only one edge between them?
         // A: try to find bridges if they exist.
+
+        // Q: The algos often use small integers to label the nodes
+        //    and the small ints are used to index arrays.
+        //    How can I label the nodes as integers?
+        // A: Make 2 maps to translate each 3-char string description to an ID and vice versa
+        // toID - assign and ID number to each 3 char description
+        // toNode - revers toID - given ID map to node char description
+        // val toID = G.keys.zipWithIndex.toMap
+        // val toNode = toID.map(x => (x._2, x._1))
 
         // in each ArrayBuffer the index is the ID of of the node as assigned above
         //        val ids = ArrayBuffer[Int]()
@@ -387,8 +383,6 @@ object Day25:
         //            println("Outcome:  no go, there are no bridges in this graph")
 
         // End Try 2 - fail
-
-
 
     }
 
