@@ -262,7 +262,7 @@ object Day25:
                 found = true
 
             // heartbeat and error check  sum of S and T should equal # nodes and always be the same
-            if found || i % 1 == 0 then
+            if found || i % 10 == 0 then
                 print(f"$i%6d iterations min cut (S,T) = (${S.length}%3d,${T.length}%3d)")
                 println(f", N edges S-T = ${cnt}%4d")
         end while
@@ -282,7 +282,7 @@ object Day25:
         println(s"What do you get if you multiply the sizes of these two groups together?  A: $answerP1")
 
         val delta1 = Duration.between(p1T0, Instant.now())
-        println(s"Run time approx ${delta1.toMillis} milliseconds\n")
+        println(f"Run time approx ${delta1.toMillis / 1000.0}%.3f seconds\n")
 
 
 
