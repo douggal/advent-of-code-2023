@@ -148,6 +148,16 @@ object Day25:
         // ----------
         val p1T0 = Instant.now()
 
+        // Try 1
+        // Q: are there any obvious partitions around nodes with small number of connections ?
+        // A: no
+//        println(s"The nodes with small nbr connections:")
+//        G.filter(x => x._2.size < 5).foreach(println)
+//        println(s"The nodes with many connections:")
+//        G.filter(x => x._2.size >= 9).foreach(println)
+        // End Try 1 - fail
+
+
         // Try 3
         // 31 May 2024 - Try Karger's Algorithm
 
@@ -224,14 +234,18 @@ object Day25:
                 T += last0
 
             // Assertions to ascertain if the candidate solution is plausible:
-            if Gcand.size != 2 then println("It failed! More than 2 groups.")
-            if S.intersect(T).nonEmpty then println("It failed S U T is not empty!")
+            if Gcand.size != 2 then
+                println("It failed! More than 2 groups.")
+                System.exit(1)
+            if S.intersect(T).nonEmpty then
+                println("It failed S U T is not empty!")
+                System.exit(2)
             if S.length + T.length != Gprime.size then
                 println("It failed! Nbr nodes S + T != Gprime")
                 print(S.sortWith(_ < _).mkString(", "))
                 println()
                 print(T.sortWith(_ < _).mkString(", "))
-                System.exit(1)
+                System.exit(3)
 
             // candidate graph Gcand has two groups left, 0 and 1
             // remove group 1 node from S and place in T
@@ -253,9 +267,9 @@ object Day25:
                 found = true
 
             // heartbeat and error check  sum of S and T should equal # nodes and always be the same
-            if found || i % 100 == 0 then
-                print(s"$i iterations min cut (S,T) = (${S.length},${T.length})")
-                println(s", N edges S-T = ${cnt}")
+            if found || i % 1 == 0 then
+                print(f"$i%6d iterations min cut (S,T) = (${S.length}%3d,${T.length}%3d)")
+                println(f", N edges S-T = ${cnt}%4d")
         end while
 
         // check answer
@@ -293,28 +307,21 @@ object Day25:
         // errata...
         // test fansi console output text coloring:
         // fansi
-        val colored: fansi.Str = fansi.Color.Red("Hello World Ansi!")
-        // Or fansi.Str("Hello World Ansi!").overlay(fansi.Color.Red)
+//        val colored: fansi.Str = fansi.Color.Red("Hello World Ansi!")
+//        // Or fansi.Str("Hello World Ansi!").overlay(fansi.Color.Red)
+//
+//        val length = colored.length // Fast and returns the non-colored length of string
+//
+//        val blueWorld = colored.overlay(fansi.Color.Blue, 6, 11)
+//
+//        val underlinedWorld = colored.overlay(fansi.Underlined.On, 6, 11)
+//
+//        val underlinedBlue = blueWorld.overlay(fansi.Underlined.On, 4, 13)
+//        println(colored)
+//        println(blueWorld)
+//        println(underlinedWorld)
+//        println(underlinedBlue)
 
-        val length = colored.length // Fast and returns the non-colored length of string
-
-        val blueWorld = colored.overlay(fansi.Color.Blue, 6, 11)
-
-        val underlinedWorld = colored.overlay(fansi.Underlined.On, 6, 11)
-
-        val underlinedBlue = blueWorld.overlay(fansi.Underlined.On, 4, 13)
-        println(colored)
-        println(blueWorld)
-        println(underlinedWorld)
-        println(underlinedBlue)
-
-
-        // Try 1
-        // Q: are there any obvious partitions around nodes with small number of connections ?
-        // A: no
-        // println(s"The nodes with small nbr connections:")
-        // G.filter(x => x._2.size >= 5).foreach(println)
-        // End Try 1 - fail
 
         // Try 2
         // Q: are there any bridges - graph components with only one edge between them?

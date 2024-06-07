@@ -211,5 +211,5 @@ represent the input as an adjacency list which each node represented in the list
 regardless of which side of the ":" it appears on in the input.
 - DNF :( no bridges found, need a different approach
 - 31 May 2024:  found new approach using [Karger's Algorithm](https://en.wikipedia.org/wiki/Karger's_algorithm)
-
-
+- Randomized algorithm using 15 node test data set took anywhere from &lt; 500 interations to over 32000
+- DNF works with test data but not real data set.  Concluded the graph is too uniform for Karger's
