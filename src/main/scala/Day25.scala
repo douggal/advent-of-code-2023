@@ -189,49 +189,63 @@ object Day25:
                 val n1 = choose(Gcand.iterator, r)._1 // Gcand.maxBy(_=> r.nextInt)._1
                 val n2 = choose(Gcand.iterator, r)._1 // Gcand.maxBy(_=> r.nextInt)._1
                 if n1 != n2 then
-                    // Collapse node n1 with n2 and create a new node
+                    // Collapse node n1 with n2 and create a new node, named n1,
+                    // and with edges that are the combined edges of n1 and n2
                     nodeNbr += 1
-                    val newNode =  s"p${i}_${nodeNbr}" // n1 + n2
-                    Gcand += (newNode -> ArrayBuffer[String]())
-                    if n1.length == 3 then
-                        S += n1
-                    if n2 .length == 3 then
-                        T += n2
+                    // val newNode =  s"p${i}_${nodeNbr}" // n1 + n2
+                    val newNode = (n1 -> ArrayBuffer[String]())
+                    // Gcand += (newNode -> ArrayBuffer[String]())
+//                    if n1.length == 3 then
+//                        S += n1
+//                    if n2 .length == 3 then
+//                        T += n2
 
-                    // and then combine n2 and n1 edges into new node newNode
-                    for e <- Gcand(n1) do
-                        if !Gcand(newNode).contains(e) then
-                            Gcand(newNode) += e
-                    for e <- Gcand(n2) do
-                        if !Gcand(newNode).contains(e) then
-                            Gcand(newNode) += e
+                    // add in to newNode each vertex v n1 has an edge to
+                    for v <- Gcand(n1) do
+                        if !newNode._2.contains(v) && v != newNode._1 then
+                            newNode._2 += v
+                    // ditto for n2
+                    for v <- Gcand(n2) do
+                        if !newNode._2.contains(v) && v != newNode._1 then
+                            newNode._2 += v
 
                     // delete node n1 and n2 from G
                     Gcand -= n1
                     Gcand -= n2
 
-                    // and lastly, for each node in graph, replace edges to n1, n2 with newNode
+                    // and for each node in graph, replace edges to n2 with edge to newNode
                     for node <- Gcand.keys do
-                        if node != newNode then
-                            if Gcand(node).contains(n1) then
-                                Gcand(node) -= n1
-                                Gcand(node) += newNode
-                            end if
-                            if Gcand(node).contains(n2) then
+                        // if node != newNode._1 then
+//                            if Gcand(node).contains(n1) then
+//                                Gcand(node) -= n1
+//                                Gcand(node) += newNode._1
+//                            end if
+                            if Gcand(node).contains(n2) && node != newNode._1 then
                                 Gcand(node) -= n2
-                                Gcand(node) += newNode
+                                Gcand(node) += newNode._1
                             end if
-                        end if
+                        // end if
                     end for
+
+                    // and last, add new coalesced node to G
+                    Gcand += newNode
                 end if
             end while
+//
+//            val last1 = Gcand.head._1
+//            if !S.contains(last1) && last1.length == 3 then
+//                S += last1
+//            val last0 = Gcand.last._1
+//            if !T.contains(last0) && last0.length == 3 then
+//                T += last0
 
-            val last1 = Gcand.head._1
-            if !S.contains(last1) && last1.length == 3 then
-                S += last1
-            val last0 = Gcand.last._1
-            if !T.contains(last0) && last0.length == 3 then
-                T += last0
+            // Create S and T, should only be 2 left, head and last.
+            S += Gcand.head._1
+            for v <- Gcand.head._2 do
+                S += v
+            T += Gcand.last._1
+            for v <- Gcand.last._2 do
+                T += v
 
             // Assertions to ascertain if the candidate solution is plausible:
             if Gcand.size != 2 then
@@ -239,12 +253,12 @@ object Day25:
                 System.exit(1)
             if S.intersect(T).nonEmpty then
                 println("It failed S U T is not empty!")
-                System.exit(2)
-            if S.length + T.length != Gprime.size then
-                println("It failed! Nbr nodes S + T != Gprime")
                 print(S.sortWith(_ < _).mkString(", "))
                 println()
                 print(T.sortWith(_ < _).mkString(", "))
+                System.exit(2)
+            if S.length + T.length != Gprime.size then
+                println("It failed! Nbr nodes S + T != Gprime")
                 System.exit(3)
 
             // candidate graph Gcand has two groups left, 0 and 1
