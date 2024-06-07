@@ -79,6 +79,10 @@ object Day25:
         // an Node class - connects 0 or more other nodes
         case class Node(descr: String, isConnectedTo: List[String])
 
+        case class Vertex(ID: String,
+                          connectedTo: mutable.ArrayBuffer[String],
+                          madeFrom: mutable.ArrayBuffer[String])
+
         // random nbr
         val seed = new java.util.Date().hashCode
         val r = new scala.util.Random(seed)
@@ -137,6 +141,12 @@ object Day25:
         //G.foreach(println)
         println
 
+        // Assert each vertex v in G does not contain duplicates
+        for v <- G.keys do
+            if G(v).size != G(v).distinct.size then
+                println("Duplicate! Bad graph.")
+                System.exit(10)
+
         // Make a deep copy of G
         // https://stackoverflow.com/questions/9049117/copy-contents-of-immutable-map-to-new-mutable-map/9049302
         val Gprime = mutable.Map[String,mutable.ArrayBuffer[String]]()
@@ -180,6 +190,7 @@ object Day25:
             val Gcand = mutable.Map[String, mutable.ArrayBuffer[String]]()
             for n <- G.keys do
                 Gcand += (n -> G(n).map(x => x))
+                S += n
 
             i += 1
             var nodeNbr = 0
@@ -192,60 +203,43 @@ object Day25:
                     // Collapse node n1 with n2 and create a new node, named n1,
                     // and with edges that are the combined edges of n1 and n2
                     nodeNbr += 1
-                    // val newNode =  s"p${i}_${nodeNbr}" // n1 + n2
-                    val newNode = (n1 -> ArrayBuffer[String]())
-                    // Gcand += (newNode -> ArrayBuffer[String]())
-//                    if n1.length == 3 then
-//                        S += n1
-//                    if n2 .length == 3 then
-//                        T += n2
 
-                    // add in to newNode each vertex v n1 has an edge to
+                    val newNode = (n1 -> ArrayBuffer[String]())
+
+                    // combine each vertex n1 and n2 are connected to into one
+                    val newVertices = mutable.Set[String]()
                     for v <- Gcand(n1) do
-                        if !newNode._2.contains(v) && v != newNode._1 then
-                            newNode._2 += v
-                    // ditto for n2
+                        if v != newNode._1 then
+                            newVertices += v
                     for v <- Gcand(n2) do
-                        if !newNode._2.contains(v) && v != newNode._1 then
-                            newNode._2 += v
+                        T += v
+                        S -= v
+                        if v != newNode._1 then
+                            newVertices += v
+                    for v <- newVertices do
+                        newNode._2 += v
 
                     // delete node n1 and n2 from G
                     Gcand -= n1
                     Gcand -= n2
 
+                    Gcand += newNode
+
                     // and for each node in graph, replace edges to n2 with edge to newNode
-                    for node <- Gcand.keys do
-                        // if node != newNode._1 then
-//                            if Gcand(node).contains(n1) then
-//                                Gcand(node) -= n1
-//                                Gcand(node) += newNode._1
-//                            end if
-                            if Gcand(node).contains(n2) && node != newNode._1 then
-                                Gcand(node) -= n2
-                                Gcand(node) += newNode._1
-                            end if
-                        // end if
+                    for v <- Gcand.keys do
+                        Gcand(v) -= n2
+                        if !Gcand(v).contains(newNode._1) && newNode._1 != v then
+                            Gcand(v) += newNode._1
+
+                        if Gcand(v).size != Gcand(v).distinct.size then
+                            println("Duplicate!")
+                            println(Gcand(v).mkString(", "))
+                            System.exit(100)
+                        end if
                     end for
 
-                    // and last, add new coalesced node to G
-                    Gcand += newNode
                 end if
             end while
-//
-//            val last1 = Gcand.head._1
-//            if !S.contains(last1) && last1.length == 3 then
-//                S += last1
-//            val last0 = Gcand.last._1
-//            if !T.contains(last0) && last0.length == 3 then
-//                T += last0
-
-            // Create S and T, should only be 2 left, head and last.
-            S += Gcand.head._1
-            for v <- Gcand.head._2 do
-                S += v
-            T += Gcand.last._1
-            for v <- Gcand.last._2 do
-                T += v
 
             // Assertions to ascertain if the candidate solution is plausible:
             if Gcand.size != 2 then
@@ -253,9 +247,8 @@ object Day25:
                 System.exit(1)
             if S.intersect(T).nonEmpty then
                 println("It failed S U T is not empty!")
-                print(S.sortWith(_ < _).mkString(", "))
-                println()
-                print(T.sortWith(_ < _).mkString(", "))
+                println(S.sortWith(_ < _).mkString(", "))
+                println(T.sortWith(_ < _).mkString(", "))
                 System.exit(2)
             if S.length + T.length != Gprime.size then
                 println("It failed! Nbr nodes S + T != Gprime")
