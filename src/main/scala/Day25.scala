@@ -111,18 +111,18 @@ object Day25:
         //   A: I'll add all the nodes to a mutable ArrayBuffer
 
         // G is full graph in adj. list form
-        val G = mutable.Map[String, mutable.ArrayBuffer[String]]()
+        val G = mutable.Map[String, Vertex]()
 
         // first pass - populate with given nodes
-        inputgraph.foreach(n => { G += (n.descr -> n._2.to(ArrayBuffer)) })
+        inputgraph.foreach(n => { G += (n._1 -> Vertex(n.descr, n._2.to(ArrayBuffer), mutable.ArrayBuffer[String]())) })
 
         // 2nd pass - pick up any nodes not already in G
-        for node <- G do
-             for n <- node._2 do  // each node this node is connected to
+        for v <- G do
+             for n <- v._2.connectedTo do  // each node this node is connected to
                 if !G.contains(n) then
-                    G += (n -> mutable.ArrayBuffer[String]())
-                if !G(n).contains(node._1) then
-                    G(n) += node._1
+                    G += (n -> Vertex(n, mutable.ArrayBuffer[String](), mutable.ArrayBuffer[String]()))
+                if !G(n).connectedTo.contains(v._1) then
+                    G(n).connectedTo += v._1
 
         // Q: The algos often use small integers to label the nodes
         //    and the small ints are used to index arrays.
@@ -143,15 +143,15 @@ object Day25:
 
         // Assert each vertex v in G does not contain duplicates
         for v <- G.keys do
-            if G(v).size != G(v).distinct.size then
+            if G(v).connectedTo.size != G(v).connectedTo.distinct.size then
                 println("Duplicate! Bad graph.")
                 System.exit(10)
 
         // Make a deep copy of G
         // https://stackoverflow.com/questions/9049117/copy-contents-of-immutable-map-to-new-mutable-map/9049302
-        val Gprime = mutable.Map[String,mutable.ArrayBuffer[String]]()
+        val Gprime = mutable.Map[String, Vertex]()
         for n <- G.keys do
-            Gprime += (n -> G(n).map(x => x))
+            Gprime += (n -> Vertex(n, G(n).connectedTo.map(x => x), mutable.ArrayBuffer[String]()))
 
         // ----------
         //  Part One
@@ -183,17 +183,15 @@ object Day25:
         var found = false
         var i = 0
         while !found && i < 1e6 do
+            i+=1
             S.clear()
             T.clear()
 
-            // Make a deep copy of G
-            val Gcand = mutable.Map[String, mutable.ArrayBuffer[String]]()
+            // Candidate graph - start with a deep copy of G
+            val Gcand = mutable.Map[String, Vertex]()
             for n <- G.keys do
-                Gcand += (n -> G(n).map(x => x))
-                S += n
+                Gcand += (n -> Vertex(n, G(n).connectedTo.map(x => x),mutable.ArrayBuffer[String]()))
 
-            i += 1
-            var nodeNbr = 0
             while Gcand.size > 2 do
                 // select two nodes at random using a uniform distribution
                 // https://stackoverflow.com/questions/34817917/how-to-pick-a-random-value-from-a-collection-in-scala
@@ -202,22 +200,26 @@ object Day25:
                 if n1 != n2 then
                     // Collapse node n1 with n2 and create a new node, named n1,
                     // and with edges that are the combined edges of n1 and n2
-                    nodeNbr += 1
+                    val newNode = (n1 -> Vertex(n1, mutable.ArrayBuffer[String](), mutable.ArrayBuffer[String]()))
 
-                    val newNode = (n1 -> ArrayBuffer[String]())
+                    // the new node is make from everything that make up n1 and n2 + n1 and n2 themselves
+                    newNode._2.madeFrom += n1
+                    newNode._2.madeFrom += n2
+                    for (x <- Gcand(n1).madeFrom) do
+                        newNode._2.madeFrom += x
+                    for (x <- Gcand(n2).madeFrom) do
+                        newNode._2.madeFrom += x
 
-                    // combine each vertex n1 and n2 are connected to into one
+                    // new node is connected to the combined vertexes of n1 and n2
                     val newVertices = mutable.Set[String]()
-                    for v <- Gcand(n1) do
+                    for v <- Gcand(n1).connectedTo do
                         if v != newNode._1 then
                             newVertices += v
-                    for v <- Gcand(n2) do
-                        T += v
-                        S -= v
+                    for v <- Gcand(n2).connectedTo do
                         if v != newNode._1 then
                             newVertices += v
                     for v <- newVertices do
-                        newNode._2 += v
+                        newNode._2.connectedTo += v
 
                     // delete node n1 and n2 from G
                     Gcand -= n1
@@ -227,15 +229,15 @@ object Day25:
 
                     // and for each node in graph, replace edges to n2 with edge to newNode
                     for v <- Gcand.keys do
-                        Gcand(v) -= n2
-                        if !Gcand(v).contains(newNode._1) && newNode._1 != v then
-                            Gcand(v) += newNode._1
+                        Gcand(v).connectedTo -= n2
+                        if !Gcand(v).connectedTo.contains(newNode._1) && newNode._1 != v then
+                            Gcand(v).connectedTo += newNode._1
 
-                        if Gcand(v).size != Gcand(v).distinct.size then
-                            println("Duplicate!")
-                            println(Gcand(v).mkString(", "))
-                            System.exit(100)
-                        end if
+//                        if Gcand(v).connectedTo.size != Gcand(v).connectedTo.distinct.size then
+//                            println("Duplicate!")
+//                            println(Gcand(v).connectedTo.mkString(", "))
+//                            System.exit(100)
+//                        end if
                     end for
 
                 end if
@@ -255,11 +257,10 @@ object Day25:
                 System.exit(3)
 
             // candidate graph Gcand has two groups left, 0 and 1
-            // remove group 1 node from S and place in T
-            if Gcand.head._1.length == 3 then
-                S += Gcand.head._1
-            if Gcand.last._1.length == 3 then
-                T += Gcand.last._1
+            for s <- Gcand.head._2.madeFrom do
+                S += s
+            for t <- Gcand.last._2.madeFrom do
+                T += t
 
             // how do I count edges between the two groups ???
             // look at each node in 1st group
@@ -267,7 +268,7 @@ object Day25:
             var cnt = 0
             for s <- S do
                 for t <- T do
-                    if Gprime(t).contains(s) then
+                    if Gprime(t).connectedTo.contains(s) then
                         cnt += 1
 
             if cnt == 3 then
