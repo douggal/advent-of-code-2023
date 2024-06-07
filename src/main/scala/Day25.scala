@@ -83,6 +83,12 @@ object Day25:
         val seed = new java.util.Date().hashCode
         val r = new scala.util.Random(seed)
 
+        // https://stackoverflow.com/questions/34817917/how-to-pick-a-random-value-from-a-collection-in-scala
+        def choose[A](it: Iterator[A], r: util.Random): A =
+            it.zip(Iterator.iterate(1)(_ + 1)).reduceLeft((x, y) =>
+                if (r.nextInt(y._2) == 0) y else x
+            )._1
+
         // read raw input and create an initial (incomplete) graph
         val inputgraph: List[Node] =
             input
@@ -169,8 +175,8 @@ object Day25:
             while Gcand.size > 2 do
                 // select two nodes at random using a uniform distribution
                 // https://stackoverflow.com/questions/34817917/how-to-pick-a-random-value-from-a-collection-in-scala
-                val n1 = Gcand.maxBy(_=> r.nextInt)._1
-                val n2 = Gcand.maxBy(_=> r.nextInt)._1
+                val n1 = choose(Gcand.iterator, r)._1 //Gcand.maxBy(_=> r.nextInt)._1
+                val n2 = choose(Gcand.iterator, r)._1 // Gcand.maxBy(_=> r.nextInt)._1
                 if n1 != n2 then
                     // Collapse node n1 with n2 and create a new node
                     nodeNbr += 1
@@ -209,11 +215,10 @@ object Day25:
                 end if
             end while
 
-            // assert Gcand has only 2 nodes left
-//            if Gcand.size == 2 then
-//                println("It worked!")
-//            else
-//                println("It failed!")
+            // assert:
+            if Gcand.size != 2 then println("It failed!")
+            if S.intersect(T).nonEmpty then println("It failed S U T!")
+            if S.length + T.length != Gprime.size then println("It failed! S + T != Gprime")
 
             // candidate graph Gcand has two groups left, 0 and 1
             // remove group 1 node from S and place in T
@@ -226,22 +231,18 @@ object Day25:
             // look at each node in 1st group
             //  does it connect to a node in 2nd group found by ref to original graph ?
             var cnt = 0
-            var j = 0
-            while cnt < 4 && j < S.length do
-                var k = 0
-                while cnt < 4 && k < T.length do
-                    if Gprime(T(k)).contains(S(j)) then
+            for s <- S do
+                for t <- T do
+                    if Gprime(t).contains(s) then
                         cnt += 1
-                    k += 1
-                end while
-                j += 1
-            end while
 
             if cnt == 3 then
                 found = true
 
             // heartbeat and error check  sum of S and T should equal # nodes and always be the same
-            if found || i % 10 == 0 then println(s"$i iterations min cut (S,T) = (${S.length},${T.length}), sum = ${S.length+T.length}")
+            if found || i % 10 == 0 then
+                print(s"$i iterations min cut (S,T) = (${S.length},${T.length})")
+                println(s", N edges S-T = ${cnt}")
         end while
 
         println(s"Size of 'S' group of components: ${S.length}")
