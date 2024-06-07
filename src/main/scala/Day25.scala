@@ -84,6 +84,7 @@ object Day25:
         val r = new scala.util.Random(seed)
 
         // https://stackoverflow.com/questions/34817917/how-to-pick-a-random-value-from-a-collection-in-scala
+        // which is better maxBy or calling this method?
         def choose[A](it: Iterator[A], r: util.Random): A =
             it.zip(Iterator.iterate(1)(_ + 1)).reduceLeft((x, y) =>
                 if (r.nextInt(y._2) == 0) y else x
@@ -175,7 +176,7 @@ object Day25:
             while Gcand.size > 2 do
                 // select two nodes at random using a uniform distribution
                 // https://stackoverflow.com/questions/34817917/how-to-pick-a-random-value-from-a-collection-in-scala
-                val n1 = choose(Gcand.iterator, r)._1 //Gcand.maxBy(_=> r.nextInt)._1
+                val n1 = choose(Gcand.iterator, r)._1 // Gcand.maxBy(_=> r.nextInt)._1
                 val n2 = choose(Gcand.iterator, r)._1 // Gcand.maxBy(_=> r.nextInt)._1
                 if n1 != n2 then
                     // Collapse node n1 with n2 and create a new node
@@ -215,10 +216,22 @@ object Day25:
                 end if
             end while
 
-            // assert:
-            if Gcand.size != 2 then println("It failed!")
-            if S.intersect(T).nonEmpty then println("It failed S U T!")
-            if S.length + T.length != Gprime.size then println("It failed! S + T != Gprime")
+            val last1 = Gcand.head._1
+            if !S.contains(last1) && last1.length == 3 then
+                S += last1
+            val last0 = Gcand.last._1
+            if !T.contains(last0) && last0.length == 3 then
+                T += last0
+
+            // Assertions to ascertain if the candidate solution is plausible:
+            if Gcand.size != 2 then println("It failed! More than 2 groups.")
+            if S.intersect(T).nonEmpty then println("It failed S U T is not empty!")
+            if S.length + T.length != Gprime.size then
+                println("It failed! Nbr nodes S + T != Gprime")
+                print(S.sortWith(_ < _).mkString(", "))
+                println()
+                print(T.sortWith(_ < _).mkString(", "))
+                System.exit(1)
 
             // candidate graph Gcand has two groups left, 0 and 1
             // remove group 1 node from S and place in T
@@ -240,23 +253,23 @@ object Day25:
                 found = true
 
             // heartbeat and error check  sum of S and T should equal # nodes and always be the same
-            if found || i % 10 == 0 then
+            if found || i % 100 == 0 then
                 print(s"$i iterations min cut (S,T) = (${S.length},${T.length})")
                 println(s", N edges S-T = ${cnt}")
         end while
 
+        // check answer
         println(s"Size of 'S' group of components: ${S.length}")
-        println("S:")
-        S.foreach(println)
-        println(s"Size of 'T' group of components: ${T.length}")
-        println("T:")
-        T.foreach(println)
+        print("S:")
+        print(S.sortWith(_ < _).mkString(", "))
+        println(s"\nSize of 'T' group of components: ${T.length}")
+        print("T:")
+        print(T.sortWith(_ < _).mkString(", "))
 
-
-
+        // print answer
         val answerP1 = S.length * T.length
-        println(s"\nPart 1: Find the three wires you need to disconnect in order to")
-        println(s"divide the components into two separate groups.")
+        val ans1: fansi.Str = fansi.Color.Red(s"\n\nPart 1: Find the three wires you need to disconnect in order to divide the components into two separate groups.")
+        println(ans1.overlay(fansi.Color.Blue, 0, 7))
         println(s"What do you get if you multiply the sizes of these two groups together?  A: $answerP1")
 
         val delta1 = Duration.between(p1T0, Instant.now())
