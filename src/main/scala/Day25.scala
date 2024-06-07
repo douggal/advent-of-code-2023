@@ -82,7 +82,7 @@ object Day25:
         // a Vertex with memory of what vertices were used to create it
         case class Vertex(ID: String,
                           connectedTo: mutable.ArrayBuffer[String],
-                          madeFrom: mutable.ArrayBuffer[String])
+                          madeFrom: Set[String])
 
         // random nbr generator
         // https://stackoverflow.com/questions/34817917/how-to-pick-a-random-value-from-a-collection-in-scala
@@ -116,20 +116,17 @@ object Day25:
         val G = mutable.Map[String, Vertex]()
 
         // first pass - populate G with vertices read in from input file
-        inputgraph.foreach(n => { G += (n._1 -> Vertex(n.descr, n._2.to(ArrayBuffer), mutable.ArrayBuffer[String]())) })
+        inputgraph.foreach(n => { G += (n._1 -> Vertex(n.descr, n._2.to(ArrayBuffer), Set(n._1))) })
 
         // 2nd pass - add vertices found in input and not already in G
         for v <- G do
-            // add v to list to madeFrom
-            if !G(v._1).madeFrom.contains(v._1) then
-                G(v._1).madeFrom += v._1
             // check each vertex this vertex is connected to.  if not in G, add it.
             for n <- v._2.connectedTo do  // each node this node is connected to
                 if !G.contains(n) then
-                    G += (n -> Vertex(n, mutable.ArrayBuffer[String](), mutable.ArrayBuffer[String]()))
-                    G(n).madeFrom += n
+                    G += (n -> Vertex(n, mutable.ArrayBuffer[String](), Set(n)))
                 if !G(n).connectedTo.contains(v._1) then
                     G(n).connectedTo += v._1
+
 
         println("Completed reading input and building graph.")
         println(s"The graph has ${G.size} nodes.")
@@ -196,14 +193,17 @@ object Day25:
                 if n1 != n2 then
                     // Collapse node n1 with n2 and create a new node, named n1,
                     // and with edges that are the combined edges of n1 and n2
-                    val newNode = (n1 -> Vertex(n1, mutable.ArrayBuffer[String](), mutable.ArrayBuffer[String]()))
-
                     // the new node is made from everything that make up n1 and n2 + n1 and n2 themselves
-                    // duplicates are ok, will filter out with distinct
+
+                    // combine the 'madeFrom' vertices together
+                    val mf = mutable.Set[String]()
                     for (x <- Gcand(n1).madeFrom) do
-                        newNode._2.madeFrom += x
+                        mf += x
                     for (x <- Gcand(n2).madeFrom) do
-                        newNode._2.madeFrom += x
+                        mf += x
+
+                    // create new vertex
+                    val newNode = (n1 -> Vertex(n1, mutable.ArrayBuffer[String](), mf.toSet))
 
                     // new node is connected to the combined vertexes of n1 and n2
                     val newVertices = mutable.Set[String]()
@@ -231,9 +231,9 @@ object Day25:
             end while
 
             // candidate graph Gcand has two groups left, 0 and 1
-            for s <- Gcand.head._2.madeFrom.distinct do
+            for s <- Gcand.head._2.madeFrom do
                 S += s
-            for t <- Gcand.last._2.madeFrom.distinct do
+            for t <- Gcand.last._2.madeFrom do
                 T += t
 
             // Assertions to ascertain if the candidate solution is plausible:
