@@ -60,7 +60,14 @@ object Day25:
         else
             println("REAL INPUT DATA ...")
 
-        val input = Source.fromResource(filename).getLines().toVector
+        // the working directory is the project root folder
+        // place data files in subfolder ./data
+        val wd = System.getProperty("user.dir")
+        println(f"Working directory is: ${wd}")
+
+        val source = Source.fromFile("./data/" + filename)
+        val input = source.getLines.toVector
+        source.close()
 
         println("\nData Quality Control:")
         println(s"  Input file name: $filename")
@@ -258,7 +265,7 @@ object Day25:
                     if Gprime(t).connectedTo.contains(s) then
                         cnt += 1
 
-            if cnt == 3 then
+            if cnt == 3 && S.size > 1 && T.size > 1 then
                 found = true
 
             // heartbeat and error check  sum of S and T should equal # nodes and always be the same
