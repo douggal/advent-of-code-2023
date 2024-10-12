@@ -63,7 +63,7 @@ object Day25:
         // the working directory is the project root folder
         // place data files in subfolder ./data
         val wd = System.getProperty("user.dir")
-        println(f"Working directory is: ${wd}")
+        println(f"Looking for data file in 'data' folder of the working directory: ${wd}")
 
         val source = Source.fromFile("./data/" + filename)
         val input = source.getLines.toVector
