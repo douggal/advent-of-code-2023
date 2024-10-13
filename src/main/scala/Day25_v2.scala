@@ -15,6 +15,8 @@ import scala.io.Source
  *
  * 2nd try 31 May 2024
  * 3rd try 12 Oct 2024 - refactor Day25.scala based on my Python + NetworkX solution
+ * See Python solution in python folder
+ *
  */
 
 class Day25_v2 private (val title: String, val runType: Int ):
@@ -144,15 +146,21 @@ object Day25_v2:
         val S: mutable.Map[String, mutable.Set[String]] = mutable.Map[String, mutable.Set[String]]()
         val T: mutable.Map[String, mutable.Set[String]] = mutable.Map[String, mutable.Set[String]]()
 
-        for vertex <- vertices do
-            val connectedToS = S.collect { case (k, v) if v.contains(vertex) => k }
-            val connectedToT = T.collect { case (k, v) if v.contains(vertex) => k }
+        val vs = vertices.toList
+        S += (vs.head -> mutable.Set[String](vs.head))
+
+        for vertex <- vs.tail do
+            // collect all the vertices to which vertex is connected
+            // in S
+            val connectedToS = S.collectFirst { case (k, v) if v.contains(vertex) => k }
+            // and in T
+            val connectedToT = T.collectFirst { case (k, v) if v.contains(vertex) => k }
 
             if connectedToS.size < connectedToT.size then
+                // S += (vertex -> mutable.Set[String]().addAll(connectedToS))
                 S += (vertex -> mutable.Set[String]().addAll(connectedToS))
             else
-                T += (vertex -> mutable.Set[String]().addAll(connectedToS))
-
+                T += (vertex -> mutable.Set[String]().addAll(connectedToT))
 
         // print answer
         val answerP1 = S.size * T.size
