@@ -125,7 +125,11 @@ object Day25_v2:
 
             connectedTo match {
                 case None => ()  // Unit here equals do nothing
-                case Some(vs) => G += (newVertex -> mutable.Set[String]().addAll(connectedTo))
+                case Some(vs) => {
+                    G += (newVertex -> mutable.Set[String]())
+                    for v <- vs.split(" ").toList do
+                        G(newVertex).add(v)
+                }
             }
         val z=1
 
@@ -157,11 +161,25 @@ object Day25_v2:
             val connectedToT = T.collectFirst { case (k, v) if v.contains(vertex) => k }
 
             if connectedToS.size < connectedToT.size then
-                // S += (vertex -> mutable.Set[String]().addAll(connectedToS))
-                S += (vertex -> mutable.Set[String]().addAll(connectedToS))
+                connectedToS match {
+                    case None => ()  // Unit here equals do nothing
+                    case Some(vs) => {
+                        if !S.contains(vertex) then
+                            S += (vertex -> mutable.Set[String]())
+                        for v <- vs.split(" ").toList do
+                            S(vertex).add(v)
+                    }
+                }
             else
-                T += (vertex -> mutable.Set[String]().addAll(connectedToT))
-
+                connectedToT match {
+                    case None => () // Unit here equals do nothing
+                    case Some(vs) => {
+                        if !T.contains(vertex) then
+                            T += (vertex -> mutable.Set[String]())
+                        for v <- vs.split(" ").toList do
+                            T(vertex).add(v)
+                    }
+                }
         // print answer
         val answerP1 = S.size * T.size
         val ans1: fansi.Str = fansi.Color.Green(s"\n\nPart 1: Find the three wires you need to disconnect in order to divide the components into two separate groups.")
