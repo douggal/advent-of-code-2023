@@ -101,61 +101,55 @@ object Day25_v2:
 
         // read raw input and create an initial (incomplete) graph
         // dictionary of vertices
-        val G0: mutable.Map[String, mutable.Set[String]] = mutable.Map[String, mutable.Set[String]]()
-        val vertices = mutable.Set[String]()
+        val G: mutable.Map[String, mutable.Set[String]] = mutable.Map[String, mutable.Set[String]]()
+        val vertices = mutable.Set[String]()  // keep Set of all the vertices
 
         for x <- input do
             val line = x.split(":").map(x => x.trim)
-            val k = line(0).trim
-            G0 += (k -> mutable.Set[String]())
+            val k = line(0)
+            G += (k -> mutable.Set[String]())
             vertices += k
             for token <- line(1).split("\\s+") do
-                G0(k) += token
-                if !vertices.contains(token) then
-                    vertices += token
+                G(k) += token
+                vertices += token
 
         // observe what was read in:
-        G0.foreach(println)
-
-        // 2nd pass - find and add any vertices not in the adjacency list/dictionary as keys
-        val new_vertices = vertices.filter(!G0.keys.toSet.contains(_))
-
-        val z=1
+        println("The graph as read from input file:")
+        G.foreach(println)
 
         // but the graph is incomplete. Refactor the raw input graph
         //   Q: The input data does not have a row for every node!
         //       A complete graph will need all the nodes to appear in the list
         //       with any edges node touches.
-        //   A: I'll add all the nodes to a mutable ArrayBuffer
+        //   A: Identify vertices not in graph and add vertices + all their connections
+        val new_vertices = vertices.filter(!G.keys.toSet.contains(_))
+        println(f"New vertices: ${new_vertices}")
 
-//        // G is full graph in adjacency list form
-//        val G = mutable.Map[String, Vertex]()
-//
-//        // first pass - populate G with vertices read in from input file
-//        G0.foreach(n => { G += (n._1 -> Vertex(n.descr, n._2.to(ArrayBuffer), Set(n._1))) })
-//
-//        // 2nd pass - add vertices found in input and not already in G
-//        for v <- G0 do
-//            // check each vertex this vertex is connected to.  if not in G, add it.
-//            for n <- v._2.connectedTo do  // each node this node is connected to
-//                if !G.contains(n) then
-//                    G += (n -> Vertex(n, mutable.ArrayBuffer[String](), Set(n)))
-//                if !G(n).connectedTo.contains(v._1) then
-//                    G(n).connectedTo += v._1
+        for newVertex <- new_vertices do
+            // find what newVertex has an edge to, nvs = new vertices
+            // https://stackoverflow.com/questions/40534642/scala-how-to-return-the-key-that-contains-an-item-in-their-value-where-value-is
+            val connectedTo = G.collectFirst { case (k, v) if v.contains(newVertex) => k }
 
+            connectedTo match {
+                case None => ()  // Unit here equals do nothing
+                case Some(vs) => G += (newVertex -> mutable.Set[String]().addAll(connectedTo))
+            }
+        val z=1
 
+        // G is full graph in adjacency list form
         println("Completed reading input and building graph.")
-        println(s"The graph has ${G0.size} nodes.")
-        // println("The graph as adj list:")
-        // G.foreach(println)
+        println(s"The graph has ${G.size} nodes.")
+        println("The graph, G, represented as an adjacency list:")
+        G.foreach(println)
         println
 
-        // Assert each vertex v in G does not contain duplicates
-//        for v <- G0.keys do
-//            if G(v).connectedTo.size != G(v).connectedTo.distinct.size then
-//                println("Duplicate! Bad graph.")
-//                System.exit(10)
-
+        // start with two Sets S and T
+        // and pick two vertices at random
+        // add to Set S
+        // for every remaining vertex, v
+        //   if v has more edges to vertices in S, then add to S
+        //   else add to T
+        // check number of edges between the vertices in the collections S and T
 
         // ----------
         //  Part One
