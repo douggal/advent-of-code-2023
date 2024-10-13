@@ -213,3 +213,4 @@ regardless of which side of the ":" it appears on in the input.
 - 31 May 2024:  found new approach using [Karger's Algorithm](https://en.wikipedia.org/wiki/Karger's_algorithm)
 - Randomized algorithm using 15 node test data set took anywhere from &lt; 500 interations to over 32000
 - DNF works with test data but not real data set.  Concluded the graph is too uniform for Karger's
+- Oct 2024:  solve with Python &amp; NetworkX using min_cut() method
