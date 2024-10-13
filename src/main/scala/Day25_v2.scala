@@ -85,19 +85,10 @@ object Day25_v2:
         //  Common to both parts
         // ----------------------
 
-        // an Node class - description and capacity
-        case class Vertex(descr: String, capacity: Int)
-
-        // random nbr generator
-        // https://stackoverflow.com/questions/34817917/how-to-pick-a-random-value-from-a-collection-in-scala
-        // which is better maxBy or calling this method?
-        val seed = new java.util.Date().hashCode
-        val r = new scala.util.Random(seed)
-
-        def choose[A](it: Iterator[A], r: util.Random): A =
-            it.zip(Iterator.iterate(1)(_ + 1)).reduceLeft((x, y) =>
-                if (r.nextInt(y._2) == 0) y else x
-            )._1
+        // ----------
+        //  Part One
+        // ----------
+        val p1T0 = Instant.now()
 
         // read raw input and create an initial (incomplete) graph
         // dictionary of vertices
@@ -150,18 +141,21 @@ object Day25_v2:
         //   if v has more edges to vertices in S, then add to S
         //   else add to T
         // check number of edges between the vertices in the collections S and T
+        val S: mutable.Map[String, mutable.Set[String]] = mutable.Map[String, mutable.Set[String]]()
+        val T: mutable.Map[String, mutable.Set[String]] = mutable.Map[String, mutable.Set[String]]()
 
-        // ----------
-        //  Part One
-        // ----------
-        val p1T0 = Instant.now()
+        for vertex <- vertices do
+            val connectedToS = S.collect { case (k, v) if v.contains(vertex) => k }
+            val connectedToT = T.collect { case (k, v) if v.contains(vertex) => k }
 
+            if connectedToS.size < connectedToT.size then
+                S += (vertex -> mutable.Set[String]().addAll(connectedToS))
+            else
+                T += (vertex -> mutable.Set[String]().addAll(connectedToS))
 
-        val S = ArrayBuffer[String]()
-        val T = ArrayBuffer[String]()
 
         // print answer
-        val answerP1 = S.length * T.length
+        val answerP1 = S.size * T.size
         val ans1: fansi.Str = fansi.Color.Green(s"\n\nPart 1: Find the three wires you need to disconnect in order to divide the components into two separate groups.")
         println(ans1.overlay(fansi.Color.Green, 0, 7))
         println(s"What do you get if you multiply the sizes of these two groups together?  A: $answerP1")
