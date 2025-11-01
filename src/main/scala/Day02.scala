@@ -25,7 +25,7 @@ end Day02
 object Day02:
 
     val day = "02"
-    val puzzleTitle = "--- Day 2: Cube Conundrum ---"
+    val puzzleTitle = "--- Day 2: ---"
 
     // input data files
     private val testData: String = s"$day-test.txt"

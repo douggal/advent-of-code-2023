@@ -1,7 +1,7 @@
 import scala.io.Source
 import java.time.{Duration, Instant}
 
-/** Advent of Code 2023 Day XX
+/** Advent of Code 2023 Day 1
  *
  * Defines a class, its companion object and a runner method for
  * the Advent of Code Day 1 puzzles.
@@ -23,7 +23,7 @@ end Day01
 object Day01:
 
     val day = "01"
-    val puzzleTitle = "--- Day 1: Trebuchet?! ---"
+    val puzzleTitle = "--- Day 1: ---"
 
     // input data files
     private val testData: String = s"$day-test.txt"
@@ -89,7 +89,7 @@ object Day01:
             val t = if matches.length == 1 then matches.head else matches.tail.last
             as += h.toInt*10 + t.toInt
 
-        println(s"Part 1:  What is the sum of all of the calibration values?")
+        println(s"Part 1: ")
         println(as.sum)
 
         val delta1 = Duration.between(p1T0, Instant.now())
@@ -145,7 +145,7 @@ object Day01:
 
         // bs.foreach(println)
 
-        println(s"Part 2: What is the sum of all of the calibration values?")
+        println(s"Part 2: ")
         println(bs.sum)
 
         // 53900 - too high

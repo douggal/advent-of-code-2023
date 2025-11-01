@@ -182,9 +182,9 @@ object Day25_v2:
                 }
         // print answer
         val answerP1 = S.size * T.size
-        val ans1: fansi.Str = fansi.Color.Green(s"\n\nPart 1: Find the three wires you need to disconnect in order to divide the components into two separate groups.")
+        val ans1: fansi.Str = fansi.Color.Green(s"\n\nPart 1: ")
         println(ans1.overlay(fansi.Color.Green, 0, 7))
-        println(s"What do you get if you multiply the sizes of these two groups together?  A: $answerP1")
+        println(s"  A: $answerP1")
 
         val delta1 = Duration.between(p1T0, Instant.now())
         println(f"Run time approx ${delta1.toMillis / 1000.0}%.3f seconds\n")
